@@ -69,9 +69,14 @@
     .btn.ghost { background:rgba(247,241,229,.02); color:var(--cream-200); }
     .btn.ghost:hover { border-color:rgba(91,192,238,.38); color:var(--cream-50); background:rgba(91,192,238,.035); box-shadow:0 0 30px rgba(58,159,219,.065); }
     .hero-mark { position:relative; display:grid; place-items:center; min-height:430px; isolation:isolate; }
-    .hero-mark::before { content:""; position:absolute; width:61%; aspect-ratio:1; border-radius:50%; box-shadow:0 0 115px 46px rgba(58,159,219,.09); z-index:-2; }
-    .hero-mark::after { content:""; position:absolute; width:78%; aspect-ratio:1; border:1px solid rgba(247,241,229,.07); border-radius:50%; box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 0 64px rgba(58,159,219,.045); z-index:-1; }
-    .hero-mark img { width:min(360px,80%); height:auto; display:block; filter:drop-shadow(0 22px 38px rgba(0,0,0,.5)); }
+    .hero-mark::before { content:""; position:absolute; width:150%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(58,159,219,.16) 0%,rgba(58,159,219,.07) 34%,transparent 68%); z-index:-2; }
+    .hero-mark::after { content:""; position:absolute; width:78%; aspect-ratio:1; border:1px solid rgba(247,241,229,.07); border-radius:50%; box-shadow:inset 0 1px 0 rgba(255,255,255,.035); z-index:-1; }
+    .hero-mark img { width:min(292px,62%); height:auto; display:block; filter:drop-shadow(0 14px 30px rgba(0,0,0,.28)); }
+    .mark-wrap { position:relative; display:block; width:min(292px,62%); transform:translateX(4px); }
+    .mark-wrap img { width:100%; }
+    .mark-glow { position:absolute; inset:0; pointer-events:none; opacity:.7; filter:blur(8px); background:linear-gradient(180deg,#0B2A45 0%,#2578BE 25%,#A7E2FB 50%,#2578BE 75%,#0B2A45 100%); background-size:100% 200%; background-repeat:repeat-y; -webkit-mask-image:url("assets/bcs-mark-s-mask.png"); -webkit-mask-size:100% 100%; -webkit-mask-position:center; -webkit-mask-repeat:no-repeat; mask-image:url("assets/bcs-mark-s-mask.png"); mask-size:100% 100%; mask-position:center; mask-repeat:no-repeat; animation:s-flow 5.5s linear infinite; }
+    .mark-flow { position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg,#0B2A45 0%,#2578BE 25%,#A7E2FB 50%,#2578BE 75%,#0B2A45 100%); background-size:100% 200%; background-repeat:repeat-y; -webkit-mask-image:url("assets/bcs-mark-s-mask.png"); -webkit-mask-size:100% 100%; -webkit-mask-position:center; -webkit-mask-repeat:no-repeat; mask-image:url("assets/bcs-mark-s-mask.png"); mask-size:100% 100%; mask-position:center; mask-repeat:no-repeat; animation:s-flow 5.5s linear infinite; }
+    @keyframes s-flow { from { background-position:50% 200%; } to { background-position:50% 0%; } }
     .micro-strip { display:flex; gap:27px; align-items:center; padding-top:29px; color:var(--cream-600); font-family:var(--font-mono); font-size:9px; letter-spacing:.08em; text-transform:uppercase; }
     .micro-strip span { display:flex; align-items:center; gap:8px; }
     .micro-strip i { display:block; width:4px; height:4px; border-radius:50%; background:var(--azure-400); box-shadow:0 0 12px rgba(58,159,219,.42); }
@@ -90,15 +95,21 @@
 
     .tool-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:14px; }
     .tool-card { min-height:305px; border-radius:14px; padding:24px; display:flex; flex-direction:column; }
+    .matrix { position:absolute; inset:0; z-index:0; opacity:0; pointer-events:none; display:grid; grid-auto-rows:1fr; transition:opacity 900ms var(--ease); }
+    .matrix i { display:block; border-right:1px solid rgba(247,241,229,.05); border-bottom:1px solid rgba(247,241,229,.05); }
+    .tool-card:hover .matrix { opacity:.3; }
+    .tool-card:hover h3,.tool-card:hover p,.tool-card:hover .caveat,.tool-card:hover .tool-open { text-shadow:0 1px 3px rgba(5,5,6,.92),0 0 10px rgba(5,5,6,.8); }
     .tool-top { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; }
     .type-chip { font-family:var(--font-mono); font-size:8px; letter-spacing:.13em; text-transform:uppercase; color:var(--azure-300); border:1px solid rgba(91,192,238,.19); background:rgba(91,192,238,.025); padding:5px 8px; border-radius:4px; }
     .tool-index,.guide-number { font-family:var(--font-mono); font-size:9px; color:var(--cream-600); }
     .tool-card h3 { font-family:var(--font-display); font-size:29px; font-weight:400; line-height:1.12; color:var(--cream-50); margin:47px 0 14px; max-width:390px; }
     .tool-card p { color:var(--cream-600); font-size:12px; max-width:440px; margin-bottom:20px; }
     .caveat { color:var(--cream-600); font-family:var(--font-mono); font-size:9px; line-height:1.6; padding-top:12px; border-top:1px solid rgba(247,241,229,.065); margin-bottom:23px; }
-    .tool-open { margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:18px; border-top:1px solid var(--border); padding-top:18px; color:var(--cream-200); font-size:9px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; }
+    .tool-open { margin-top:auto; display:flex; align-items:center; justify-content:flex-end; gap:18px; border-top:1px solid var(--border); padding-top:18px; color:var(--cream-200); font-size:9px; font-weight:600; letter-spacing:.13em; text-transform:uppercase; }
     .tool-open span:last-child { color:var(--azure-300); font-family:var(--font-mono); font-size:14px; }
-    .capacity-card { min-height:305px; border-radius:14px; padding:24px; display:flex; align-items:flex-end; background:rgba(10,11,13,.72); border:1px dashed rgba(247,241,229,.10); }
+    .capacity-card { min-height:305px; border-radius:14px; padding:24px; display:flex; align-items:flex-end; background:rgba(10,11,13,.72); border:1px dashed rgba(247,241,229,.10); position:relative; }
+    .capacity-tease { position:absolute; left:24px; right:24px; top:24px; color:var(--cream-400); font-family:var(--font-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; opacity:0; transition:opacity 900ms var(--ease); pointer-events:none; }
+    .capacity-card:hover .capacity-tease { opacity:.75; }
     .capacity-card p { color:var(--cream-600); font-size:11px; margin:0; max-width:285px; }
     .capacity-card strong { display:block; color:var(--cream-400); font-size:9px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; margin-bottom:8px; }
 
@@ -115,14 +126,17 @@
     .community-panel { min-height:360px; border-radius:14px; padding:46px; display:grid; grid-template-columns:minmax(0,1fr) 280px; align-items:center; gap:40px; background:rgba(16,18,22,.955); }
     .community-copy h2 { max-width:700px; margin-bottom:18px; }
     .community-copy p { max-width:64ch; color:var(--cream-400); margin-bottom:30px; font-size:13px; }
-    .community-mark { font-family:var(--font-display); font-size:clamp(82px,10vw,138px); line-height:1; color:rgba(247,241,229,.09); text-align:center; letter-spacing:-.04em; user-select:none; }
+    .community-mark { display:grid; place-items:center; user-select:none; }
+    .community-mark img { width:min(230px,100%); height:auto; opacity:.09; }
 
     footer { border-top:1px solid var(--border); padding:34px 0 42px; }
     .footer-inner { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:24px; }
     .footer-copy,.footer-link { color:var(--cream-600); font-size:8px; letter-spacing:.12em; text-transform:uppercase; }
+    .footer-links { justify-self:end; display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+    .footer-links .footer-link { justify-self:auto; }
     .footer-link { justify-self:end; }
     .footer-link:hover { color:var(--cream-50); }
-    .dose-mark { width:112px; height:auto; opacity:.73; }
+    .dose-mark { width:196px; height:auto; opacity:.8; }
     .reveal { opacity:0; transition:opacity 200ms var(--ease); }
     .reveal.is-visible { opacity:1; }
 
@@ -130,7 +144,7 @@
       .hero { grid-template-columns:1fr; gap:28px; padding-top:78px; }
       .hero-copy { order:2; }
       .hero-mark { order:1; min-height:300px; }
-      .hero-mark img { width:min(285px,72%); }
+      .hero-mark img,.mark-wrap { width:min(232px,56%); }
       .section-head { grid-template-columns:1fr; }
       .section-head>p { text-align:left; max-width:560px; }
       .community-panel { grid-template-columns:1fr; }
@@ -155,13 +169,23 @@
       .guide-link { margin-top:6px; }
       .community-panel { padding:28px 22px; min-height:0; }
       .footer-inner { grid-template-columns:1fr auto; }
-      .dose-mark { order:-1; grid-column:1/-1; width:98px; }
+      .dose-mark { order:-1; grid-column:1/-1; width:168px; }
+    }
+
+    @media (hover:none) {
+      .matrix { opacity:.16; }
+      .tool-card:active .matrix { opacity:.3; }
+      .tool-card h3,.tool-card p,.tool-card .caveat,.tool-card .tool-open { text-shadow:0 1px 3px rgba(5,5,6,.92),0 0 10px rgba(5,5,6,.8); }
+      .capacity-tease { opacity:.75; }
+      nav::before,.liquid::before { display:none; }
     }
 
     @media (prefers-reduced-motion:reduce) {
       html { scroll-behavior:auto; }
       *,*::before,*::after { transition-duration:.001ms!important; animation-duration:.001ms!important; animation-iteration-count:1!important; }
       .reveal { opacity:1; }
+      .mark-flow,.mark-glow { animation-duration:5.5s!important; animation-iteration-count:infinite!important; }
+      .matrix,.capacity-tease { transition-duration:900ms!important; }
     }
   </style>
 </head>
@@ -190,7 +214,7 @@
       <header class="hero">
         <div class="hero-copy reveal">
           <div class="eyebrow">Free Research Infrastructure</div>
-          <h1>Peptide Research Tools, Kept Practical</h1>
+          <h1>Peptide Research Tools</h1>
           <p>Free tools and practical guides for peptide research. Use the resource you need, check its source context, and bring the discussion into The BioChem Society when more context is useful.</p>
           <div class="hero-actions">
             <a class="btn primary" href="#tools">Explore Tools</a>
@@ -203,7 +227,11 @@
           </div>
         </div>
         <div class="hero-mark reveal" aria-label="The BioChem Society monogram">
-          <img src="assets/bcs-monogram-accent.png" alt="The BioChem Society BCS monogram">
+          <div class="mark-wrap">
+            <div class="mark-glow" aria-hidden="true"></div>
+            <img src="assets/bcs-monogram-mark.png" alt="The BioChem Society BCS monogram">
+            <div class="mark-flow" aria-hidden="true"></div>
+          </div>
         </div>
       </header>
     </div>
@@ -214,18 +242,20 @@
     <section id="tools">
       <div class="shell">
         <div class="section-head reveal">
-          <div><div class="label">Research Tools</div><h2>Research Tools Built For Use</h2></div>
-          <p>Structured utilities for checking, comparing, and organizing research context. The library can expand without changing the core navigation.</p>
+          <div><div class="label">Utility</div><h2>Research Tools</h2></div>
+          <p>Structured utilities for checking, comparing, and organizing research context.</p>
         </div>
         <div class="tool-grid">
           <a class="tool-card liquid interactive reveal" href="/mixing" aria-label="Open Peptide Mixing and Compatibility Reference">
+            <div class="matrix" aria-hidden="true"></div>
             <div class="tool-top"><span class="type-chip">Interactive Tool</span><span class="tool-index">T.001</span></div>
             <h3>Peptide Mixing & Compatibility Reference</h3>
             <p>Cross-reference reported peptide combinations and compatibility notes in one searchable interface.</p>
             <div class="caveat">Reference context only. Detailed source notes and limitations stay inside the tool.</div>
-            <div class="tool-open"><span>Open Tool</span><span>↗</span></div>
+            <div class="tool-open"><span>↗</span></div>
           </a>
           <div class="capacity-card reveal" aria-label="More tools planned">
+            <div class="capacity-tease">More tools coming soon</div>
             <p><strong>Library Capacity</strong>New tools will use the same structure as the library grows.</p>
           </div>
         </div>
@@ -236,7 +266,7 @@
     <section id="guides">
       <div class="shell">
         <div class="section-head reveal">
-          <div><div class="label">Guides</div><h2>Practical Guides With More Context</h2></div>
+          <div><div class="label">Literature</div><h2>Practical Guides</h2></div>
           <p>Guides use an editorial layout with more room for context and less interface chrome.</p>
         </div>
         <div class="guide-list">
@@ -246,7 +276,7 @@
             <div class="guide-link">Read Guide <b>↗</b></div>
           </a>
         </div>
-        <div class="library-note reveal">The guide library can expand without changing the page hierarchy.</div>
+        <div class="library-note reveal">The guide library will be expanding soon.</div>
       </div>
     </section>
 
@@ -260,7 +290,7 @@
             <p>Members use The BioChem Society to compare notes, follow new research, and add context around these resources.</p>
             <a class="btn ghost" href="https://discord.gg/sR7ty2Z6h9" target="_blank" rel="noopener noreferrer">Join The Discord</a>
           </div>
-          <div class="community-mark" aria-hidden="true">BCS</div>
+          <div class="community-mark" aria-hidden="true"><img src="assets/bcs-monogram-ouroboros.png" alt=""></div>
         </div>
       </div>
     </section>
@@ -271,7 +301,10 @@
     <div class="shell footer-inner">
       <div class="footer-copy">The BioChem Society</div>
       <img class="dose-mark" src="assets/dose-wordmark.png" alt="DØSΞ">
-      <a class="footer-link" href="https://discord.gg/sR7ty2Z6h9" target="_blank" rel="noopener noreferrer">Discord ↗</a>
+      <div class="footer-links">
+        <a class="footer-link" href="https://discord.gg/sR7ty2Z6h9" target="_blank" rel="noopener noreferrer">Discord ↗</a>
+        <a class="footer-link" href="https://x.com/BioChemSocietyX" target="_blank" rel="noopener noreferrer">X ↗</a>
+      </div>
     </div>
   </footer>
 
@@ -280,7 +313,22 @@
       window.location.replace(`/index.html${window.location.hash}`);
     }
 
+    document.querySelectorAll('.matrix').forEach((matrix) => {
+      const cols = 22, rows = 16;
+      const fills = ['rgba(46,160,102,.55)','rgba(46,160,102,.55)','rgba(46,160,102,.55)','rgba(224,155,44,.5)','rgba(58,159,219,.5)','rgba(198,72,66,.45)'];
+      matrix.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+      let seed = 7;
+      const rand = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+      for (let i = 0; i < cols * rows; i += 1) {
+        const cell = document.createElement('i');
+        const r = rand();
+        if (r > 0.62) cell.style.background = fills[Math.floor(rand() * fills.length)];
+        matrix.appendChild(cell);
+      }
+    });
+
     document.querySelectorAll('.interactive').forEach((element) => {
+      if (window.matchMedia('(hover:none)').matches) return;
       element.addEventListener('pointermove', (event) => {
         const rect = element.getBoundingClientRect();
         element.style.setProperty('--mx', `${event.clientX - rect.left}px`);
