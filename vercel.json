@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/landing.html" },
+    { "source": "/mixing", "destination": "/index.html" },
+    { "source": "/ghk-cu-test", "destination": "/ghk-cu-test.html" }
+  ]
+}
