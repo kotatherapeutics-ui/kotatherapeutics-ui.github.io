@@ -4,7 +4,7 @@
 https://github.com/kotatherapeutics-ui/kotatherapeutics-ui.github.io
 
 ## Deployment
-Vercel, from the default branch. Routing is defined in vercel.json.
+Vercel, from the default branch. Root routing uses ordered routes in vercel.json so / serves landing.html before the filesystem fallback to index.html.
 Live URL: TBD
 
 ## Pages
