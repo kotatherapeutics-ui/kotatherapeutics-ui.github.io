@@ -1,7 +1,8 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/landing.html" },
-    { "source": "/mixing", "destination": "/index.html" },
-    { "source": "/ghk-cu-test", "destination": "/ghk-cu-test.html" }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "routes": [
+    { "src": "^/$", "dest": "/landing.html" },
+    { "src": "^/mixing/?$", "dest": "/index.html" },
+    { "src": "^/ghk-cu-test/?$", "dest": "/ghk-cu-test.html" }
   ]
 }
