@@ -3,6 +3,7 @@
   "routes": [
     { "src": "^/$", "dest": "/landing.html" },
     { "src": "^/mixing/?$", "dest": "/index.html" },
-    { "src": "^/ghk-cu-test/?$", "dest": "/ghk-cu-test.html" }
+    { "src": "^/ghk-cu-test/?$", "dest": "/ghk-cu-test.html" },
+    { "src": "^/peptide-calculator/?$", "dest": "/peptide-calculator.html" }
   ]
 }
