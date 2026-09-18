@@ -106,6 +106,9 @@
     .matrix { position:absolute; inset:0; z-index:0; opacity:0; pointer-events:none; display:grid; grid-auto-rows:1fr; transition:opacity 900ms var(--ease); }
     .matrix i { display:block; border-right:1px solid rgba(247,241,229,.05); border-bottom:1px solid rgba(247,241,229,.05); }
     .tool-card:hover .matrix { opacity:.3; }
+    .vial-graphic { position:absolute; inset:0; z-index:0; opacity:0; pointer-events:none; display:flex; align-items:center; justify-content:flex-end; padding:18px; transition:opacity 900ms var(--ease); }
+    .vial-graphic svg { width:190px; height:190px; }
+    .tool-card:hover .vial-graphic { opacity:.32; }
     .tool-card:hover h3,.tool-card:hover p,.tool-card:hover .caveat,.tool-card:hover .tool-open { text-shadow:0 1px 3px rgba(5,5,6,.92),0 0 10px rgba(5,5,6,.8); }
     .tool-top { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; }
     .type-chip { font-family:var(--font-mono); font-size:8px; letter-spacing:.13em; text-transform:uppercase; color:var(--azure-300); border:1px solid rgba(91,192,238,.19); background:rgba(91,192,238,.025); padding:5px 8px; border-radius:4px; }
@@ -190,8 +193,8 @@
     }
 
     @media (hover:none) {
-      .matrix { opacity:.16; }
-      .tool-card:active .matrix { opacity:.3; }
+      .matrix,.vial-graphic { opacity:.16; }
+      .tool-card:active .matrix,.tool-card:active .vial-graphic { opacity:.3; }
       .tool-card h3,.tool-card p,.tool-card .caveat,.tool-card .tool-open { text-shadow:0 1px 3px rgba(5,5,6,.92),0 0 10px rgba(5,5,6,.8); }
       .capacity-tease { opacity:.75; }
       nav::before,.liquid::before { display:none; }
@@ -228,6 +231,27 @@
     .tipjar-wrap:hover .tj-close,.tj-close:focus-visible { opacity:1; }
     @media (hover:none) { .tj-close { opacity:1; } }
 
+    .tip-dialog-backdrop { position:fixed; inset:0; z-index:80; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(5,5,6,.7); backdrop-filter:blur(6px); }
+    .tip-dialog-backdrop.is-open { display:flex; }
+    .tip-dialog { width:min(420px,100%); max-height:86vh; overflow-y:auto; border:1px solid var(--border-strong); border-radius:14px; background:var(--ink-900,#0e1014); background:rgba(14,15,18,.98); box-shadow:var(--shadow); padding:26px; position:relative; }
+    .tip-dialog h3 { font-family:var(--font-display); font-size:24px; font-weight:400; color:var(--cream-50); margin-bottom:6px; }
+    .tip-dialog>p { color:var(--cream-600); font-size:12px; margin-bottom:20px; }
+    .tip-dialog-close { position:absolute; top:16px; right:16px; width:26px; height:26px; display:grid; place-items:center; border:1px solid var(--border); border-radius:50%; background:transparent; color:var(--cream-600); cursor:pointer; }
+    .tip-dialog-close:hover { color:var(--cream-50); border-color:var(--border-strong); }
+    .tip-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 0; border-top:1px solid var(--border); }
+    .tip-row:first-of-type { border-top:none; }
+    .tip-row-info { min-width:0; flex:1 1 auto; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+    .tip-row-info strong { display:block; color:var(--cream-100); font-size:12px; font-weight:600; letter-spacing:.04em; margin-bottom:4px; width:100%; }
+    .tip-addr { display:block; font-family:var(--font-mono); font-size:10.5px; color:var(--cream-600); word-break:break-all; overflow-wrap:anywhere; }
+    .tip-addr.is-full { flex:1 1 100%; }
+    .tip-row-actions { display:flex; align-items:center; gap:6px; flex:0 0 auto; }
+    .tip-copy-btn { flex:0 0 auto; min-height:32px; padding:0 12px; border:1px solid var(--border-strong); border-radius:6px; background:rgba(247,241,229,.02); color:var(--cream-200); font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:border-color 140ms var(--ease),color 140ms var(--ease),background 140ms var(--ease); }
+    .tip-copy-btn:hover { border-color:rgba(91,192,238,.38); color:var(--cream-50); background:rgba(91,192,238,.06); }
+    .tip-copy-btn.is-copied { border-color:var(--azure-300); color:var(--azure-300); }
+    .tip-show-btn { flex:0 0 auto; border:none; background:none; padding:0; color:var(--cream-600); font-family:var(--font-mono); font-size:8px; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; text-decoration:underline; text-decoration-color:rgba(247,241,229,.28); }
+    .tip-show-btn:hover { color:var(--cream-50); }
+    .tip-show-btn.is-shown { color:var(--azure-300); text-decoration-color:rgba(91,192,238,.4); }
+
     @media (max-width:680px) {
       .tipjar-wrap { top:70px; right:12px; }
       body.nav-collapsed .tipjar-wrap { top:14px; }
@@ -247,7 +271,7 @@
       *,*::before,*::after { transition-duration:.001ms!important; animation-duration:.001ms!important; animation-iteration-count:1!important; }
       .reveal { opacity:1; }
       .mark-flow,.mark-glow { animation-duration:5.5s!important; animation-iteration-count:infinite!important; }
-      .matrix,.capacity-tease { transition-duration:900ms!important; }
+      .matrix,.vial-graphic,.capacity-tease { transition-duration:900ms!important; }
       .nav-collapse,.brand-copy,.nav-links { transition-duration:420ms!important; }
       .tipjar-wrap { transition-duration:820ms!important; }
       body.nav-collapsed .tipjar-wrap { transition-duration:940ms!important; }
@@ -265,7 +289,7 @@
   <div class="ambient-halo" aria-hidden="true"></div>
 
   <div class="tipjar-wrap">
-    <a class="tipjar" href="#community" aria-label="Tip jar, support the tools">
+    <a class="tipjar" href="#" aria-label="Tip jar, support the tools" aria-haspopup="dialog">
       <span class="tj-art" aria-hidden="true">
         <span class="tj-coin"></span>
         <span class="tj-rim"></span>
@@ -275,6 +299,44 @@
       <span class="tj-copy"><strong>TIP JAR</strong><span>SUPPORT THE TOOLS</span></span>
     </a>
     <button class="tj-close" type="button" aria-label="Dismiss tip jar">×</button>
+  </div>
+
+  <div class="tip-dialog-backdrop" id="tipDialogBackdrop">
+    <div class="tip-dialog" role="dialog" aria-modal="true" aria-labelledby="tipDialogTitle">
+      <button class="tip-dialog-close" type="button" aria-label="Close">×</button>
+      <h3 id="tipDialogTitle">Support The Tools</h3>
+      <p>Tips keep the free tools and guides running. Send to any address below.</p>
+      <div class="tip-row">
+        <div class="tip-row-info"><strong>PayPal USD · Solana</strong><span class="tip-addr" data-full="3HzGA7QnVgA4V5hWM53wwGDYVTZNMtHybYQJ3dcofgs1">•••• •••• ••••</span><button class="tip-show-btn" type="button">Show</button></div>
+        <div class="tip-row-actions">
+          <button class="tip-copy-btn" type="button" data-addr="3HzGA7QnVgA4V5hWM53wwGDYVTZNMtHybYQJ3dcofgs1">Copy</button>
+        </div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-row-info"><strong>USDC · Solana</strong><span class="tip-addr" data-full="3HzGA7QnVgA4V5hWM53wwGDYVTZNMtHybYQJ3dcofgs1">•••• •••• ••••</span><button class="tip-show-btn" type="button">Show</button></div>
+        <div class="tip-row-actions">
+          <button class="tip-copy-btn" type="button" data-addr="3HzGA7QnVgA4V5hWM53wwGDYVTZNMtHybYQJ3dcofgs1">Copy</button>
+        </div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-row-info"><strong>Solana · SOL</strong><span class="tip-addr" data-full="3HzGA7QnVgA4V5hWM53wwGDYVTZNMtHybYQJ3dcofgs1">•••• •••• ••••</span><button class="tip-show-btn" type="button">Show</button></div>
+        <div class="tip-row-actions">
+          <button class="tip-copy-btn" type="button" data-addr="3HzGA7QnVgA4V5hWM53wwGDYVTZNMtHybYQJ3dcofgs1">Copy</button>
+        </div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-row-info"><strong>Bitcoin · BTC</strong><span class="tip-addr" data-full="bc1qkvc3vjh9aqtngmzk58a0hhv50cx2hdy89y2gl6">•••• •••• ••••</span><button class="tip-show-btn" type="button">Show</button></div>
+        <div class="tip-row-actions">
+          <button class="tip-copy-btn" type="button" data-addr="bc1qkvc3vjh9aqtngmzk58a0hhv50cx2hdy89y2gl6">Copy</button>
+        </div>
+      </div>
+      <div class="tip-row">
+        <div class="tip-row-info"><strong>Ethereum · ETH</strong><span class="tip-addr" data-full="0x108e417d36Ee8b92f292d3BCf6Db8bbEeAB192Ea">•••• •••• ••••</span><button class="tip-show-btn" type="button">Show</button></div>
+        <div class="tip-row-actions">
+          <button class="tip-copy-btn" type="button" data-addr="0x108e417d36Ee8b92f292d3BCf6Db8bbEeAB192Ea">Copy</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="nav-wrap">
@@ -336,6 +398,29 @@
             <div class="tool-top"><span class="type-chip">Interactive Tool</span><span class="tool-index">T.001</span></div>
             <h3>Peptide Mixing & Compatibility Reference</h3>
             <p>Cross-reference reported peptide combinations and compatibility notes in one searchable interface.</p>
+            <div class="caveat">Reference context only. Detailed source notes and limitations stay inside the tool.</div>
+            <div class="tool-open"><span>↗</span></div>
+          </a>
+          <a class="tool-card liquid interactive reveal" href="https://kotatherapeutics-ui.github.io/peptide-calculator.html" target="_blank" rel="noopener noreferrer" aria-label="Open Peptide Reconstitution Calculator">
+            <div class="vial-graphic" aria-hidden="true">
+              <svg viewBox="0 0 120 120" fill="none" stroke="var(--cream-50)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="14" y="38" width="26" height="52" rx="5"/>
+                <path d="M20 38 V28 a4 4 0 0 1 4-4 h8 a4 4 0 0 1 4 4 V38"/>
+                <line x1="14" y1="58" x2="40" y2="58" stroke="var(--azure-300)"/>
+                <line x1="20" y1="22" x2="32" y2="22"/>
+                <g transform="rotate(45 80 66)">
+                  <rect x="66" y="40" width="28" height="52" rx="3"/>
+                  <line x1="80" y1="48" x2="80" y2="88" stroke="var(--azure-300)"/>
+                  <line x1="66" y1="34" x2="94" y2="34"/>
+                  <line x1="80" y1="92" x2="80" y2="106" stroke-width="2.2"/>
+                  <line x1="70" y1="14" x2="90" y2="14"/>
+                  <line x1="80" y1="14" x2="80" y2="34"/>
+                </g>
+              </svg>
+            </div>
+            <div class="tool-top"><span class="type-chip">Interactive Tool</span><span class="tool-index">T.002</span></div>
+            <h3>Peptide Reconstitution Calculator</h3>
+            <p>Work out reconstitution volume and per-dose draw for a given vial strength and target dose.</p>
             <div class="caveat">Reference context only. Detailed source notes and limitations stay inside the tool.</div>
             <div class="tool-open"><span>↗</span></div>
           </a>
@@ -464,15 +549,64 @@
         tipWrap.classList.add('is-dismissed');
       });
 
+      const tipDialog = document.getElementById('tipDialogBackdrop');
+      const openTipDialog = () => { tipDialog.classList.add('is-open'); };
+      const closeTipDialog = () => { tipDialog.classList.remove('is-open'); };
+      tipDialog.addEventListener('click', (event) => { if (event.target === tipDialog) closeTipDialog(); });
+      tipDialog.querySelector('.tip-dialog-close').addEventListener('click', closeTipDialog);
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeTipDialog(); });
+      tipDialog.querySelectorAll('.tip-show-btn').forEach((btn) => {
+        const addrEl = btn.closest('.tip-row').querySelector('.tip-addr');
+        const masked = addrEl.textContent;
+        const full = addrEl.dataset.full;
+        btn.addEventListener('click', () => {
+          const isShown = btn.classList.toggle('is-shown');
+          addrEl.textContent = isShown ? full : masked;
+          addrEl.classList.toggle('is-full', isShown);
+          btn.textContent = isShown ? 'Hide' : 'Show';
+        });
+      });
+      tipDialog.querySelectorAll('.tip-copy-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const text = btn.dataset.addr;
+          const fallbackCopy = () => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.top = '-9999px';
+            ta.style.left = '-9999px';
+            ta.style.width = '200px';
+            ta.style.height = '40px';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            ta.setSelectionRange(0, text.length);
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+          };
+          fallbackCopy();
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(() => {});
+          }
+          const original = btn.textContent;
+          btn.textContent = 'Copied';
+          btn.classList.add('is-copied');
+          setTimeout(() => { btn.textContent = original; btn.classList.remove('is-copied'); }, 1600);
+        });
+      });
+
       if (window.matchMedia('(hover:none)').matches) {
         tipCard.addEventListener('click', (event) => {
           event.preventDefault();
           restart(tipCoin, '0s');
-          const target = tipCard.getAttribute('href');
-          setTimeout(() => { window.location.href = target; }, 780);
+          setTimeout(openTipDialog, 780);
         });
       } else {
         tipCard.addEventListener('mouseenter', () => restart(tipCoin, '0s'));
+        tipCard.addEventListener('click', (event) => {
+          event.preventDefault();
+          openTipDialog();
+        });
       }
 
       const nav = document.querySelector('nav');
