@@ -464,6 +464,11 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
 .hints .hview{touch-action:pan-y;cursor:grab}
 .hints .hview:active{cursor:grabbing}
 @media (max-width:760px){.hints .hview{min-height:var(--hh,3em)}}
+
+/* r39: iOS Safari zooms the page into any field smaller than 16px. Keep fields at 16px on touch screens so the page never jumps or crops the preview. */
+@media (hover:none) and (pointer:coarse),(max-width:880px){
+  input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}
+}
 </style>
 </head>
 <body>
