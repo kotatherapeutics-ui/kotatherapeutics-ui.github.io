@@ -2550,23 +2550,26 @@ if (document.fonts) {
   // phones: a tapped field sits in the middle of the space the keyboard leaves, and never under the floating preview
   const touchUI = window.matchMedia('(hover:none) and (pointer:coarse)').matches && !!window.visualViewport;
   if (touchUI) {
-    let tgt = null, timers = [];
-    const centre = () => {
+    let tgt = null, timer = 0, runs = 0;
+    const run = () => {
       if (!tgt || document.activeElement !== tgt) return;
       const v = window.visualViewport, r = tgt.getBoundingClientRect(), mid = r.top + r.height / 2 - v.offsetTop;
-      let want = v.height / 2;
-      if (box.classList.contains('on')) { const pb = box.getBoundingClientRect().bottom - v.offsetTop; want = Math.max(want, pb + 14 + r.height / 2); }
+      const previewH = mq.matches ? st.w / 2 + M : 0; // fixed estimate, so the result does not depend on whether the preview has appeared yet
+      let want = Math.max(v.height / 2, previewH + 14 + r.height / 2);
       want = Math.min(want, v.height - r.height / 2 - 8);
-      const d = mid - want; if (Math.abs(d) > 2) window.scrollBy(0, d);
+      const d = mid - want;
+      if (Math.abs(d) > 24) { window.scrollBy(0, d); if (++runs < 2) schedule(400); } // at most one correction after the first move, never a loop
     };
-    const later = () => { timers.forEach(clearTimeout); timers = [60, 260, 520, 900].map((t) => setTimeout(centre, t)); };
+    const schedule = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
     document.addEventListener('focusin', (e) => {
       const t = e.target; if (!(t instanceof HTMLElement) || t.closest('#floatBox')) return;
       if (!t.matches('textarea,select,input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]):not([type=button])')) return;
-      tgt = t; later();
+      tgt = t; runs = 0;
+      const kbOpen = window.visualViewport.height < window.innerHeight - 120;
+      schedule(kbOpen ? 150 : 700); // wait for the keyboard animation and iOS's own scroll to finish, then move once
     });
-    document.addEventListener('focusout', () => { tgt = null; timers.forEach(clearTimeout); });
-    visualViewport.addEventListener('resize', () => { if (tgt) later(); });
+    document.addEventListener('focusout', () => { tgt = null; clearTimeout(timer); });
+    visualViewport.addEventListener('resize', () => { if (tgt && runs === 0) schedule(450); }); // debounced: only the last resize of the keyboard animation counts
   }
 })();
 </script>
