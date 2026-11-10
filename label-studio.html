@@ -2474,7 +2474,7 @@ if (document.fonts) {
   let x = 0, y = M, anim = 0;
   // when a text field is tapped on a phone the keyboard opens and the visual viewport is panned; fixed elements stay with the layout viewport and slide away, so follow the visual viewport
   const vvo = () => { const v = window.visualViewport; return v ? [v.offsetLeft || 0, v.offsetTop || 0] : [0, 0]; };
-  const put = () => { const [ox, oy] = vvo(); box.style.transform = `translate3d(${x + ox}px,${y + oy}px,0)`; };
+  const put = () => { const [ox, oy] = vvo(); box.style.transformOrigin = st.anchor === 'left' ? '0 0' : st.anchor === 'middle' ? '50% 0' : '100% 0'; box.style.transform = `translate3d(${x + ox}px,${y + oy}px,0) scale(${box.classList.contains('kb') ? 0.5 : 1})`; };
   if (window.visualViewport) { let q = 0; const f = () => { if (q) return; q = requestAnimationFrame(() => { q = 0; if (box.classList.contains('on')) put(); }); }; visualViewport.addEventListener('scroll', f); visualViewport.addEventListener('resize', f); }
   const setW = (w) => { st.w = clampW(w); box.style.width = st.w + 'px'; };
   const place = () => { cancelAnimationFrame(anim); setW(st.w); x = snapX(st.anchor, st.w); y = M; put(); };
@@ -2547,29 +2547,10 @@ if (document.fonts) {
   const endRs = (e) => { if (!rs || e.pointerId !== rs.id) return; try { grip.releasePointerCapture(rs.id); } catch {} rs = null; save(); };
   grip.addEventListener('pointerup', endRs); grip.addEventListener('pointercancel', endRs);
 
-  // phones: a tapped field sits in the middle of the space the keyboard leaves, and never under the floating preview
-  const touchUI = window.matchMedia('(hover:none) and (pointer:coarse)').matches && !!window.visualViewport;
-  if (touchUI) {
-    let tgt = null, timer = 0, runs = 0;
-    const run = () => {
-      if (!tgt || document.activeElement !== tgt) return;
-      const v = window.visualViewport, r = tgt.getBoundingClientRect(), mid = r.top + r.height / 2 - v.offsetTop;
-      const previewH = mq.matches ? st.w / 2 + M : 0; // fixed estimate, so the result does not depend on whether the preview has appeared yet
-      let want = Math.max(v.height / 2, previewH + 14 + r.height / 2);
-      want = Math.min(want, v.height - r.height / 2 - 8);
-      const d = mid - want;
-      if (Math.abs(d) > 24) { window.scrollBy(0, d); if (++runs < 2) schedule(400); } // at most one correction after the first move, never a loop
-    };
-    const schedule = (ms) => { clearTimeout(timer); timer = setTimeout(run, ms); };
-    document.addEventListener('focusin', (e) => {
-      const t = e.target; if (!(t instanceof HTMLElement) || t.closest('#floatBox')) return;
-      if (!t.matches('textarea,select,input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]):not([type=button])')) return;
-      tgt = t; runs = 0;
-      const kbOpen = window.visualViewport.height < window.innerHeight - 120;
-      schedule(kbOpen ? 150 : 700); // wait for the keyboard animation and iOS's own scroll to finish, then move once
-    });
-    document.addEventListener('focusout', () => { tgt = null; clearTimeout(timer); });
-    visualViewport.addEventListener('resize', () => { if (tgt && runs === 0) schedule(450); }); // debounced: only the last resize of the keyboard animation counts
+  // phones: leave scrolling to the browser (iOS already centres a tapped field above the keyboard) and just shrink the preview while the keyboard is open so it never covers the field
+  if (window.visualViewport && window.matchMedia('(hover:none) and (pointer:coarse)').matches) {
+    const kb = () => { const on = visualViewport.height < window.innerHeight - 120; if (on !== box.classList.contains('kb')) { box.classList.toggle('kb', on); put(); } };
+    visualViewport.addEventListener('resize', kb); kb();
   }
 })();
 </script>
