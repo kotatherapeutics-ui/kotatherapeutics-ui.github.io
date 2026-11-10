@@ -516,7 +516,6 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
 <div class="xmenu" id="exportMenu" role="menu" aria-label="Export" hidden>
   <div class="pmhead"><h3>Export</h3><button type="button" class="xclose" id="exportClose" aria-label="Close export">&times;</button></div>
   <button type="button" role="menuitem" id="export">Download PNG for Niimbot</button>
-  <button type="button" role="menuitem" id="exportHi" hidden title="">Save to Photos (standard size)</button>
   <button type="button" role="menuitem" id="printBtn">Print</button>
   <button type="button" role="menuitem" id="save">Save to library</button>
 </div>
@@ -1209,7 +1208,7 @@ function doRender() {
   if (cfg.showEdge) edge(pctx, s);
   document.getElementById("legalWarn").hidden = !legalOver.length;
   if (window.__presetSync) window.__presetSync();
-  { const cut = isCut(); cutNow = cut; pv.classList.toggle("cut", cut); floatPrev.classList.toggle("cut", cut); { const pb = document.getElementById("printBtn"); expBtn.disabled = cut; { const eh = document.getElementById("exportHi"); if (eh) eh.disabled = cut; } pb.disabled = cut; expBtn.title = pb.title = cut ? "Move or shrink whatever runs past the red edge first" : ""; } }
+  { const cut = isCut(); cutNow = cut; pv.classList.toggle("cut", cut); floatPrev.classList.toggle("cut", cut); { const pb = document.getElementById("printBtn"); expBtn.disabled = cut; pb.disabled = cut; expBtn.title = pb.title = cut ? "Move or shrink whatever runs past the red edge first" : ""; } }
   if (floatBox.classList.contains("on")) {
     const fw = Math.round((floatPrev.clientWidth || 150) * dpr), fh = Math.round(fw / 2);
     if (floatPrev.width !== fw) { floatPrev.width = fw; floatPrev.height = fh; }
@@ -1886,7 +1885,7 @@ async function saveToPhotos(blob, filename) { // true when handled here, false t
   }
   photoSheet(blob, file); return true;
 }
-if (handheld()) { const eb = document.getElementById("export"), sm = document.getElementById("exportHi"); if (eb) eb.textContent = "Save to Photos for Niimbot"; sm.textContent = "Save to Photos (standard size)"; sm.title = "The label at its exact 472 x 236 pixel size. The default is drawn at 4 times the pixels, which prints sharper."; sm.hidden = false; } // phones: the sharper 4x file is the default
+if (handheld()) { const eb = document.getElementById("export"); if (eb) eb.textContent = "Save to Photos for Niimbot"; } // phones: the sharper 4x file is the only save option
 async function exportPng(k) {
   if (cutNow) return;
   await ensureGfx("#000000");
@@ -1906,7 +1905,6 @@ async function exportPng(k) {
   }
 }
 document.getElementById("export").addEventListener("click", () => exportPng(handheld() ? 4 : 1));
-document.getElementById("exportHi").addEventListener("click", () => exportPng(1));
 
 // Font picker UI (shown while a text element is selected)
 const fontField = document.getElementById("fontField"), fontBtn = document.getElementById("fontBtn"), fontList = document.getElementById("fontList");
@@ -2548,6 +2546,28 @@ if (document.fonts) {
   });
   const endRs = (e) => { if (!rs || e.pointerId !== rs.id) return; try { grip.releasePointerCapture(rs.id); } catch {} rs = null; save(); };
   grip.addEventListener('pointerup', endRs); grip.addEventListener('pointercancel', endRs);
+
+  // phones: a tapped field sits in the middle of the space the keyboard leaves, and never under the floating preview
+  const touchUI = window.matchMedia('(hover:none) and (pointer:coarse)').matches && !!window.visualViewport;
+  if (touchUI) {
+    let tgt = null, timers = [];
+    const centre = () => {
+      if (!tgt || document.activeElement !== tgt) return;
+      const v = window.visualViewport, r = tgt.getBoundingClientRect(), mid = r.top + r.height / 2 - v.offsetTop;
+      let want = v.height / 2;
+      if (box.classList.contains('on')) { const pb = box.getBoundingClientRect().bottom - v.offsetTop; want = Math.max(want, pb + 14 + r.height / 2); }
+      want = Math.min(want, v.height - r.height / 2 - 8);
+      const d = mid - want; if (Math.abs(d) > 2) window.scrollBy(0, d);
+    };
+    const later = () => { timers.forEach(clearTimeout); timers = [60, 260, 520, 900].map((t) => setTimeout(centre, t)); };
+    document.addEventListener('focusin', (e) => {
+      const t = e.target; if (!(t instanceof HTMLElement) || t.closest('#floatBox')) return;
+      if (!t.matches('textarea,select,input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]):not([type=button])')) return;
+      tgt = t; later();
+    });
+    document.addEventListener('focusout', () => { tgt = null; timers.forEach(clearTimeout); });
+    visualViewport.addEventListener('resize', () => { if (tgt) later(); });
+  }
 })();
 </script>
 <script>
