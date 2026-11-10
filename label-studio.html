@@ -2474,7 +2474,10 @@ if (document.fonts) {
   const clampW = (w) => Math.max(MIN_W, Math.min(maxW(), w));
   const snapX = (anchor, w) => anchor === 'left' ? M : anchor === 'middle' ? Math.round((vw() - w) / 2) : vw() - w - M;
   let x = 0, y = M, anim = 0;
-  const put = () => { box.style.transform = `translate3d(${x}px,${y}px,0)`; };
+  // when a text field is tapped on a phone the keyboard opens and the visual viewport is panned; fixed elements stay with the layout viewport and slide away, so follow the visual viewport
+  const vvo = () => { const v = window.visualViewport; return v ? [v.offsetLeft || 0, v.offsetTop || 0] : [0, 0]; };
+  const put = () => { const [ox, oy] = vvo(); box.style.transform = `translate3d(${x + ox}px,${y + oy}px,0)`; };
+  if (window.visualViewport) { let q = 0; const f = () => { if (q) return; q = requestAnimationFrame(() => { q = 0; if (box.classList.contains('on')) put(); }); }; visualViewport.addEventListener('scroll', f); visualViewport.addEventListener('resize', f); }
   const setW = (w) => { st.w = clampW(w); box.style.width = st.w + 'px'; };
   const place = () => { cancelAnimationFrame(anim); setW(st.w); x = snapX(st.anchor, st.w); y = M; put(); };
 
@@ -2490,7 +2493,7 @@ if (document.fonts) {
   const ghosts = ['left', 'middle', 'right'].map((a) => { const g = document.createElement('div'); g.className = 'floatGhost'; g.dataset.a = a; document.body.appendChild(g); return g; });
   const showGhosts = (on, hot) => ghosts.forEach((g) => {
     g.style.display = on ? 'block' : 'none';
-    if (on) { g.style.width = st.w + 'px'; g.style.height = (st.w / 2) + 'px'; g.style.transform = `translate3d(${snapX(g.dataset.a, st.w)}px,${M}px,0)`; g.style.borderColor = g.dataset.a === hot ? 'rgba(235,235,245,.95)' : 'rgba(200,200,210,.45)'; }
+    if (on) { g.style.width = st.w + 'px'; g.style.height = (st.w / 2) + 'px'; { const [vx0, vy0] = vvo(); g.style.transform = `translate3d(${snapX(g.dataset.a, st.w) + vx0}px,${M + vy0}px,0)`; } g.style.borderColor = g.dataset.a === hot ? 'rgba(235,235,245,.95)' : 'rgba(200,200,210,.45)'; }
   });
   const nearest = (px) => { let best = 'right', bd = Infinity; for (const a of ['left', 'middle', 'right']) { const d = Math.abs(px - snapX(a, st.w)); if (d < bd) { bd = d; best = a; } } return best; };
 
