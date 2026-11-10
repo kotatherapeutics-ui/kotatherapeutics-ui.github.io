@@ -515,6 +515,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
 <div class="xmenu" id="exportMenu" role="menu" aria-label="Export" hidden>
   <div class="pmhead"><h3>Export</h3><button type="button" class="xclose" id="exportClose" aria-label="Close export">&times;</button></div>
   <button type="button" role="menuitem" id="export">Download PNG for Niimbot</button>
+  <button type="button" role="menuitem" id="exportHi" hidden title="The same label drawn at 4 times the pixels. If the Niimbot app prints the standard one soft, try this one.">Save to Photos (sharper, 4x)</button>
   <button type="button" role="menuitem" id="printBtn">Print</button>
   <button type="button" role="menuitem" id="save">Save to library</button>
 </div>
@@ -1152,11 +1153,11 @@ function edge(ctx, scale) { // die-cut outline, preview only
 }
 
 // 300 dpi, one-colour raster (what the printer gets)
-function renderMono(ink = "#000000", stock = null) {
-  const c = document.createElement("canvas"); c.width = EX_W; c.height = EX_H;
-  const x = c.getContext("2d"); x.setTransform(EX_W / W, 0, 0, EX_H / H, 0, 0);
+function renderMono(ink = "#000000", stock = null, k = 1) { // k > 1 draws the same label at k times the pixels (same shape and aspect, finer edges)
+  const EW = EX_W * k, EH = EX_H * k, c = document.createElement("canvas"); c.width = EW; c.height = EH;
+  const x = c.getContext("2d"); x.setTransform(EW / W, 0, 0, EH / H, 0, 0);
   drawLabel(x, cfg, "#000000", "#ffffff");
-  const d = x.getImageData(0, 0, EX_W, EX_H), p = d.data, t = cfg.threshold;
+  const d = x.getImageData(0, 0, EW, EH), p = d.data, t = cfg.threshold;
   const hx = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   const I = hx(ink), S = stock ? hx(stock) : null;
   for (let i = 0; i < p.length; i += 4) {
@@ -1206,7 +1207,7 @@ function doRender() {
   if (cfg.showEdge) edge(pctx, s);
   document.getElementById("legalWarn").hidden = !legalOver.length;
   if (window.__presetSync) window.__presetSync();
-  { const cut = isCut(); cutNow = cut; pv.classList.toggle("cut", cut); floatPrev.classList.toggle("cut", cut); { const pb = document.getElementById("printBtn"); expBtn.disabled = cut; pb.disabled = cut; expBtn.title = pb.title = cut ? "Move or shrink whatever runs past the red edge first" : ""; } }
+  { const cut = isCut(); cutNow = cut; pv.classList.toggle("cut", cut); floatPrev.classList.toggle("cut", cut); { const pb = document.getElementById("printBtn"); expBtn.disabled = cut; { const eh = document.getElementById("exportHi"); if (eh) eh.disabled = cut; } pb.disabled = cut; expBtn.title = pb.title = cut ? "Move or shrink whatever runs past the red edge first" : ""; } }
   if (floatBox.classList.contains("on")) {
     const fw = Math.round((floatPrev.clientWidth || 150) * dpr), fh = Math.round(fw / 2);
     if (floatPrev.width !== fw) { floatPrev.width = fw; floatPrev.height = fh; }
@@ -1797,8 +1798,8 @@ document.getElementById("save").addEventListener("click", () => {
 // PNG export with a 300 dpi pHYs chunk
 const crcT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
 function crc32(b) { let c = 0xffffffff; for (let i = 0; i < b.length; i++) c = crcT[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; }
-function withDpi(buf) {
-  const src = new Uint8Array(buf), ppm = Math.round(DPI / 0.0254);
+function withDpi(buf, k = 1) {
+  const src = new Uint8Array(buf), ppm = Math.round(DPI * k / 0.0254);
   const chunk = new Uint8Array(21), dv = new DataView(chunk.buffer);
   dv.setUint32(0, 9); chunk.set([112, 72, 89, 115], 4); dv.setUint32(8, ppm); dv.setUint32(12, ppm); chunk[16] = 1;
   dv.setUint32(17, crc32(chunk.subarray(4, 17)));
@@ -1868,7 +1869,7 @@ function photoSheet(blob, file) { // fallback when the share sheet is not availa
   const wrap = document.createElement("div"); wrap.className = "modalwrap"; wrap.setAttribute("role", "presentation");
   const m = document.createElement("div"); m.className = "modal"; m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true");
   if (photoUrl) URL.revokeObjectURL(photoUrl); photoUrl = URL.createObjectURL(blob);
-  m.innerHTML = '<h3>Save to Photos</h3><p>Press and hold the label, then choose Save to Photos (or Add to Photos). It saves at the exact label size, so it fills the label in the Niimbot app.</p><img alt="Your label, 472 by 236 pixels" style="display:block;width:100%;max-width:472px;margin:0 auto 18px;background:#fff;border-radius:6px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto"><div class="actions"><button type="button" class="btn" data-x>Done</button><button type="button" class="btn primary" data-s>Save to Photos</button></div>';
+  m.innerHTML = '<h3>Save to Photos</h3><p>Press and hold the label, then choose Save to Photos (or Add to Photos). It saves at the exact label size, so it fills the label in the Niimbot app.</p><img alt="Your label" style="display:block;width:100%;max-width:472px;margin:0 auto 18px;background:#fff;border-radius:6px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto"><div class="actions"><button type="button" class="btn" data-x>Done</button><button type="button" class="btn primary" data-s>Save to Photos</button></div>';
   m.querySelector("img").src = photoUrl; wrap.append(m); document.body.append(wrap);
   const close = () => wrap.remove();
   m.querySelector("[data-x]").addEventListener("click", close);
@@ -1883,15 +1884,15 @@ async function saveToPhotos(blob, filename) { // true when handled here, false t
   }
   photoSheet(blob, file); return true;
 }
-if (handheld()) { const eb = document.getElementById("export"); if (eb) eb.textContent = "Save to Photos for Niimbot"; }
-document.getElementById("export").addEventListener("click", async () => {
+if (handheld()) { const eb = document.getElementById("export"); if (eb) eb.textContent = "Save to Photos for Niimbot"; document.getElementById("exportHi").hidden = false; }
+async function exportPng(k) {
   if (cutNow) return;
   await ensureGfx("#000000");
-  const c = renderMono("#000000", null);
+  const c = renderMono("#000000", null, k);
   const blob = await new Promise(r => c.toBlob(r, "image/png"));
-  const bytes = withDpi(await blob.arrayBuffer());
+  const bytes = withDpi(await blob.arrayBuffer(), k);
   const safe = (s) => (s || "").trim().replace(/[^A-Za-z0-9.+-]+/g, "-").replace(/^-|-$/g, "");
-  const filename = `${safe(cfg.compound) || "label"}${cfg.variant && cfg.variant.trim() ? "-" + safe(cfg.variant) : ""}-${safe(cfg.strength) || "x"}-40x20.png`;
+  const filename = `${safe(cfg.compound) || "label"}${cfg.variant && cfg.variant.trim() ? "-" + safe(cfg.variant) : ""}-${safe(cfg.strength) || "x"}-40x20${k > 1 ? "-x" + k : ""}.png`;
   const pngBlob = new Blob([bytes], { type: "image/png" });
   if (handheld() && await saveToPhotos(pngBlob, filename)) return; // phones and tablets: the Niimbot app only reads the photo library
   try { await saveFile(filename, pngBlob); say(`Saved ${filename}.`); }
@@ -1901,7 +1902,9 @@ document.getElementById("export").addEventListener("click", async () => {
     else if (code === "rate_limited") say("A save prompt is already open. Finish that one first.");
     else say("Could not save the file in this view.");
   }
-});
+}
+document.getElementById("export").addEventListener("click", () => exportPng(1));
+document.getElementById("exportHi").addEventListener("click", () => exportPng(4));
 
 // Font picker UI (shown while a text element is selected)
 const fontField = document.getElementById("fontField"), fontBtn = document.getElementById("fontBtn"), fontList = document.getElementById("fontList");
@@ -2372,7 +2375,7 @@ exportBtns.forEach((b) => b.addEventListener("click", () => { if (typeof menuOpe
 exportMenu.addEventListener("click", (e) => { if (e.target.closest("button") && !e.target.closest(".xclose")) exportOpen(false); });
 document.addEventListener("click", (e) => { if (!exportMenu.hidden && !e.target.closest(".xbtn") && !e.target.closest("#exportMenu")) exportOpen(false); });
 exportWrap.addEventListener("keydown", (e) => {
-  const items = [...exportMenu.querySelectorAll("button[role=menuitem]:not(:disabled)")], i = items.indexOf(document.activeElement);
+  const items = [...exportMenu.querySelectorAll("button[role=menuitem]:not(:disabled):not([hidden])")], i = items.indexOf(document.activeElement);
   if (e.key === "Escape") { const a = exportAnchor; exportOpen(false); if (a) a.focus(); }
   else if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length].focus(); }
   else if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
