@@ -1860,6 +1860,30 @@ printBtn.addEventListener("click", async () => {
   } catch { say("Printing is not available in this view. Use Download PNG instead."); }
   finally { setTimeout(() => { printBtn.disabled = cutNow; }, 600); }
 });
+// Handheld devices: the Niimbot app imports from the photo library, not Files, so the label goes to the share sheet ("Save Image") instead of a download.
+// The PNG bytes are exactly the ones the desktop download saves (472 x 236 px, 300 dpi), so the label fills the Niimbot canvas the same way.
+const handheld = () => (navigator.maxTouchPoints > 0 && matchMedia("(hover:none) and (pointer:coarse)").matches) || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+let photoUrl = null;
+function photoSheet(blob, file) { // fallback when the share sheet is not available: show the label to press and hold, plus a button that tries again
+  const wrap = document.createElement("div"); wrap.className = "modalwrap"; wrap.setAttribute("role", "presentation");
+  const m = document.createElement("div"); m.className = "modal"; m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true");
+  if (photoUrl) URL.revokeObjectURL(photoUrl); photoUrl = URL.createObjectURL(blob);
+  m.innerHTML = '<h3>Save to Photos</h3><p>Press and hold the label, then choose Save to Photos (or Add to Photos). It saves at the exact label size, so it fills the label in the Niimbot app.</p><img alt="Your label, 472 by 236 pixels" style="display:block;width:100%;max-width:472px;margin:0 auto 18px;background:#fff;border-radius:6px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto"><div class="actions"><button type="button" class="btn" data-x>Done</button><button type="button" class="btn primary" data-s>Save to Photos</button></div>';
+  m.querySelector("img").src = photoUrl; wrap.append(m); document.body.append(wrap);
+  const close = () => wrap.remove();
+  m.querySelector("[data-x]").addEventListener("click", close);
+  wrap.addEventListener("click", (e) => { if (e.target === wrap) close(); });
+  m.querySelector("[data-s]").addEventListener("click", async () => { try { await navigator.share({ files: [file] }); close(); } catch (e) { if (e && e.name !== "AbortError") say("Press and hold the label to save it."); } });
+}
+async function saveToPhotos(blob, filename) { // true when handled here, false to fall back to a normal download
+  const file = new File([blob], filename, { type: "image/png" });
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file] }); say("Choose Save Image in the share sheet to put the label in your Photos."); return true; }
+    catch (e) { if (e && e.name === "AbortError") { say("Cancelled."); return true; } } // anything else (for example the browser wanting a fresh tap): show the label to save by hand
+  }
+  photoSheet(blob, file); return true;
+}
+if (handheld()) { const eb = document.getElementById("export"); if (eb) eb.textContent = "Save to Photos for Niimbot"; }
 document.getElementById("export").addEventListener("click", async () => {
   if (cutNow) return;
   await ensureGfx("#000000");
@@ -1868,7 +1892,9 @@ document.getElementById("export").addEventListener("click", async () => {
   const bytes = withDpi(await blob.arrayBuffer());
   const safe = (s) => (s || "").trim().replace(/[^A-Za-z0-9.+-]+/g, "-").replace(/^-|-$/g, "");
   const filename = `${safe(cfg.compound) || "label"}${cfg.variant && cfg.variant.trim() ? "-" + safe(cfg.variant) : ""}-${safe(cfg.strength) || "x"}-40x20.png`;
-  try { await saveFile(filename, new Blob([bytes], { type: "image/png" })); say(`Saved ${filename}.`); }
+  const pngBlob = new Blob([bytes], { type: "image/png" });
+  if (handheld() && await saveToPhotos(pngBlob, filename)) return; // phones and tablets: the Niimbot app only reads the photo library
+  try { await saveFile(filename, pngBlob); say(`Saved ${filename}.`); }
   catch (e) {
     const code = e && e.code;
     if (code === "declined") say("Download cancelled.");
@@ -2658,7 +2684,7 @@ if (document.fonts) {
   const TIPS = [
     "Load presets using the Presets button at the top of the page to kickstart an idea.",
     "You can easily send your design straight to your printer using the Export button.",
-    "Selecting \u201cDownload PNG for Niimbot\u201d will download a PNG you can easily upload in the Niimbot app.",
+    "Selecting \u201cDownload PNG for Niimbot\u201d (\u201cSave to Photos\u201d on a phone) gives you a PNG you can easily upload in the Niimbot app.",
     "Click any text or graphic on the preview to select it, then drag it to move it.",
     "Use the X and Y boxes under the preview to nudge a selected item by exact amounts.",
     "Drag the round knob at the top right of a selected item to rotate it.",
