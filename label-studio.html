@@ -148,6 +148,7 @@ input[type=range]{width:100%;accent-color:var(--accent-d)}
 #fontBtn{width:100%;display:flex;align-items:center;gap:10px;background:var(--sunken);border:1px solid var(--accent-d);border-radius:2px;color:var(--ink);padding:9px 12px;cursor:pointer;text-align:left}
 #fontBtn:hover{border-color:var(--accent)}
 #fontCur{font-size:20px;line-height:1.2;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fwarn{margin:8px 0 0;color:#e8b04a}
 .fdef{font:400 10px/1 var(--f-sans);letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
 .fontlist{position:absolute;z-index:20;left:0;right:0;top:calc(100% + 4px);max-height:min(420px,60vh);overflow:auto;background:var(--sunken);border:1px solid var(--line-2);border-radius:4px;box-shadow:0 18px 40px rgba(0,0,0,.55);padding:6px 0}
 .fgroup{font:500 10px/1 var(--f-sans);letter-spacing:.26em;text-transform:uppercase;color:var(--ink-3);padding:12px 14px 6px}
@@ -515,7 +516,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
 <div class="xmenu" id="exportMenu" role="menu" aria-label="Export" hidden>
   <div class="pmhead"><h3>Export</h3><button type="button" class="xclose" id="exportClose" aria-label="Close export">&times;</button></div>
   <button type="button" role="menuitem" id="export">Download PNG for Niimbot</button>
-  <button type="button" role="menuitem" id="exportHi" hidden title="The same label drawn at 4 times the pixels. If the Niimbot app prints the standard one soft, try this one.">Save to Photos (sharper, 4x)</button>
+  <button type="button" role="menuitem" id="exportHi" hidden title="">Save to Photos (standard size)</button>
   <button type="button" role="menuitem" id="printBtn">Print</button>
   <button type="button" role="menuitem" id="save">Save to library</button>
 </div>
@@ -609,6 +610,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
             </button>
             <div class="fontlist" id="fontList" role="listbox" tabindex="-1" aria-labelledby="fontLbl" hidden></div>
           </div>
+          <p class="note fwarn" id="fontWarn" hidden>Heads up: small vertical text in Montserrat has printed poorly on the Niimbot M2. Raise the size to 1.6 mm or more, or pick a sturdier font such as Oswald.</p>
         </div>
         <div class="field full"><div class="lbl">Logo mark (optional)</div>
           <div class="logorow">
@@ -1385,7 +1387,7 @@ function syncTxtList() {
       inp.addEventListener("focus", pick); sz.addEventListener("focus", pick);
       inp.addEventListener("input", () => setTxt(id, inp.value));
       inp.addEventListener("blur", () => { if (customText(id) && !inp.value.trim()) setTxt(id, TXT_DEFAULT); });
-      sz.addEventListener("input", () => { const v = parseFloat(sz.value); if (customText(id) && v >= 0.8 && v <= 12) { cfg.texts = cfg.texts.map((x) => x.id === id ? Object.assign({}, x, { size: v }) : x); lsSet(LS_CFG, cfg); render(); } });
+      sz.addEventListener("input", () => { const v = parseFloat(sz.value); if (customText(id) && v >= 0.8 && v <= 12) { cfg.texts = cfg.texts.map((x) => x.id === id ? Object.assign({}, x, { size: v }) : x); lsSet(LS_CFG, cfg); render(); syncFontField(); } });
       rm.addEventListener("click", () => { const nm = nameOf(id); removeText(id); say(`${nm} removed from the label.`); });
       row.append(lab, inp, sz, rm); box.append(row);
     }
@@ -1869,7 +1871,7 @@ function photoSheet(blob, file) { // fallback when the share sheet is not availa
   const wrap = document.createElement("div"); wrap.className = "modalwrap"; wrap.setAttribute("role", "presentation");
   const m = document.createElement("div"); m.className = "modal"; m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true");
   if (photoUrl) URL.revokeObjectURL(photoUrl); photoUrl = URL.createObjectURL(blob);
-  m.innerHTML = '<h3>Save to Photos</h3><p>Press and hold the label, then choose Save to Photos (or Add to Photos). It saves at the exact label size, so it fills the label in the Niimbot app.</p><img alt="Your label" style="display:block;width:100%;max-width:472px;margin:0 auto 18px;background:#fff;border-radius:6px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto"><div class="actions"><button type="button" class="btn" data-x>Done</button><button type="button" class="btn primary" data-s>Save to Photos</button></div>';
+  m.innerHTML = '<h3>Save to Photos</h3><p>Press and hold the label, then choose Save to Photos (or Add to Photos). It keeps the label\u2019s exact proportions, so it fills the label in the Niimbot app. After you upload it there, set the photo\u2019s contrast to 0 to avoid a white outline.</p><img alt="Your label" style="display:block;width:100%;max-width:472px;margin:0 auto 18px;background:#fff;border-radius:6px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto"><div class="actions"><button type="button" class="btn" data-x>Done</button><button type="button" class="btn primary" data-s>Save to Photos</button></div>';
   m.querySelector("img").src = photoUrl; wrap.append(m); document.body.append(wrap);
   const close = () => wrap.remove();
   m.querySelector("[data-x]").addEventListener("click", close);
@@ -1884,7 +1886,7 @@ async function saveToPhotos(blob, filename) { // true when handled here, false t
   }
   photoSheet(blob, file); return true;
 }
-if (handheld()) { const eb = document.getElementById("export"); if (eb) eb.textContent = "Save to Photos for Niimbot"; document.getElementById("exportHi").hidden = false; }
+if (handheld()) { const eb = document.getElementById("export"), sm = document.getElementById("exportHi"); if (eb) eb.textContent = "Save to Photos for Niimbot"; sm.textContent = "Save to Photos (standard size)"; sm.title = "The label at its exact 472 x 236 pixel size. The default is drawn at 4 times the pixels, which prints sharper."; sm.hidden = false; } // phones: the sharper 4x file is the default
 async function exportPng(k) {
   if (cutNow) return;
   await ensureGfx("#000000");
@@ -1903,8 +1905,8 @@ async function exportPng(k) {
     else say("Could not save the file in this view.");
   }
 }
-document.getElementById("export").addEventListener("click", () => exportPng(1));
-document.getElementById("exportHi").addEventListener("click", () => exportPng(4));
+document.getElementById("export").addEventListener("click", () => exportPng(handheld() ? 4 : 1));
+document.getElementById("exportHi").addEventListener("click", () => exportPng(1));
 
 // Font picker UI (shown while a text element is selected)
 const fontField = document.getElementById("fontField"), fontBtn = document.getElementById("fontBtn"), fontList = document.getElementById("fontList");
@@ -1928,6 +1930,7 @@ function syncFontField() {
   document.getElementById("fontLbl").textContent = `Font · ${NAMES[sel]}`;
   const cur = document.getElementById("fontCur"); cur.textContent = fam; cur.style.fontFamily = `"${fam}", ${SANS}`;
   document.getElementById("fontDef").textContent = fam === DEFAULT_FONT[sel] ? "Default" : "";
+  { const ct = customText(sel), fw = document.getElementById("fontWarn"); if (fw) fw.hidden = !(ct && fam === "Montserrat" && rotOf(sel) % 2 === 1 && (+ct.size || 2) < 1.55); }
   const sec = fontField.closest("details"); if (sec && !sec.open) sec.open = true;
 }
 function buildFonts() {
@@ -2120,7 +2123,7 @@ pv.addEventListener("pointerup", (e) => {
 });
 document.getElementById("txtVal").addEventListener("input", (e) => { if (sel && customText(sel)) setTxt(sel, e.target.value); });
 document.getElementById("txtVal").addEventListener("blur", (e) => { if (sel && customText(sel) && !e.target.value.trim()) setTxt(sel, TXT_DEFAULT); });
-document.getElementById("txtSize").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (sel && customText(sel) && v >= 0.8 && v <= 12) { cfg.texts = cfg.texts.map(t => t.id === sel ? Object.assign({}, t, { size: v }) : t); lsSet(LS_CFG, cfg); render(); } });
+document.getElementById("txtSize").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (sel && customText(sel) && v >= 0.8 && v <= 12) { cfg.texts = cfg.texts.map(t => t.id === sel ? Object.assign({}, t, { size: v }) : t); lsSet(LS_CFG, cfg); render(); syncFontField(); } });
 document.getElementById("txtRemove").addEventListener("click", () => { if (!sel || !customText(sel)) return; const nm = nameOf(sel); removeText(sel); say(`${nm} removed from the label.`); });
 const updGfx = (fn) => { if (!sel) return; freezeGfx(sel); cfg.graphics = (cfg.graphics || []).map(g => g.id === sel ? Object.assign({}, g, fn(g)) : g); lsSet(LS_CFG, cfg); render(); };
 document.getElementById("gfxH").addEventListener("input", (e) => { const v = parseFloat(e.target.value); if (v >= 0.8 && v <= 19) updGfx((g) => (g.key === "bar" || v >= 2) ? ({ h: v }) : ({})); });
@@ -2230,7 +2233,7 @@ const PRESETS = [
     cfg: { compound: "RETATRUTIDE", variant: "99% PURITY", strength: "20 mg", strengthBox: true, showLogo: false, showSide: false, showRules: false, textAlign: "center", legalCenter: true,
       disclaimer: "Lyophilized peptide", disclaimer2: "Research use only", legalLines: "split", legalSize: 1.45, legal2Size: 1.45,
       nameSize: 4.6, nameWeight: "700", variantSize: 1.5, strengthSize: 2.2, strengthTrack: 0.04, margin: 1.2, topPad: 4.4, gap: 0.8, bottomPad: 0.2,
-      texts: [{ id: "txt1", text: "STORE AT 2-8\u00b0C", size: 1.3 }, { id: "txt2", text: "MFG:12/25", size: 1.3 }, { id: "txt3", text: "EXP:12/27", size: 1.3 }],
+      texts: [{ id: "txt1", text: "STORE AT 2-8\u00b0C", size: 1.6 }, { id: "txt2", text: "MFG:12/25", size: 1.6 }, { id: "txt3", text: "EXP:12/27", size: 1.6 }],
       graphics: [{ id: "gfx1", key: "bar", w: 7, h: 1.4 }, { id: "gfx2", key: "bar", w: 7, h: 1.4 }, { id: "gfx3", key: "bar", w: 6, h: 0.25 }, { id: "gfx4", key: "bar", w: 6, h: 0.25 }, { id: "gfx5", key: "flex", h: 4.2 }],
       off: { gfx5: { x: 0, y: 7.2 }, txt1: { x: -17.9, y: 0 }, txt2: { x: 17.9, y: 4.8 }, txt3: { x: 17.9, y: -4.8 }, gfx1: { x: -10.2, y: -0.1 }, gfx2: { x: 10.2, y: -0.1 }, gfx3: { x: -8.7, y: -2.9 }, gfx4: { x: 8.7, y: -2.9 } },
       rot: { txt1: 3, txt2: 1, txt3: 1 },
@@ -2700,6 +2703,7 @@ if (document.fonts) {
     "Save labels you reuse to the Library from the Export menu.",
     "BCS Label Studio is a free tool from The BioChem Society. Join the community on Discord.",
     "Swipe a tip sideways to send it away and see the next one.",
+    "Uploading your label in the Niimbot app? Set the photo\u2019s contrast to 0 to get rid of the white outline around your label\u2019s contents.",
     "Tuck away settings you are not using with the minimise button on each panel."
   ];
   const KEY = "vial-label-studio-hints-v1", box = document.getElementById("hints"), track = document.getElementById("hTrack");
