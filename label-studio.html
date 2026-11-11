@@ -1650,6 +1650,11 @@ function rebaseDrag() { // the selection changed mid-drag: carry on moving every
   const ids = selIds(); drag.group = ids.map(id => Object.assign({ id }, getOff(id)));
   const o = getOff(sel); drag.ox = o.x; drag.oy = o.y; drag.sx = drag.lastPx; drag.sy = drag.lastPy; drag.bb0 = unionBox(ids);
 }
+document.addEventListener("pointerdown", (e) => { // clicking anywhere outside the preview lets go of the selected element
+  if (!sel || drag) return; const t = e.target; if (!(t instanceof Element) || !t.isConnected) return;
+  if (t.closest("#preview, #posbar, #floatPrev, #floatBox, .fontpick, #fontField, #txtList, #txtEdit, .modalwrap, .xmenu, .pmenu, nav, dialog, [role=listbox], [role=dialog]")) return;
+  sel = null; hover = null; updatePos(); render();
+});
 pv.addEventListener("pointerdown", (e) => {
   const { px, py, k } = local(e);
   if (drag && drag.pid !== e.pointerId) { // a second finger while the first is held on a selected element adds to the selection
@@ -2476,7 +2481,7 @@ gfxFile.addEventListener("change", async () => {
 })();
 
 // ── My design: artwork for the whole label. The file's own size information (PNG/JPEG pixel density, SVG units) decides what "actual size" means ──
-const LS_DESIGN = "vial-label-studio-design-v1", DSG_MAX = 1888; // 4x the 472 px export width
+const LS_DESIGN = "vial-label-studio-design-v1"; // no resolution cap: raster uploads keep every pixel; SVG is vector, so it is rasterized large
 const dq = (id) => document.getElementById(id);
 let dsgSaved = null; // { name, url, meta } of the design kept on this device
 function pngDpi(b) {
@@ -2518,11 +2523,10 @@ async function readDesignMeta(file, natural) {
   if (d && d.x >= 10 && d.x <= 5000 && d.y >= 10 && d.y <= 5000) { m.dpi = { x: Math.round(d.x), y: Math.round(d.y) }; m.mm = { w: natural.w / d.x * 25.4, h: natural.h / d.y * 25.4 }; }
   return m;
 }
-async function processDesign(file) { // a black mask the printer can use: dark areas become ink. Keeps up to 4x export resolution
+async function processDesign(file) { // a black mask the printer can use: dark areas become ink. Keeps the native resolution
   let src = await fileToSrc(file);
-  if (/^data:image\/svg/i.test(src)) { const S = DSG_MAX / 600; let txt = decodeURIComponent(src.slice(src.indexOf(",") + 1)); txt = txt.replace(/<svg\b[^>]*>/i, (t) => t.replace(/(?<![-\w:])width="([\d.]+)"/, (_, v) => `width="${Math.round(v * S)}"`).replace(/(?<![-\w:])height="([\d.]+)"/, (_, v) => `height="${Math.round(v * S)}"`)); src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(txt); }
   const img = await load(src); if (!img || !img.naturalWidth || !img.naturalHeight) throw new Error("decode");
-  const natural = { w: img.naturalWidth, h: img.naturalHeight }, k = Math.min(1, DSG_MAX / Math.max(natural.w, natural.h));
+  const natural = { w: img.naturalWidth, h: img.naturalHeight }, k = 1;
   const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(natural.w * k)); c.height = Math.max(1, Math.round(natural.h * k));
   const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(img, 0, 0, c.width, c.height);
   const d = x.getImageData(0, 0, c.width, c.height), q = d.data; let opaque = true;
@@ -2932,7 +2936,7 @@ function fileToSrc(file) {
       const hasVb = vb.length === 4 && vb[2] > 0 && vb[3] > 0;
       if (!(w > 0 && h > 0)) { if (hasVb) { w = vb[2]; h = vb[3]; } else { w = 300; h = 300; } }
       if (!hasVb) r.setAttribute("viewBox", `0 0 ${w} ${h}`);
-      const k = 600 / Math.max(w, h); r.setAttribute("width", Math.round(w * k)); r.setAttribute("height", Math.round(h * k));
+      const k = 4096 / Math.max(w, h); r.setAttribute("width", Math.round(w * k)); r.setAttribute("height", Math.round(h * k));
       return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(new XMLSerializer().serializeToString(r));
     });
   }
@@ -2941,7 +2945,7 @@ function fileToSrc(file) {
 function processLogo(file) {
   return fileToSrc(file).then((src) => load(src)).then((img) => {
     if (!img || !img.naturalWidth || !img.naturalHeight) throw new Error("decode");
-    const k = Math.min(1, 600 / Math.max(img.naturalWidth, img.naturalHeight));
+    const k = 1;
     const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
     const x = c.getContext("2d"); x.drawImage(img, 0, 0, c.width, c.height);
     const d = x.getImageData(0, 0, c.width, c.height), p = d.data; let opaque = true;
