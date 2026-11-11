@@ -337,13 +337,7 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .modal h3{margin:0 0 10px;font-family:var(--f-display);font-weight:500;font-size:24px}
 .modal p{margin:0 0 18px;color:var(--ink-2);line-height:1.55}
 .modal .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-#printSheet{display:none}
-@media print{
-  html,body{background:#fff!important;margin:0!important;padding:0!important;height:auto!important}
-  body>*:not(#printSheet){display:none!important}
-  #printSheet{display:block!important;width:40mm;height:20mm;margin:0;padding:0;overflow:hidden;page-break-after:avoid;break-after:avoid}
-  #printSheet img{display:block;width:40mm;height:20mm;image-rendering:pixelated;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-}
+
 #floatBox{position:fixed;left:0;top:0;z-index:40;width:190px;display:none;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;will-change:transform}
 #floatBox.on{display:block}
 #floatBox.drag{cursor:grabbing}
@@ -387,6 +381,8 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .nt ol{margin:0;padding-left:20px;display:grid;gap:6px;font:400 12px/1.45 var(--f-sans);color:var(--cream-200,#ddd)}
 .nt ol b{color:var(--cream-50,#fff);font-weight:600}
 .nt-warn{margin:12px 0 2px;padding:10px 12px;border-radius:8px;background:rgba(224,164,106,.1);border:1px solid rgba(224,164,106,.35);font:400 11.5px/1.5 var(--f-sans);color:#e0a46a}
+#printBtn{display:flex!important;align-items:center;justify-content:space-between;gap:10px}
+.xmenu .xnote{font:500 10px/1 var(--f-sans);letter-spacing:.04em;text-transform:none;color:var(--text-muted,#8a8f98);opacity:.8}
 .xmenu .pmhead{padding:0 0 12px;margin-bottom:8px;align-self:stretch;width:100%}
 .xmenu .pmhead h3{font-size:22px}
 header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
@@ -494,7 +490,6 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
     <div class="actions"><button type="button" class="btn" id="cfNo">Cancel</button><button type="button" class="btn primary" id="cfYes">Yes, clear everything</button></div>
   </div>
 </div>
-<div id="printSheet" aria-hidden="true"><img alt="" id="printImg"></div>
 <div id="floatBox" aria-hidden="true"><canvas id="floatPrev" width="380" height="190"></canvas><button type="button" id="floatResize" tabindex="-1" title="Drag to resize"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13 L13 3 M3 13 V8.5 M3 13 H7.5 M13 3 V7.5 M13 3 H8.5"/></svg></button></div>
 <div class="nav-wrap">
   <div class="shell">
@@ -529,7 +524,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
 <div class="xmenu" id="exportMenu" role="menu" aria-label="Export" hidden>
   <div class="pmhead"><h3>Export</h3><button type="button" class="xclose" id="exportClose" aria-label="Close export">&times;</button></div>
   <button type="button" role="menuitem" id="export">Download PNG for Niimbot</button>
-  <button type="button" role="menuitem" id="printBtn">Print</button>
+  <button type="button" role="menuitem" id="printBtn">Print<span class="xnote">Chrome / Edge only</span></button>
   <button type="button" role="menuitem" id="save">Save to library</button>
   <div class="nt" id="niimTut" hidden>
     <div class="nt-head"><strong>Printing with the Niimbot iPhone app?</strong><button type="button" class="nt-skip" id="ntToggle" aria-expanded="true" aria-controls="ntBody">Skip tutorial</button></div>
@@ -616,7 +611,6 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
       </div>
     </div>
     
-    <p class="note" id="printHelp" hidden>In the print window, choose your Niimbot printer, set the paper size to 40 × 20 mm, margins to none and scale to 100%. If it is not listed, download the PNG and print it from the Niimbot app instead.</p>
     <div id="status" role="status" aria-live="polite"></div>
 
   </section>
@@ -1847,45 +1841,30 @@ async function saveFile(filename, data, type) {
   a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
 }
-// Print: send the 300 dpi one-colour label to the system print dialog, sized to the label.
-// Some views (an embedded or sandboxed frame) refuse to open a print dialog. When that happens no print event fires,
-// so a print-ready PDF at exactly 40 x 20 mm is saved instead, to print from any PDF viewer at 100%.
-const printBtn = document.getElementById("printBtn"), printImg = document.getElementById("printImg");
-(() => { const st = document.createElement("style"); st.textContent = `@page{size:${W}mm ${H}mm;margin:0}`; document.head.appendChild(st); })();
-function pdfFromCanvas(c) { // one bit per pixel, lossless, on a page the size of the label
-  const w = c.width, h = c.height, d = c.getContext("2d").getImageData(0, 0, w, h).data, rb = Math.ceil(w / 8), img = new Uint8Array(rb * h).fill(0);
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4, lum = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114; if (d[i + 3] < 128 || lum >= 128) img[y * rb + (x >> 3)] |= 0x80 >> (x & 7); }
-  const pw = (W / 25.4 * 72).toFixed(3), ph = (H / 25.4 * 72).toFixed(3), enc = new TextEncoder(), parts = [], offs = []; let len = 0;
-  const put = (u) => { parts.push(u); len += u.length; }, txt = (t) => put(enc.encode(t));
-  const obj = (n, head, stream) => { offs[n] = len; txt(`${n} 0 obj\n${head}\n`); if (stream) { txt("stream\n"); put(stream); txt("\nendstream\n"); } txt("endobj\n"); };
-  txt("%PDF-1.4\n");
-  obj(1, "<< /Type /Catalog /Pages 2 0 R >>"); obj(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
-  obj(3, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw} ${ph}] /CropBox [0 0 ${pw} ${ph}] /Contents 4 0 R /Resources << /XObject << /Im0 5 0 R >> >> >>`);
-  const cs = enc.encode(`q ${pw} 0 0 ${ph} 0 0 cm /Im0 Do Q`); obj(4, `<< /Length ${cs.length} >>`, cs);
-  obj(5, `<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} /ColorSpace /DeviceGray /BitsPerComponent 1 /Interpolate false /Length ${img.length} >>`, img);
-  obj(6, "<< /Title (BCS Label) /Producer (BCS Label Studio, The BioChem Society) >>"); const xr = len; txt("xref\n0 7\n0000000000 65535 f \n"); for (let n = 1; n <= 6; n++) txt(String(offs[n]).padStart(10, "0") + " 00000 n \n");
-  txt(`trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xr}\n%%EOF\n`);
-  return new Blob(parts, { type: "application/pdf" });
+// Print: straight to a Niimbot M2-H over Bluetooth, no app and no print dialog (open-source driver niimbot-web-bluetooth, MIT, loaded from our own site).
+// Needs Web Bluetooth: Chrome or Edge on a computer, or Chrome on Android. Label: 40 x 20 mm at 300 dpi = 472 x 236 px, the exact pixels the PNG export saves.
+const printBtn = document.getElementById("printBtn");
+const NIIM_MODEL = { label: "Niimbot M2-H", id: 4608, dpi: 300, protocol: "v4", task: "b1", density: 3, label_type: 1, speed: 1, name_prefixes: ["M2"] };
+const NIIM_SIZE = { label: "40 x 20 mm (M2-H)", w_mm: 40, h_mm: 20, w_px: EX_W, h_px: EX_H, dpi: 300 };
+let niimLoad = null;
+function loadNiimbot() {
+  if (window.Niimbot) return Promise.resolve();
+  if (!niimLoad) niimLoad = new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "/assets/label-studio/niimbot.js"; sc.onload = () => (window.Niimbot ? ok() : no(new Error("driver"))); sc.onerror = () => { niimLoad = null; no(new Error("driver")); }; document.head.appendChild(sc); });
+  return niimLoad;
 }
 printBtn.addEventListener("click", async () => {
+  if (!navigator.bluetooth) { say("Direct printing needs Chrome or Edge on a computer or Android. This browser can't connect to the printer."); return; }
   printBtn.disabled = true;
   try {
-    await ensureGfx("#000000");
-    const c = renderMono("#000000", "#ffffff");
-    printImg.src = c.toDataURL("image/png");
-    try { await printImg.decode(); } catch {}
-    document.getElementById("printHelp").hidden = false;
-    let opened = false; const mq = window.matchMedia ? window.matchMedia("print") : null, on = () => { opened = true; };
-    window.addEventListener("beforeprint", on); if (mq && mq.addEventListener) mq.addEventListener("change", on);
-    try { if (typeof window.print === "function") window.print(); } catch {}
-    await new Promise((r) => setTimeout(r, 450));
-    window.removeEventListener("beforeprint", on); if (mq && mq.removeEventListener) mq.removeEventListener("change", on);
-    if (!opened) {
-      const name = ((cfg.compound || "label").trim().replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "") || "label") + "-40x20mm-print.pdf";
-      try { await saveFile(name, pdfFromCanvas(c)); say(`Printing is blocked inside this window, so ${name} was saved instead. Open it and print at 100% scale (no fit-to-page); the page is exactly 40 \u00d7 20 mm.`); }
-      catch (e) { say(e && e.code === "declined" ? "Download cancelled." : "Printing is not available in this view. Use Download PNG instead."); }
-    }
-  } catch { say("Printing is not available in this view. Use Download PNG instead."); }
+    await Promise.all([ensureGfx("#000000"), loadNiimbot()]);
+    const c = renderMono("#000000", null, 1), blob = await new Promise((r) => c.toBlob(r, "image/png")), url = URL.createObjectURL(blob);
+    say("Choose your Niimbot in the Bluetooth window.");
+    try { await Niimbot.printImage(url, { model: NIIM_MODEL, size: NIIM_SIZE, onProgress: (t) => { if (t && t !== "ok") say(String(t).replace(/^./, (m) => m.toUpperCase())); } }); say("Sent to the printer."); }
+    finally { URL.revokeObjectURL(url); }
+  } catch (e) {
+    const m = String((e && e.message) || e);
+    say(e && e.name === "NotFoundError" || /cancel|chooser/i.test(m) ? "No printer chosen." : m === "driver" ? "Could not load the printer driver. Check your connection and try again." : "Print failed: " + m.slice(0, 160));
+  }
   finally { setTimeout(() => { printBtn.disabled = cutNow; }, 600); }
 });
 // Handheld devices: the Niimbot app imports from the photo library, not Files, so the label goes to the share sheet ("Save Image") instead of a download.
@@ -2406,6 +2385,7 @@ function exportOpen(on, anchor) {
   exportMenu.hidden = !on; exportWrap.hidden = !on; exportBtns.forEach(b => b.setAttribute("aria-expanded", on && b === anchor ? "true" : "false"));
   if (on) {
     exportAnchor = anchor;
+    if (navigator.bluetooth && !window.Niimbot) loadNiimbot().catch(() => {});
     if (!ntBox.hidden) ntSet(ntGet(), false);
     const f = exportMenu.querySelector("button:not(:disabled)"); if (f) f.focus();
   }
