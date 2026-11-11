@@ -382,6 +382,7 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .nt ol b{color:var(--cream-50,#fff);font-weight:600}
 .nt-warn{margin:12px 0 2px;padding:10px 12px;border-radius:8px;background:rgba(224,164,106,.1);border:1px solid rgba(224,164,106,.35);font:400 11.5px/1.5 var(--f-sans);color:#e0a46a}
 .xsec{display:grid;gap:4px;margin:6px 0 8px}
+.xlib{margin:14px 0 4px;padding-top:12px;border-top:1px solid var(--line-2)}
 .xhead{font:500 10px/1 var(--f-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted,#8a8f98);padding:6px 2px 2px}
 #quickBtn,#printBtn{display:flex!important;align-items:center;justify-content:space-between;gap:10px}
 .xmenu .xnote{font:500 10px/1 var(--f-sans);letter-spacing:.04em;text-transform:none;color:var(--text-muted,#8a8f98);opacity:.8}
@@ -420,6 +421,13 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .cal-zoom button:disabled{opacity:.35;cursor:default}
 .cal-zoom output{min-width:30px;text-align:center;color:var(--ink)}
 .cal-prev{touch-action:none;cursor:grab}
+.pr-prev{display:block;width:100%;height:auto;aspect-ratio:2/1;margin:0 0 14px;border-radius:8px;background:#fff;border:1px solid var(--line-2)}
+.pr-prev[hidden]{display:none}
+.fly{position:fixed;z-index:300;pointer-events:none;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.fly canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.lib li.lib-h{padding:14px 0 6px;border-bottom:1px solid var(--line-2);font:600 10px/1 var(--f-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted,#8a8f98);justify-content:space-between}
+.lib li.lib-h:first-child{padding-top:2px}
+.lib li.empty{color:var(--text-muted,#8a8f98);font-size:13px}
 .cal-foot{flex-wrap:wrap;display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:4px}
 .cal-note{margin:0 0 12px!important;font:400 11.5px/1.5 var(--f-sans)}
 @media (prefers-reduced-motion:reduce){.cal-sub,.cal-body,#calBtn .chev{transition:none}}
@@ -570,7 +578,9 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
   <div class="xsec" id="xsHigh"><div class="xhead">High quality</div>
     <button type="button" role="menuitem" id="printBtn">High quality export<span class="xnote">Cost: 1 label</span></button>
   </div>
-  <button type="button" role="menuitem" id="save">Save to library</button>
+  <div class="xsec xlib"><div class="xhead">Library</div>
+    <button type="button" role="menuitem" id="save">Save to library</button>
+  </div>
   <div class="nt" id="niimTut" hidden>
     <div class="nt-head"><strong>Printing with the Niimbot iPhone app?</strong><button type="button" class="nt-skip" id="ntToggle" aria-expanded="true" aria-controls="ntBody">Skip tutorial</button></div>
     <div class="nt-body" id="ntBody">
@@ -585,6 +595,13 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
   </div>
 </div>
 </div>
+<div id="libWrap" class="modalwrap" hidden>
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="lbT" aria-describedby="lbD">
+    <h3 id="lbT">Replace your current label?</h3>
+    <p id="lbD">Loading this label replaces what is on the studio now. Save the current label to your library first if you want to keep it.</p>
+    <div class="actions"><button type="button" class="btn" id="lbNo">Go back</button><button type="button" class="btn primary" id="lbYes">Proceed</button></div>
+  </div>
+</div>
 <div id="leaveWrap" class="modalwrap" hidden>
   <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="lvT" aria-describedby="lvD">
     <h3 id="lvT">Leave Label Studio?</h3>
@@ -596,6 +613,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="prT" aria-describedby="prMsg">
     <h3 id="prT">Print to Niimbot</h3>
     <p id="prMsg" aria-live="polite">Turn on your Niimbot M2-H, then connect it.</p>
+    <canvas id="prPrev" class="pr-prev" width="944" height="472" hidden role="img" aria-label="Preview of the label that will print"></canvas>
     <label class="pr-copies" id="prCopiesRow" hidden>Copies <input type="number" id="prCopies" min="1" max="50" value="1" inputmode="numeric"></label>
     <div id="prAdv" hidden>
     <div class="pr-dens"><label for="prDens">Print density <output id="prDensO">3</output></label><input type="range" id="prDens" min="1" max="5" step="1" value="3"><div class="ticks" aria-hidden="true"><span style="left:calc(8px + (100% - 16px) * 0)">1</span><span style="left:calc(8px + (100% - 16px) * .25)">2</span><span style="left:calc(8px + (100% - 16px) * .5)">3</span><span style="left:calc(8px + (100% - 16px) * .75)">4</span><span style="left:calc(100% - 8px)">5</span></div></div>
@@ -1856,23 +1874,51 @@ document.getElementById("reset").addEventListener("click", () => { cfg = norm(Ob
 // Library (this browser only)
 const libEl = document.getElementById("lib");
 function lib() { return lsGet(LS_LIB) || []; }
-function drawLib() {
-  const items = lib(); libEl.textContent = "";
-  document.getElementById("libcount").textContent = items.length ? `${items.length} saved` : "Saved on this device";
-  if (!items.length) { const li = document.createElement("li"); li.className = "empty"; li.textContent = "Nothing saved yet. Set up a label and press Save to library."; libEl.append(li); return; }
+const LS_RECENT = "vial-label-studio-recent-v1", recent = () => lsGet(LS_RECENT) || [];
+const PRINTER_KEYS = ["printX", "printY", "printR", "printDensity", "threshold", "showEdge"]; // your printer's setup, not part of a label design
+function addRecent(copies) { // every printed label is remembered; the browser's own storage limit is the only cap, oldest drop first if it runs out
+  const c = Object.assign({}, cfg); for (const k of PRINTER_KEYS) delete c[k];
+  const key = JSON.stringify(c), e = { cfg: c, at: Date.now(), n: copies || 1 }; let a = recent();
+  const i = a.findIndex((x) => JSON.stringify(x.cfg) === key); if (i >= 0) { e.n += a[i].n || 1; a.splice(i, 1); }
+  a.unshift(e); while (a.length && !lsSet(LS_RECENT, a)) a.pop();
+  drawLib();
+}
+const libWrap = document.getElementById("libWrap"); let libPending = null;
+function libLoad(it) {
+  const keep = {}; for (const k of PRINTER_KEYS) keep[k] = cfg[k];
+  cfg = norm(Object.assign({}, DEFAULTS, it.cfg, keep)); sel = null; updatePos(); lsSet(LS_CFG, cfg); jsonDirty = false; fillControls(); render(); say(`Loaded ${cfg.compound || "label"}.`);
+}
+function libAsk(it, from) { libPending = it; libWrap.hidden = false; document.getElementById("lbNo").focus(); libWrap.dataset.from = from || ""; }
+function libClose() { libWrap.hidden = true; libPending = null; }
+document.getElementById("lbNo").addEventListener("click", libClose);
+document.getElementById("lbYes").addEventListener("click", () => { const it = libPending; libClose(); if (it) libLoad(it); });
+libWrap.addEventListener("pointerdown", (e) => { if (e.target === libWrap) libClose(); });
+libWrap.addEventListener("keydown", (e) => { if (e.key === "Escape") libClose(); });
+function libRows(items, store, emptyText) {
+  if (!items.length) { const li = document.createElement("li"); li.className = "empty"; li.textContent = emptyText; libEl.append(li); return; }
   items.forEach((it, i) => {
     const li = document.createElement("li");
     const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = it.cfg.compound || "Untitled";
-    const sm = document.createElement("small"); sm.textContent = [it.cfg.variant, it.cfg.strength].filter(Boolean).join(" · "); nm.append(sm);
+    const sm = document.createElement("small"); sm.textContent = [it.cfg.variant, it.cfg.strength, store === LS_RECENT && it.n > 1 ? `${it.n} printed` : ""].filter(Boolean).join(" · "); nm.append(sm);
     const lo = document.createElement("button"); lo.className = "btn small"; lo.type = "button"; lo.textContent = "Load";
-    lo.onclick = () => { cfg = norm(Object.assign({}, DEFAULTS, it.cfg)); sel = null; updatePos(); lsSet(LS_CFG, cfg); jsonDirty = false; fillControls(); render(); say(`Loaded ${cfg.compound}.`); };
+    lo.onclick = () => libAsk(it);
     const del = document.createElement("button"); del.className = "btn small"; del.type = "button"; del.textContent = "Remove";
     del.onclick = () => {
-      if (del.dataset.armed) { const a = lib(); a.splice(i, 1); lsSet(LS_LIB, a); drawLib(); say("Removed from library."); }
+      if (del.dataset.armed) { const a = lsGet(store) || []; a.splice(i, 1); lsSet(store, a); drawLib(); say("Removed from library."); }
       else { del.dataset.armed = "1"; del.textContent = "Confirm"; setTimeout(() => { if (del.isConnected) { delete del.dataset.armed; del.textContent = "Remove"; } }, 3000); }
     };
     li.append(nm, lo, del); libEl.append(li);
   });
+}
+function drawLib() {
+  const items = lib(), rec = recent(); libEl.textContent = "";
+  document.getElementById("libcount").textContent = (items.length || rec.length) ? `${items.length} saved \u00b7 ${rec.length} recent` : "Saved on this device";
+  const h1 = document.createElement("li"); h1.className = "lib-h"; h1.textContent = "Saved labels"; libEl.append(h1);
+  libRows(items, LS_LIB, "Nothing saved yet. Set up a label and press Save to library.");
+  const h2 = document.createElement("li"); h2.className = "lib-h"; const t = document.createElement("span"); t.textContent = "Recent prints"; h2.append(t);
+  if (rec.length) { const cl = document.createElement("button"); cl.className = "btn small"; cl.type = "button"; cl.textContent = "Clear recent"; cl.onclick = () => { if (cl.dataset.armed) { lsSet(LS_RECENT, []); drawLib(); say("Recent prints cleared."); } else { cl.dataset.armed = "1"; cl.textContent = "Confirm"; setTimeout(() => { if (cl.isConnected) { delete cl.dataset.armed; cl.textContent = "Clear recent"; } }, 3000); } }; h2.append(cl); }
+  libEl.append(h2);
+  libRows(rec, LS_RECENT, "Labels you print show up here.");
 }
 document.getElementById("save").addEventListener("click", () => {
   const a = lib(); const libKey = (c) => [c.compound, c.variant || "", c.strength].join("|").toLowerCase();
@@ -1922,12 +1968,37 @@ function loadNiimbot() {
 }
 // Print dialog: connect first (needs a tap), then a separate Print button, so every step and every error is visible.
 const prWrap = document.getElementById("prWrap"), prMsg = document.getElementById("prMsg"), prGo = document.getElementById("prGo"), prClose = document.getElementById("prClose"), prCopies = document.getElementById("prCopies"), prRow = document.getElementById("prCopiesRow");
-let prState = "connect", prBusy = false, prMode = "hq", prConn = false;
+let prState = "connect", prBusy = false, prMode = "hq", prConn = false, prDrawP = Promise.resolve();
+const prPrev = document.getElementById("prPrev");
+const prFonts = () => Promise.all([...Object.values(cfg.fonts || {}).map((f) => loadFont(f)), document.fonts && document.fonts.ready].filter(Boolean)).catch(() => {});
+async function prPreviewDraw() { // a copy of the studio label, drawn the way it will print (same pixels the printer gets)
+  await prFonts(); await ensureGfx("#000000");
+  const c = renderMono("#000000", "#ffffff", 2), x = prPrev.getContext("2d"); x.clearRect(0, 0, prPrev.width, prPrev.height); x.drawImage(c, 0, 0, prPrev.width, prPrev.height);
+}
+const bez = (x1, y1, x2, y2) => (t) => { let u = t; for (let i = 0; i < 8; i++) { const cx = 3 * x1 * u * (1 - u) ** 2 + 3 * x2 * u * u * (1 - u) + u ** 3 - t, dx = 3 * x1 * (1 - u) ** 2 + 6 * (x2 - x1) * u * (1 - u) + 3 * (1 - x2) * u * u; if (Math.abs(cx) < 1e-5 || !dx) break; u -= cx / dx; } u = Math.max(0, Math.min(1, u)); return 3 * y1 * u * (1 - u) ** 2 + 3 * y2 * u * u * (1 - u) + u ** 3; };
+const flyEase = bez(.22, 1, .36, 1);
+function prFly(snap, from) { // the calibration preview glides into the print dialog and turns into the studio label, same easing as the panels
+  const to0 = prPrev.getBoundingClientRect();
+  if (matchMedia("(prefers-reduced-motion:reduce)").matches || !to0.width) { prPrev.style.visibility = ""; return; }
+  const box = document.createElement("div"); box.className = "fly";
+  const A = snap, B = document.createElement("canvas"); B.width = prPrev.width; B.height = prPrev.height; B.getContext("2d").drawImage(prPrev, 0, 0);
+  box.append(A, B); document.body.append(box);
+  const t0 = performance.now(), D = 700;
+  const step = (now) => {
+    const p = Math.min(1, (now - t0) / D), e = flyEase(p), t = prPrev.getBoundingClientRect(), f = Math.max(0, Math.min(1, (p - .15) / .6)), m = f * f * (3 - 2 * f);
+    box.style.left = from.left + (t.left - from.left) * e + "px"; box.style.top = from.top + (t.top - from.top) * e + "px";
+    box.style.width = from.width + (t.width - from.width) * e + "px"; box.style.height = from.height + (t.height - from.height) * e + "px";
+    A.style.opacity = String(1 - m); B.style.opacity = String(m);
+    if (p < 1) requestAnimationFrame(step); else { prPrev.style.visibility = ""; box.remove(); }
+  };
+  requestAnimationFrame(step);
+}
 const CAL_KEY = "bcs-label-calibrated", calDoneYet = () => { try { return localStorage.getItem(CAL_KEY) === "1"; } catch { return false; } }, calSet = () => { try { localStorage.setItem(CAL_KEY, "1"); } catch {} };
 function prShow(msg, err) { prMsg.textContent = msg; prMsg.classList.toggle("err", !!err); }
 function prSet(state) {
   prState = state; const hq = prMode === "hq", printing = state === "print" || state === "again";
-  prRow.hidden = !printing; document.getElementById("prAdv").hidden = !(hq && (printing || state === "cal"));
+  prRow.hidden = !printing; prPrev.hidden = !printing; if (printing) prDrawP = prPreviewDraw();
+  document.getElementById("prAdv").hidden = !(hq && (printing || state === "cal"));
   document.querySelector(".pr-dens").hidden = state === "cal"; document.getElementById("calBtn").disabled = state === "cal";
   prGo.textContent = state === "connect" ? "Connect printer" : state === "calneed" ? "Proceed" : state === "again" ? "Print again" : "Print label";
   prClose.textContent = state === "calneed" ? "Go back" : "Close";
@@ -1936,7 +2007,7 @@ function prSet(state) {
 function prRoute() {
   if (!prConn) { prSet("connect"); prShow("Turn on your Niimbot M2-H, then tap Connect printer."); }
   else if (prMode === "hq" && !calDoneYet()) { prSet("calneed"); prShow("A calibration label is required for this method. It prints one test label so you can fine tune your printer."); }
-  else { prSet("print"); prShow("Printer connected. Load a 40 x 20 mm label roll, then tap Print label."); }
+  else { prSet("print"); prShow("Printer Connected"); }
 }
 function prOpen(on) { prWrap.hidden = !on; if (on) { prGo.disabled = false; prGo.focus(); } }
 
@@ -1950,16 +2021,17 @@ function calMarks() { calBtn.classList.toggle("cal-on", !!(+cfg.printX || +cfg.p
 function calToggle(open, zero) {
   if (open) { calLoad(); if (zero) for (const id in CAL) calIn(id).value = "0"; calViewReset(); }
   document.getElementById("prWrap").classList.toggle("cal-open", open); document.getElementById("calDone").hidden = !open;
-  if (open) calDraw();
+  if (open) { calDraw(); calGfx().then(calDraw); }
   calSub.classList.toggle("open", open); calBtn.setAttribute("aria-expanded", open ? "true" : "false");
   calSub.querySelectorAll("button,input").forEach((el) => { el.tabIndex = open ? 0 : -1; });
 }
+const calGfx = () => Promise.all((GFX.calibration ? [gfxImage("calibration", "#000000", 1).p] : []));
 const calView = { z: 1, cx: 0, cy: 0 }, CAL_Z = [1, 2, 4, 8];
 function calViewReset() { calView.z = 1; calView.cx = W / 2; calView.cy = H / 2; }
 function calDraw() {
   const cv = document.getElementById("calPrev"), x = cv.getContext("2d"), pad = 16, sc = (cv.width - pad * 2) / W * calView.z, lw = W * sc, lh = H * sc;
   const ox = cv.width / 2 - calView.cx * sc, oy = cv.height / 2 - calView.cy * sc;
-  const base = prState === "cal" ? presetCfg(PRESETS.find((q) => q.id === "calibration"), { threshold: cfg.threshold }) : cfg; // while calibrating, show the test label that was printed
+  const base = presetCfg(PRESETS.find((q) => q.id === "calibration"), { threshold: cfg.threshold }); // this preview is always the calibration label, never the current design
   const c = Object.assign({}, base, { printX: calVal("calX"), printY: calVal("calY"), printR: calVal("calR") });
   x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.fillStyle = "#0b0c0e"; x.fillRect(0, 0, cv.width, cv.height);
   x.save(); x.beginPath(); x.rect(ox, oy, lw, lh); x.clip(); x.translate(ox, oy); x.scale(sc, sc);
@@ -1992,10 +2064,15 @@ document.getElementById("calZo").addEventListener("click", () => calZoom(-1));
   const end = () => { drag = null; cv.style.cursor = ""; }; cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
 }
 document.getElementById("calReset").addEventListener("click", () => { for (const id in CAL) calIn(id).value = "0"; calDraw(); });
-document.getElementById("calDone").addEventListener("click", () => {
+document.getElementById("calDone").addEventListener("click", async () => {
   for (const id in CAL) { const v = calVal(id); calIn(id).value = calFmt(v); setField(CAL[id][0], v); }
   calMarks();
-  if (prState === "cal") { calSet(); prSet("print"); prShow("Calibration saved. Load a 40 x 20 mm label roll, then tap Print label."); } else calToggle(false);
+  if (prState === "cal") {
+    const cv = document.getElementById("calPrev"), from = cv.getBoundingClientRect(), snap = document.createElement("canvas"); snap.width = cv.width; snap.height = cv.height; snap.getContext("2d").drawImage(cv, 0, 0);
+    calSet(); prPrev.style.visibility = "hidden"; prSet("print"); prShow("Printer Connected");
+    try { await prDrawP; } catch {}
+    prFly(snap, from);
+  } else { calToggle(false); if (prState === "print" || prState === "again") prDrawP = prPreviewDraw(); }
 });
 calSub.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); document.getElementById("calDone").click(); } });
 prDens.addEventListener("input", () => { prDensO.textContent = prDens.value; setField("printDensity", +prDens.value); });
@@ -2039,7 +2116,7 @@ prGo.addEventListener("click", async () => {
     } else {
       await ensureGfx("#000000");
       const n = Math.max(1, Math.min(50, parseInt(prCopies.value, 10) || 1)); prCopies.value = n;
-      await prSend(renderMono("#000000", null, 1), n);
+      await prSend(renderMono("#000000", null, 1), n); addRecent(n);
       prShow(n > 1 ? `Printed ${n} labels.` : "Printed."); prSet("again");
     }
   } catch (e) { prFail(e); }
