@@ -159,6 +159,7 @@ input[type=range]{width:100%;accent-color:var(--accent-d)}
 .fopt.active{background:var(--raised)}
 .fopt .tick{width:14px;flex:none;color:var(--accent)}
 .gfxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px}
+.gfxgrid{overflow-y:auto;overscroll-behavior:contain;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
 .gtile{background:var(--sunken);border:1px solid var(--line);border-radius:4px;padding:14px 12px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
 .gtile svg{width:64px;height:72px;color:var(--accent)}
 .gtile .gname{font-family:var(--f-display);font-size:18px;font-weight:600}
@@ -410,6 +411,7 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .dsg-fit .rec{font:600 9px/1 var(--f-sans);letter-spacing:.12em;margin-left:6px;opacity:.9}
 @media (max-width:460px){.dsg-fit{grid-template-columns:minmax(0,1fr)}.dsg-card{flex-direction:column;align-items:flex-start}}
 .xsec{display:grid;gap:4px;margin:6px 0 8px}
+#costNote[hidden]{display:none}
 .xrec{color:var(--azure-300,#5BC0EE);letter-spacing:.1em}
 #printBtn{background:var(--grad-azure)!important;border:1px solid transparent!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,30,60,.45);box-shadow:0 6px 18px rgba(58,159,219,.28)}
 #printBtn .xnote{color:rgba(255,255,255,.88)!important;opacity:1!important;text-shadow:none}
@@ -622,7 +624,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
     <button type="button" role="menuitem" id="quickBtn">Quick print<span class="xnote">Chrome / Edge only</span></button>
   </div>
   <div class="xsec" id="xsHigh"><div class="xhead">High quality <span class="xrec">(Recommended)</span></div>
-    <button type="button" role="menuitem" id="printBtn">High quality export<span class="xnote">Cost: 1 label</span></button>
+    <button type="button" role="menuitem" id="printBtn">High quality export<span class="xnote" id="costNote">Cost: 1 label</span></button>
   </div>
   <div class="xsec xlib"><div class="xhead">Library</div>
     <button type="button" role="menuitem" id="save">Save to library</button>
@@ -754,7 +756,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
   </section>
 
   <section class="controls" aria-label="Label settings">
-    <details class="spot interactive" open>
+    <details class="spot interactive" open id="contentSec">
       <summary><h2>Content</h2><div class="sumr"><button type="button" class="btn small ldef" data-defaults="content">Load defaults</button></div></summary>
       <div class="grid">
         <div class="field full fontfield" id="fontField" hidden>
@@ -1059,7 +1061,7 @@ function loadFont(family) {
 
 // Every element records its box (mm) so the preview can select and move it
 let hits = [];
-const NAMES = { logo: "Logo mark", side: "Vertical text", ruleL: "Left divider", ruleR: "Right divider", name: "Compound", variant: "Variant", legal2: "Disclaimer 2", strength: "Strength", recon: "Recon row", batch: "Batch and date row", legal: "Disclaimer" };
+const NAMES = { design: "Your design", logo: "Logo mark", side: "Vertical text", ruleL: "Left divider", ruleR: "Right divider", name: "Compound", variant: "Variant", legal2: "Disclaimer 2", strength: "Strength", recon: "Recon row", batch: "Batch and date row", legal: "Disclaimer" };
 function getOff(id) { const o = (cfg.off && cfg.off[id]) || {}; return { x: +o.x || 0, y: +o.y || 0 }; }
 function setOff(id, x, y) {
   cfg.off = Object.assign({}, cfg.off);
@@ -1114,7 +1116,7 @@ function drawLabel(ctx, c, ink, stock, inner) {
     const dz = c.design, dd = dz && GFX.design;
     if (dd && dd.img) {
       const e = gfxImage("design", ink, 1);
-      if (e.ok) { const r = designRect(dz.fit, dd); ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.clip(); ctx.drawImage(e.img, r.x, r.y, r.w, r.h); ctx.restore(); }
+      if (e.ok) { ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.clip(); at("design", () => { const r = designRect(dz.fit, dd); ctx.drawImage(e.img, r.x, r.y, r.w, r.h); return [r.x, r.y, r.w, r.h]; }); ctx.restore(); }
       if (dz.only) { ctx.restore(); return; }
     }
   } ctx.textBaseline = "alphabetic";
@@ -1946,6 +1948,13 @@ for (const el of inputs) {
     lsSet(LS_CFG, cfg); updateOutputs(); applyFocus(); render();
   });
 }
+{ // changing anything in the Content panel means you want the text on the label, so "Design only" turns itself off
+  const cs = document.getElementById("contentSec"), off = (e) => {
+    if (e.type === "click" && (!e.target.closest("button") || e.target.closest(".pmin"))) return;
+    if (!(cfg.design && cfg.design.only)) return; cfg.design = Object.assign({}, cfg.design, { only: false }); lsSet(LS_CFG, cfg); syncDsgUI(); render();
+  };
+  cs.addEventListener("input", off); cs.addEventListener("change", off); cs.addEventListener("click", off);
+}
 function setPressed(group, btn) { group.forEach(b => b.setAttribute("aria-pressed", String(b === btn))); }
 const modeBtns = [document.getElementById("mode-smooth"), document.getElementById("mode-dots")];
 modeBtns.forEach(b => b.addEventListener("click", () => { view.mode = b.id === "mode-dots" ? "dots" : "smooth"; setPressed(modeBtns, b); render(); }));
@@ -2379,7 +2388,7 @@ const gfxGrid = document.getElementById("gfxGrid"), gfxSec = document.getElement
 const LS_GFX = "vial-label-studio-gfx-v1", MAX_CUSTOM_GFX = 12;
 let customGfx = []; // [{ key, name, url }]
 function drawGfxLib() {
-  const byName = (a, b) => GFX[a].name.localeCompare(GFX[b].name, undefined, { sensitivity: "base" }), all = Object.keys(GFX).filter(k => !GFX[k].hidden), keys = [...all.filter(k => !GFX[k].custom).sort(byName), ...all.filter(k => GFX[k].custom).sort(byName)]; gfxGrid.textContent = ""; // built-in graphics A to Z, then your own uploads A to Z
+  const byName = (a, b) => GFX[a].name.localeCompare(GFX[b].name, undefined, { sensitivity: "base" }), all = Object.keys(GFX).filter(k => !GFX[k].hidden), keys = [...all.filter(k => GFX[k].custom).sort(byName), ...all.filter(k => !GFX[k].custom).sort(byName)]; gfxGrid.textContent = ""; // your own uploads first, then the built-in graphics A to Zuploads A to Z
   for (const key of keys) {
     const d = GFX[key], t = document.createElement("div"); t.className = "gtile";
     if (d.custom) {
@@ -2423,7 +2432,15 @@ function drawGfxLib() {
   const plus = document.createElement("button"); plus.type = "button"; plus.className = "gtile gadd";
   plus.innerHTML = '<span class="plus" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4.5"/><path d="M7.2 9 12 4.2 16.8 9"/><path d="M5 14.5v2.2A2.3 2.3 0 0 0 7.3 19h9.4a2.3 2.3 0 0 0 2.3-2.3v-2.2"/></svg></span><span class="gname">Upload your own</span>';
   plus.onclick = () => gfxFile.click(); gfxGrid.append(plus);
+  sizeGfxScroll();
 }
+function sizeGfxScroll() { // six graphics show at a time; the rest scroll
+  const t = gfxGrid.querySelector(".gtile"); if (!t || !t.offsetHeight) return;
+  const cs = getComputedStyle(gfxGrid), cols = Math.max(1, cs.gridTemplateColumns.split(" ").length), gap = parseFloat(cs.rowGap) || 12, rows = Math.ceil(6 / cols);
+  gfxGrid.style.maxHeight = Math.ceil(rows * t.offsetHeight + (rows - 1) * gap + 2) + "px";
+}
+if (window.ResizeObserver) new ResizeObserver(() => sizeGfxScroll()).observe(gfxGrid);
+gfxSec.addEventListener("toggle", () => { if (gfxSec.open) requestAnimationFrame(sizeGfxScroll); });
 const gfxFile = document.getElementById("gfxFile");
 function persistCustomGfx() { return lsSet(LS_GFX, customGfx); }
 function registerCustom(c, img) { GFX[c.key] = { name: c.name, vb: [0, 0, img.naturalWidth, img.naturalHeight], sw: 0, body: "", custom: true, url: c.url, img }; }
@@ -2530,6 +2547,7 @@ function dsgApply(entry, fit, only) { // make the uploaded design available to t
     if (fit) cfg.design = { fit, only: only !== false };
   });
 }
+function dsgForget() { for (const k of ["off", "rot", "ang"]) if (cfg[k] && cfg[k].design !== undefined) { cfg[k] = Object.assign({}, cfg[k]); delete cfg[k].design; } } // a new or removed design starts centred again
 function syncDsgUI() {
   const e = dsgSaved, on = !!(e && cfg.design && GFX.design);
   dq("dsgInfo").hidden = !e; dq("dsgPick").hidden = !!e; dq("dsgNote").hidden = !!e;
@@ -2551,7 +2569,7 @@ async function dsgUpload(file) {
     const out = await processDesign(file), meta = await readDesignMeta(file, out.natural);
     const name = (file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim() || "My design").slice(0, 40);
     dsgSaved = { name, url: out.url, meta }; const fit = dsgRecommend(meta);
-    await dsgApply(dsgSaved, fit, true); const kept = dsgSave(); lsSet(LS_CFG, cfg); syncDsgUI(); render();
+    dsgForget(); await dsgApply(dsgSaved, fit, true); const kept = dsgSave(); lsSet(LS_CFG, cfg); syncDsgUI(); render();
     say(kept ? `${name} is on your label with the recommended fit. Change the fit under My Media if you like.` : `${name} is on your label for this session only. This browser would not let the site save it (storage is full, blocked, or in private browsing).`);
   } catch { say("That file could not be read as an image."); }
 }
@@ -2564,7 +2582,7 @@ dq("dsgFit").addEventListener("click", (e) => {
   if (GFX.design) go(); else dsgApply(dsgSaved, null).then(go);
 });
 dq("dsgOnly").addEventListener("change", () => { if (!cfg.design) return; cfg.design = Object.assign({}, cfg.design, { only: dq("dsgOnly").checked }); lsSet(LS_CFG, cfg); render(); });
-dq("dsgRemove").addEventListener("click", () => { delete GFX.design; gTint.clear(); delete cfg.design; dsgSaved = null; dsgSave(); lsSet(LS_CFG, cfg); syncDsgUI(); render(); say("Design removed."); });
+dq("dsgRemove").addEventListener("click", () => { delete GFX.design; gTint.clear(); delete cfg.design; dsgForget(); if (sel === "design") sel = null; dsgSaved = null; dsgSave(); lsSet(LS_CFG, cfg); syncDsgUI(); render(); say("Design removed."); });
 (async () => {
   const e = lsGet(LS_DESIGN); if (!e || typeof e.url !== "string" || !e.url.startsWith("data:image/png") || !e.meta || !e.meta.px) { syncDsgUI(); return; }
   dsgSaved = e; try { await dsgApply(e, null); } catch { dsgSaved = null; }
@@ -2865,7 +2883,9 @@ function ntSet(skip, save) {
 ntBtn.addEventListener("click", () => ntSet(!ntBody.hidden, true));
 ntVid.addEventListener("error", () => { ntVid.hidden = true; });
 if (handheld()) ntBox.hidden = false;
+function syncCostNote() { const n = document.getElementById("costNote"); if (n) n.hidden = calDoneYet(); } // the extra calibration label is only needed once
 function exportOpen(on, anchor) {
+  if (on) { try { syncCostNote(); } catch {} }
   exportMenu.hidden = !on; exportWrap.hidden = !on; exportBtns.forEach(b => b.setAttribute("aria-expanded", on && b === anchor ? "true" : "false"));
   if (on) {
     exportAnchor = anchor;
