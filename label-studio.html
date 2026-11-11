@@ -383,6 +383,9 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .nt-warn{margin:12px 0 2px;padding:10px 12px;border-radius:8px;background:rgba(224,164,106,.1);border:1px solid rgba(224,164,106,.35);font:400 11.5px/1.5 var(--f-sans);color:#e0a46a}
 #printBtn{display:flex!important;align-items:center;justify-content:space-between;gap:10px}
 .xmenu .xnote{font:500 10px/1 var(--f-sans);letter-spacing:.04em;text-transform:none;color:var(--text-muted,#8a8f98);opacity:.8}
+.pr-copies{display:flex;align-items:center;gap:10px;margin:0 0 16px;font:500 11px/1 var(--f-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.pr-copies input{width:76px}
+#prMsg.err{color:#e0a46a}
 .xmenu .pmhead{padding:0 0 12px;margin-bottom:8px;align-self:stretch;width:100%}
 .xmenu .pmhead h3{font-size:22px}
 header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
@@ -545,6 +548,14 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
     <h3 id="lvT">Leave Label Studio?</h3>
     <p id="lvD">You are about to leave this page for The BioChem Society home page. Your current label, saved Library labels and uploaded graphics are kept in this browser automatically, so they will be here when you come back. Only your Undo history is cleared.</p>
     <div class="actions"><button type="button" class="btn" id="lvNo">Stay here</button><button type="button" class="btn primary" id="lvYes">Leave this page</button></div>
+  </div>
+</div>
+<div id="prWrap" class="modalwrap" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="prT" aria-describedby="prMsg">
+    <h3 id="prT">Print to Niimbot</h3>
+    <p id="prMsg" aria-live="polite">Turn on your Niimbot M2-H, then connect it.</p>
+    <label class="pr-copies" id="prCopiesRow" hidden>Copies <input type="number" id="prCopies" min="1" max="50" value="1" inputmode="numeric"></label>
+    <div class="actions"><button type="button" class="btn" id="prClose">Close</button><button type="button" class="btn primary" id="prGo">Connect printer</button></div>
   </div>
 </div>
 <header>
@@ -1852,20 +1863,44 @@ function loadNiimbot() {
   if (!niimLoad) niimLoad = new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "/assets/label-studio/niimbot.js"; sc.onload = () => (window.Niimbot ? ok() : no(new Error("driver"))); sc.onerror = () => { niimLoad = null; no(new Error("driver")); }; document.head.appendChild(sc); });
   return niimLoad;
 }
-printBtn.addEventListener("click", async () => {
-  if (!navigator.bluetooth) { say("Direct printing needs Chrome or Edge on a computer or Android. This browser can't connect to the printer."); return; }
-  printBtn.disabled = true;
+// Print dialog: connect first (needs a tap), then a separate Print button, so every step and every error is visible.
+const prWrap = document.getElementById("prWrap"), prMsg = document.getElementById("prMsg"), prGo = document.getElementById("prGo"), prClose = document.getElementById("prClose"), prCopies = document.getElementById("prCopies"), prRow = document.getElementById("prCopiesRow");
+let prState = "connect", prBusy = false;
+function prShow(msg, err) { prMsg.textContent = msg; prMsg.classList.toggle("err", !!err); }
+function prSet(state) {
+  prState = state; prRow.hidden = state === "connect";
+  prGo.textContent = state === "connect" ? "Connect printer" : state === "again" ? "Print again" : "Print label";
+}
+function prOpen(on) { prWrap.hidden = !on; if (on) { prGo.disabled = false; prGo.focus(); } }
+printBtn.addEventListener("click", () => {
+  prOpen(true);
+  if (!navigator.bluetooth) { prShow("Direct printing needs Chrome or Edge on a computer or Android. This browser can't connect to the printer.", true); prGo.disabled = true; return; }
+  loadNiimbot().catch(() => {});
+  if (prState === "connect") prShow("Turn on your Niimbot M2-H, then tap Connect printer.");
+  else prShow("Printer connected. Ready to print.");
+});
+prClose.addEventListener("click", () => { if (!prBusy) prOpen(false); });
+prWrap.addEventListener("click", (e) => { if (e.target === prWrap && !prBusy) prOpen(false); });
+prWrap.addEventListener("keydown", (e) => { if (e.key === "Escape" && !prBusy) prOpen(false); });
+const prErr = (e) => { const m = String((e && e.message) || e); return (e && e.name === "NotFoundError") || /cancel|chooser/i.test(m) ? "No printer was chosen. Tap Connect printer to try again." : m === "driver" ? "Could not load the printer driver. Check your connection and try again." : m.slice(0, 220); };
+prGo.addEventListener("click", async () => {
+  if (prBusy) return; prBusy = true; prGo.disabled = true; prClose.disabled = true;
   try {
-    await Promise.all([ensureGfx("#000000"), loadNiimbot()]);
-    const c = renderMono("#000000", null, 1), blob = await new Promise((r) => c.toBlob(r, "image/png")), url = URL.createObjectURL(blob);
-    say("Choose your Niimbot in the Bluetooth window.");
-    try { await Niimbot.printImage(url, { model: NIIM_MODEL, size: NIIM_SIZE, onProgress: (t) => { if (t && t !== "ok") say(String(t).replace(/^./, (m) => m.toUpperCase())); } }); say("Sent to the printer."); }
-    finally { URL.revokeObjectURL(url); }
-  } catch (e) {
-    const m = String((e && e.message) || e);
-    say(e && e.name === "NotFoundError" || /cancel|chooser/i.test(m) ? "No printer chosen." : m === "driver" ? "Could not load the printer driver. Check your connection and try again." : "Print failed: " + m.slice(0, 160));
-  }
-  finally { setTimeout(() => { printBtn.disabled = cutNow; }, 600); }
+    await loadNiimbot();
+    if (prState === "connect") {
+      prShow("Choose your Niimbot in the Bluetooth window\u2026");
+      await Niimbot.connect(NIIM_MODEL);
+      prShow("Connected. Load a 40 x 20 mm label roll, then tap Print label."); prSet("print");
+    } else {
+      await ensureGfx("#000000");
+      const c = renderMono("#000000", null, 1), blob = await new Promise((r) => c.toBlob(r, "image/png")), url = URL.createObjectURL(blob);
+      const n = Math.max(1, Math.min(50, parseInt(prCopies.value, 10) || 1)); prCopies.value = n;
+      try { await Niimbot.printImage(url, { model: NIIM_MODEL, size: NIIM_SIZE, copies: n, onProgress: (t) => { if (t && t !== "ok") prShow(String(t).replace(/^./, (m) => m.toUpperCase())); } }); }
+      finally { URL.revokeObjectURL(url); }
+      prShow(n > 1 ? `Printed ${n} labels.` : "Printed."); prSet("again");
+    }
+  } catch (e) { prShow(prErr(e), true); if (prState === "again") prSet("print"); }
+  finally { prBusy = false; prGo.disabled = false; prClose.disabled = false; prGo.focus(); }
 });
 // Handheld devices: the Niimbot app imports from the photo library, not Files, so the label goes to the share sheet ("Save Image") instead of a download.
 // The PNG bytes are exactly the ones the desktop download saves (472 x 236 px, 300 dpi), so the label fills the Niimbot canvas the same way.
