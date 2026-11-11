@@ -381,6 +381,34 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .nt ol{margin:0;padding-left:20px;display:grid;gap:6px;font:400 12px/1.45 var(--f-sans);color:var(--cream-200,#ddd)}
 .nt ol b{color:var(--cream-50,#fff);font-weight:600}
 .nt-warn{margin:12px 0 2px;padding:10px 12px;border-radius:8px;background:rgba(224,164,106,.1);border:1px solid rgba(224,164,106,.35);font:400 11.5px/1.5 var(--f-sans);color:#e0a46a}
+.mediabody{display:flex;flex-direction:column}
+.sub{border-top:1px solid var(--line)}
+.sub>summary{padding:13px 18px}
+.sub>summary h2{font-size:17px}
+.sub[open]>summary{border-bottom:1px solid var(--line)}
+.subbody{display:grid;gap:12px;padding:16px 18px 18px;min-width:0}
+.subbody>.note{margin:0}
+.sub .grid{padding:16px 18px 18px}
+#dsgInfo{display:grid;gap:12px;min-width:0}
+#dsgInfo[hidden]{display:none}
+.dsg-actions{display:flex;gap:8px;flex-wrap:wrap}
+.dsg-card{display:flex;gap:14px;align-items:center;min-width:0}
+.dsg-card canvas{flex:none;width:112px;height:56px;border:1px solid var(--line-2);border-radius:4px;background:#fff}
+.dsg-meta{margin:0;display:grid;gap:3px;min-width:0;font:400 12px/1.4 var(--f-sans);color:var(--ink-2)}
+.dsg-meta div{display:flex;gap:8px;justify-content:space-between}
+.dsg-meta dt{color:var(--ink-3);text-transform:uppercase;letter-spacing:.12em;font-size:10px}
+.dsg-meta dd{margin:0;text-align:right;overflow-wrap:anywhere}
+.dsg-fitlab{font:500 10px/1 var(--f-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.dsg-fit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.dsg-fit button{display:grid;gap:4px;text-align:left;padding:10px 12px;border:1px solid var(--line-2);border-radius:6px;background:transparent;color:var(--ink);cursor:pointer;min-width:0}
+.dsg-fit button b{font:600 12px/1.2 var(--f-sans);letter-spacing:.08em;text-transform:uppercase}
+.dsg-fit button span{font:400 11px/1.35 var(--f-sans);color:var(--ink-3)}
+.dsg-fit button:hover:not(:disabled),.dsg-fit button:focus-visible{border-color:var(--accent);outline:none}
+.dsg-fit button[aria-pressed="true"]{background:var(--grad-azure);border-color:transparent;color:#fff}
+.dsg-fit button[aria-pressed="true"] span{color:rgba(255,255,255,.88)}
+.dsg-fit button:disabled{opacity:.45;cursor:default}
+.dsg-fit .rec{font:600 9px/1 var(--f-sans);letter-spacing:.12em;margin-left:6px;opacity:.9}
+@media (max-width:460px){.dsg-fit{grid-template-columns:minmax(0,1fr)}.dsg-card{flex-direction:column;align-items:flex-start}}
 .xsec{display:grid;gap:4px;margin:6px 0 8px}
 .xrec{color:var(--azure-300,#5BC0EE);letter-spacing:.1em}
 #printBtn{background:var(--grad-azure)!important;border:1px solid transparent!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,30,60,.45);box-shadow:0 6px 18px rgba(58,159,219,.28)}
@@ -808,16 +836,41 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
       </div>
     </details>
 
-    <details class="spot interactive" id="gfxSec">
+    <details class="spot interactive" id="mediaSec">
+      <summary><h2>My Media</h2><div class="sumr"><span>Designs, graphics, library</span></div></summary>
+      <div class="mediabody">
+        <details class="sub" id="dsgSec" open>
+          <summary><h2>My design</h2><span id="dsgStat">Upload artwork</span></summary>
+          <div class="subbody">
+            <input type="file" id="dsgFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+            <p class="note" id="dsgNote">Upload artwork for the whole label (PNG, JPG, WebP or SVG). The tool reads the size stored in the file and can fit it to the 40 x 20 mm label. It prints in black and white, and is kept on this device.</p>
+            <div class="dsg-actions"><button type="button" class="btn" id="dsgPick">Upload design</button></div>
+            <div id="dsgInfo" hidden>
+              <div class="dsg-card"><canvas id="dsgThumb" width="200" height="100" aria-hidden="true"></canvas><dl class="dsg-meta" id="dsgMeta"></dl></div>
+              <div class="dsg-fitlab" id="dsgFitLab">How it fits the label</div>
+              <div class="dsg-fit" id="dsgFit" role="group" aria-labelledby="dsgFitLab">
+                <button type="button" data-fit="fit" aria-pressed="false"><b>Fit</b><span>Whole design, centred</span></button>
+                <button type="button" data-fit="fill" aria-pressed="false"><b>Fill</b><span>Covers the label, trims the edges</span></button>
+                <button type="button" data-fit="stretch" aria-pressed="false"><b>Stretch</b><span>Exactly the label size</span></button>
+                <button type="button" data-fit="actual" aria-pressed="false"><b>Actual size</b><span id="dsgActualSub">From the file</span></button>
+              </div>
+              <p class="note" id="dsgFitNote"></p>
+              <label class="check"><input type="checkbox" id="dsgOnly"> Design only (hide the label text, logo and graphics)</label>
+              <div class="dsg-actions"><button type="button" class="btn small" id="dsgReplace">Replace design</button><button type="button" class="btn small" id="dsgRemove">Remove design</button></div>
+            </div>
+          </div>
+        </details>
+        <details class="sub" id="gfxSec">
       <summary><h2>Graphics</h2><div class="sumr"><button type="button" class="btn gplus" id="gfxAdd" aria-label="Upload your own graphic" title="Upload your own graphic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4.5"/><path d="M7.2 9 12 4.2 16.8 9"/><path d="M5 14.5v2.2A2.3 2.3 0 0 0 7.3 19h9.4a2.3 2.3 0 0 0 2.3-2.3v-2.2"/></svg></button></div></summary>
       <div class="grid"><div class="gfxgrid full" id="gfxGrid"></div>
         <input type="file" id="gfxFile" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden>
         <p class="note full" id="gfxNote">Use the upload button above to add your own graphic (PNG, JPG, WebP or SVG). It prints in the ribbon colour, and is kept on this device.</p></div>
     </details>
-
-    <details class="spot interactive">
+        <details class="sub" id="libSec">
       <summary><h2>Library</h2><span id="libcount">Saved on this device</span></summary>
       <div class="grid"><p class="note full" style="margin:0">The library is stored in this browser only. Clearing site data, or opening the tool on another device or browser, starts with an empty library.</p><div class="full"><ul class="lib" id="lib"></ul></div></div>
+    </details>
+      </div>
     </details>
 
     <details class="spot interactive">
@@ -900,7 +953,8 @@ if (storedCfg) {
   if (storedCfg.defaultsVersion < 6 && +storedCfg.printX === -0.4) storedCfg.printX = 0; // the old built-in -0.4 mm shift is gone; a value you chose yourself is kept
   storedCfg.defaultsVersion = DEFAULTS.defaultsVersion;
 }
-let cfg = norm(Object.assign({}, DEFAULTS, storedCfg || {}));
+const BLANK_CFG = { compound: "", variant: "", strength: "", sideText: "", showSide: false, showLogo: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true };
+let cfg = norm(storedCfg ? Object.assign({}, DEFAULTS, storedCfg) : Object.assign({}, DEFAULTS, BLANK_CFG, { preset: "blank" })); // a first visit opens on the Blank preset; a saved label is never replaced
 lsSet(LS_CFG, cfg);
 let view = { mode: "smooth", ink: "#111111", stock: "#ffffff", tex: null };
 // Textured label stock (hologram, brushed silver): the real texture, painted behind the design in the preview and presets (export is unchanged)
@@ -1013,6 +1067,16 @@ function setOff(id, x, y) {
   if (!x && !y) delete cfg.off[id]; else cfg.off[id] = { x, y };
 }
 
+// Where an uploaded design lands on the label (mm). fit: whole design inside, fill: covers the label and crops the overflow, stretch: exactly the label, actual: the physical size stored in the file
+function designRect(fit, d) {
+  const a = d.vb[2] / d.vb[3];
+  if (fit === "stretch") return { x: 0, y: 0, w: W, h: H };
+  let w, h;
+  if (fit === "actual" && d.mm) { w = d.mm.w; h = d.mm.h; }
+  else if (fit === "fill") { w = Math.max(W, H * a); h = w / a; }
+  else { w = Math.min(W, H * a); h = w / a; }
+  return { x: W / 2 - w / 2, y: H / 2 - h / 2, w, h };
+}
 // Draws the whole label in millimetre units onto ctx (already scaled so 1 unit = 1 mm)
 let legalOver = [];
 function drawLabel(ctx, c, ink, stock, inner) {
@@ -1045,7 +1109,15 @@ function drawLabel(ctx, c, ink, stock, inner) {
   const PX = +c.printX || 0, PY = -(+c.printY || 0);
   ctx.save(); ctx.translate(PX, PY);
   { const pr = +c.printR || 0; if (pr) { ctx.translate(W / 2, H / 2); ctx.rotate(pr * Math.PI / 180); ctx.translate(-W / 2, -H / 2); } } // printer rotation about the label centre
-  ctx.fillStyle = ink; ctx.strokeStyle = ink; ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = ink; ctx.strokeStyle = ink;
+  { // your uploaded design sits under everything else; "design only" skips the rest of the label
+    const dz = c.design, dd = dz && GFX.design;
+    if (dd && dd.img) {
+      const e = gfxImage("design", ink, 1);
+      if (e.ok) { const r = designRect(dz.fit, dd); ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.clip(); ctx.drawImage(e.img, r.x, r.y, r.w, r.h); ctx.restore(); }
+      if (dz.only) { ctx.restore(); return; }
+    }
+  } ctx.textBaseline = "alphabetic";
   const m = c.margin;
   let left = m, right = W - m;
   const vrule = (id, x) => at(id, () => { ctx.lineWidth = 0.12; ctx.beginPath(); ctx.moveTo(x, m + 1.6); ctx.lineTo(x, H - m - 1.6); ctx.stroke(); return [x - 0.4, m + 1.6, 0.8, H - 2 * m - 3.2]; });
@@ -1835,6 +1907,7 @@ function fillControls() {
     if (el.type === "checkbox") el.checked = !!cfg[k]; else el.value = cfg[k];
   }
   updateOutputs(); syncLegalUI(); syncRowUI(); applyFocus();
+  try { syncDsgUI(); } catch {}
 }
 function syncRowUI() {
   document.querySelectorAll("[data-rowof]").forEach((el) => { el.hidden = !cfg[el.dataset.rowof === "recon" ? "showRecon" : "showBatchRow"]; });
@@ -2380,6 +2453,123 @@ gfxFile.addEventListener("change", async () => {
   if (customGfx.length) { drawGfxLib(); render(); }
   histRebase();
 })();
+
+// ── My design: artwork for the whole label. The file's own size information (PNG/JPEG pixel density, SVG units) decides what "actual size" means ──
+const LS_DESIGN = "vial-label-studio-design-v1", DSG_MAX = 1888; // 4x the 472 px export width
+const dq = (id) => document.getElementById(id);
+let dsgSaved = null; // { name, url, meta } of the design kept on this device
+function pngDpi(b) {
+  if (b.length < 33 || b[0] !== 0x89 || b[1] !== 0x50) return null; const dv = new DataView(b.buffer, b.byteOffset, b.byteLength); let o = 8;
+  while (o + 12 <= b.length) { const len = dv.getUint32(o), t = String.fromCharCode(b[o + 4], b[o + 5], b[o + 6], b[o + 7]);
+    if (t === "pHYs") { const x = dv.getUint32(o + 8), y = dv.getUint32(o + 12); return b[o + 16] === 1 && x > 0 && y > 0 ? { x: x * 0.0254, y: y * 0.0254 } : null; }
+    if (t === "IDAT" || t === "IEND") break; o += 12 + len; }
+  return null;
+}
+function jpgDpi(b) {
+  if (b.length < 4 || b[0] !== 0xFF || b[1] !== 0xD8) return null; const dv = new DataView(b.buffer, b.byteOffset, b.byteLength); let o = 2, exif = null;
+  while (o + 4 < b.length) {
+    if (b[o] !== 0xFF) { o++; continue; } const m = b[o + 1]; if (m === 0xD8 || m === 0x01 || (m >= 0xD0 && m <= 0xD7) || m === 0xFF) { o += m === 0xFF ? 1 : 2; continue; }
+    const len = dv.getUint16(o + 2);
+    if (m === 0xE0 && b[o + 4] === 0x4A && b[o + 5] === 0x46 && b[o + 6] === 0x49 && b[o + 7] === 0x46) { const u = b[o + 11], xd = dv.getUint16(o + 12), yd = dv.getUint16(o + 14); if (u === 1 && xd > 1) return { x: xd, y: yd || xd }; if (u === 2 && xd > 1) return { x: xd * 2.54, y: (yd || xd) * 2.54 }; }
+    if (m === 0xE1 && b[o + 4] === 0x45 && b[o + 5] === 0x78 && b[o + 6] === 0x69 && b[o + 7] === 0x66) exif = o + 10;
+    if (m === 0xDA) break; o += 2 + len;
+  }
+  if (exif != null) { try {
+    const le = b[exif] === 0x49, g16 = (x) => dv.getUint16(x, le), g32 = (x) => dv.getUint32(x, le), ifd = exif + g32(exif + 4), n = g16(ifd); let xr = 0, yr = 0, un = 2;
+    for (let i = 0; i < n; i++) { const e = ifd + 2 + i * 12, tag = g16(e); if (tag === 0x011A || tag === 0x011B) { const off = exif + g32(e + 8), v = g32(off) / (g32(off + 4) || 1); if (tag === 0x011A) xr = v; else yr = v; } else if (tag === 0x0128) un = g16(e + 8); }
+    if (xr > 1) { const k = un === 3 ? 2.54 : 1; return { x: xr * k, y: (yr || xr) * k }; }
+  } catch {} }
+  return null;
+}
+function svgSize(txt) { // width/height with units, else the viewBox read at 96 px per inch
+  const m = /<svg\b[^>]*>/i.exec(txt); if (!m) return null; const t = m[0], at = (n) => { const r = new RegExp("(?<![-\\w:])" + n + "\\s*=\\s*[\"']([^\"']+)[\"']", "i").exec(t); return r ? r[1].trim() : ""; };
+  const U = { mm: 1, cm: 10, in: 25.4, pt: 25.4 / 72, pc: 25.4 / 6, px: 25.4 / 96, "": 25.4 / 96 }, one = (v) => { const r = /^([\d.]+)\s*([a-z%]*)$/i.exec(v); if (!r || r[2] === "%") return null; const k = U[r[2].toLowerCase()]; return k == null ? null : { n: +r[1], mm: +r[1] * k }; };
+  const vb = at("viewBox").split(/[\s,]+/).map(Number), hasVb = vb.length === 4 && vb[2] > 0 && vb[3] > 0, w = one(at("width")), h = one(at("height"));
+  if (w && h && w.n > 0 && h.n > 0) return { px: { w: w.n, h: h.n }, mm: { w: w.mm, h: h.mm } };
+  if (hasVb) return { px: { w: vb[2], h: vb[3] }, mm: { w: vb[2] * 25.4 / 96, h: vb[3] * 25.4 / 96 }, implied: true };
+  return null;
+}
+async function readDesignMeta(file, natural) {
+  const b = new Uint8Array(await file.arrayBuffer()), isSvg = /svg/i.test(file.type) || /\.svg$/i.test(file.name);
+  const m = { kind: isSvg ? "svg" : b[0] === 0x89 ? "png" : b[0] === 0xFF ? "jpeg" : /webp/i.test(file.type) ? "webp" : (file.type.split("/")[1] || "image"), px: { w: natural.w, h: natural.h }, dpi: null, mm: null };
+  if (isSvg) { const z = svgSize(new TextDecoder().decode(b)); if (z) { m.px = z.px; m.mm = z.mm; m.implied = !!z.implied; } return m; }
+  const d = m.kind === "png" ? pngDpi(b) : m.kind === "jpeg" ? jpgDpi(b) : null;
+  if (d && d.x >= 10 && d.x <= 5000 && d.y >= 10 && d.y <= 5000) { m.dpi = { x: Math.round(d.x), y: Math.round(d.y) }; m.mm = { w: natural.w / d.x * 25.4, h: natural.h / d.y * 25.4 }; }
+  return m;
+}
+async function processDesign(file) { // a black mask the printer can use: dark areas become ink. Keeps up to 4x export resolution
+  let src = await fileToSrc(file);
+  if (/^data:image\/svg/i.test(src)) { const S = DSG_MAX / 600; let txt = decodeURIComponent(src.slice(src.indexOf(",") + 1)); txt = txt.replace(/<svg\b[^>]*>/i, (t) => t.replace(/(?<![-\w:])width="([\d.]+)"/, (_, v) => `width="${Math.round(v * S)}"`).replace(/(?<![-\w:])height="([\d.]+)"/, (_, v) => `height="${Math.round(v * S)}"`)); src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(txt); }
+  const img = await load(src); if (!img || !img.naturalWidth || !img.naturalHeight) throw new Error("decode");
+  const natural = { w: img.naturalWidth, h: img.naturalHeight }, k = Math.min(1, DSG_MAX / Math.max(natural.w, natural.h));
+  const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(natural.w * k)); c.height = Math.max(1, Math.round(natural.h * k));
+  const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(img, 0, 0, c.width, c.height);
+  const d = x.getImageData(0, 0, c.width, c.height), q = d.data; let opaque = true;
+  for (let i = 3; i < q.length; i += 4) if (q[i] < 250) { opaque = false; break; }
+  if (opaque) for (let i = 0; i < q.length; i += 4) { const lum = q[i] * 0.299 + q[i + 1] * 0.587 + q[i + 2] * 0.114; q[i] = q[i + 1] = q[i + 2] = 0; q[i + 3] = Math.round(255 - lum); }
+  x.putImageData(d, 0, 0); return { url: c.toDataURL("image/png"), natural };
+}
+function dsgRecommend(m) {
+  const a = m.px.w / m.px.h, la = W / H;
+  if (m.mm && !m.implied && Math.abs(m.mm.w - W) <= W * 0.05 && Math.abs(m.mm.h - H) <= H * 0.05) return "actual";
+  return Math.abs(a - la) / la < 0.04 ? "stretch" : "fit";
+}
+function dsgFitText(fit, m) {
+  const a = m.px.w / m.px.h, la = W / H, pc = (v) => Math.round(v * 100);
+  if (fit === "fit") return a > la ? `All of the design shows. There is empty space above and below it.` : a < la ? `All of the design shows. There is empty space at the left and right.` : `The design is the same shape as the label, so it fills it.`;
+  if (fit === "fill") return Math.abs(a - la) / la < 0.01 ? `The design is the same shape as the label, so nothing is trimmed.` : a > la ? `Covers the whole label and trims about ${pc(1 - la / a)}% off the left and right.` : `Covers the whole label and trims about ${pc(1 - a / la)}% off the top and bottom.`;
+  if (fit === "stretch") { const d = Math.abs(a - la) / la; return d < 0.04 ? `The shapes match, so nothing is distorted.` : `Stretches to the label, so the proportions change by about ${pc(d)}%.`; }
+  if (!m.mm) return "This file has no size information.";
+  const r = (v) => Math.round(v * 10) / 10, over = m.mm.w > W + 0.05 || m.mm.h > H + 0.05;
+  return `Prints at ${r(m.mm.w)} x ${r(m.mm.h)} mm${over ? ", so the part beyond the 40 x 20 mm label is cut off" : m.mm.w < W - 0.05 || m.mm.h < H - 0.05 ? ", centred, with blank space around it" : ", which is the label size"}.`;
+}
+function dsgApply(entry, fit, only) { // make the uploaded design available to the label renderer
+  return load(entry.url).then((img) => {
+    if (!img) throw new Error("decode");
+    GFX.design = { name: entry.name, vb: [0, 0, img.naturalWidth, img.naturalHeight], sw: 0, body: "", custom: true, hidden: true, url: entry.url, img, mm: entry.meta.mm }; gTint.clear();
+    if (fit) cfg.design = { fit, only: only !== false };
+  });
+}
+function syncDsgUI() {
+  const e = dsgSaved, on = !!(e && cfg.design && GFX.design);
+  dq("dsgInfo").hidden = !e; dq("dsgPick").hidden = !!e; dq("dsgNote").hidden = !!e;
+  dq("dsgStat").textContent = !e ? "Upload artwork" : on ? "On label" : "Saved, not on label";
+  if (!e) return; const m = e.meta, r = (v) => Math.round(v * 10) / 10;
+  const rows = [["File", e.name], ["Pixels", `${Math.round(m.px.w)} x ${Math.round(m.px.h)}`], [m.kind === "svg" ? "Type" : "Density", m.kind === "svg" ? "Vector (SVG)" : m.dpi ? `${m.dpi.x} dpi` : "Not stored in file"], ["Size", m.mm ? `${r(m.mm.w)} x ${r(m.mm.h)} mm${m.implied ? " (assumed)" : ""}` : "Unknown"], ["Shape", `${Math.round(m.px.w / m.px.h * 100) / 100} : 1`]];
+  dq("dsgMeta").textContent = ""; for (const [k, v] of rows) { const d = document.createElement("div"), a = document.createElement("dt"), b = document.createElement("dd"); a.textContent = k; b.textContent = v; d.append(a, b); dq("dsgMeta").append(d); }
+  const rec = dsgRecommend(m), cur = on ? cfg.design.fit : "";
+  dq("dsgFit").querySelectorAll("button").forEach((b) => { const f = b.dataset.fit; b.disabled = f === "actual" && !m.mm; b.setAttribute("aria-pressed", String(f === cur)); b.querySelector(".rec") && b.querySelector(".rec").remove(); if (f === rec) { const t = document.createElement("i"); t.className = "rec"; t.textContent = "RECOMMENDED"; t.style.fontStyle = "normal"; b.querySelector("b").append(t); } });
+  dq("dsgActualSub").textContent = m.mm ? `${r(m.mm.w)} x ${r(m.mm.h)} mm from the file` : "No size in this file";
+  dq("dsgFitNote").textContent = cur ? dsgFitText(cur, m) : "Choose how the design should fit. Recommended is marked.";
+  dq("dsgOnly").checked = !!(on && cfg.design.only);
+  const t = dq("dsgThumb"), x = t.getContext("2d"); x.clearRect(0, 0, t.width, t.height); x.fillStyle = "#fff"; x.fillRect(0, 0, t.width, t.height);
+  if (GFX.design) { const e2 = gfxImage("design", "#000000", 1); if (e2.ok) { const R = designRect(cur || rec, GFX.design), k = t.width / W; x.save(); x.beginPath(); x.rect(0, 0, t.width, t.height); x.clip(); x.drawImage(e2.img, R.x * k, R.y * k, R.w * k, R.h * k); x.restore(); } }
+}
+function dsgSave() { const ok = dsgSaved ? lsSet(LS_DESIGN, dsgSaved) : (localStorage.removeItem(LS_DESIGN), true); return ok; }
+async function dsgUpload(file) {
+  try {
+    const out = await processDesign(file), meta = await readDesignMeta(file, out.natural);
+    const name = (file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim() || "My design").slice(0, 40);
+    dsgSaved = { name, url: out.url, meta }; const fit = dsgRecommend(meta);
+    await dsgApply(dsgSaved, fit, true); const kept = dsgSave(); lsSet(LS_CFG, cfg); syncDsgUI(); render();
+    say(kept ? `${name} is on your label with the recommended fit. Change the fit under My Media if you like.` : `${name} is on your label for this session only. This browser would not let the site save it (storage is full, blocked, or in private browsing).`);
+  } catch { say("That file could not be read as an image."); }
+}
+dq("dsgPick").addEventListener("click", () => dq("dsgFile").click());
+dq("dsgReplace").addEventListener("click", () => dq("dsgFile").click());
+dq("dsgFile").addEventListener("change", () => { const f = dq("dsgFile").files && dq("dsgFile").files[0]; dq("dsgFile").value = ""; if (f) dsgUpload(f); });
+dq("dsgFit").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-fit]"); if (!b || b.disabled || !dsgSaved) return;
+  const go = () => { cfg.design = { fit: b.dataset.fit, only: cfg.design ? cfg.design.only !== false : true }; lsSet(LS_CFG, cfg); syncDsgUI(); render(); };
+  if (GFX.design) go(); else dsgApply(dsgSaved, null).then(go);
+});
+dq("dsgOnly").addEventListener("change", () => { if (!cfg.design) return; cfg.design = Object.assign({}, cfg.design, { only: dq("dsgOnly").checked }); lsSet(LS_CFG, cfg); render(); });
+dq("dsgRemove").addEventListener("click", () => { delete GFX.design; gTint.clear(); delete cfg.design; dsgSaved = null; dsgSave(); lsSet(LS_CFG, cfg); syncDsgUI(); render(); say("Design removed."); });
+(async () => {
+  const e = lsGet(LS_DESIGN); if (!e || typeof e.url !== "string" || !e.url.startsWith("data:image/png") || !e.meta || !e.meta.px) { syncDsgUI(); return; }
+  dsgSaved = e; try { await dsgApply(e, null); } catch { dsgSaved = null; }
+  syncDsgUI(); render(); histRebase();
+})();
 // Custom text: add as many lines as needed. Double-click (or double-tap on a phone) one on the label to edit it.
 const TXT_DEFAULT = "Custom text";
 document.getElementById("addText").addEventListener("click", () => {
@@ -2490,7 +2680,7 @@ const PRESETS = [
       graphics: [{ id: "gfx1", key: "molecule", h: 5.2, stroke: 1, fit: true }],
       fonts: { name: "Bodoni Moda", variant: "Josefin Sans", strength: "Josefin Sans", legal: "Josefin Sans" } } },
   { id: "blank", name: "Blank", note: "empty label with only the disclaimer",
-    cfg: { compound: "", variant: "", strength: "", showLogo: false, showSide: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true } },
+    cfg: Object.assign({}, BLANK_CFG) },
   { id: "calibration", name: "Calibration", note: "edge frame, 1 mm frame and 5 mm ticks to check how the printer places a label",
     cfg: { compound: "", variant: "", strength: "", showLogo: false, showSide: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true, disclaimer: "",
       graphics: [{ id: "gfx1", key: "calibration", h: 20 }], off: { gfx1: { x: 0, y: 0 } } } },
@@ -3016,7 +3206,7 @@ if (document.fonts) {
     "Drag a graphic\u2019s corner handle to make it bigger or smaller.",
     "Made a mistake? Press Ctrl+Z (Cmd+Z on a Mac). The last 5 changes are remembered.",
     "Add extra lines of text with the Add text button in the Content panel.",
-    "Upload your own artwork in the Graphics panel to place it on your label.",
+    "Upload a whole-label design, or your own graphics, under My Media.",
     "Switch to Print dots to see how the thermal printer will render your label.",
     "Drag the corner icon on the preview to make it larger or smaller.",
     "Save labels you reuse to the Library from the Export menu.",
