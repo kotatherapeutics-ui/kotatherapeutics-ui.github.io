@@ -382,6 +382,11 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .nt ol b{color:var(--cream-50,#fff);font-weight:600}
 .nt-warn{margin:12px 0 2px;padding:10px 12px;border-radius:8px;background:rgba(224,164,106,.1);border:1px solid rgba(224,164,106,.35);font:400 11.5px/1.5 var(--f-sans);color:#e0a46a}
 .xsec{display:grid;gap:4px;margin:6px 0 8px}
+.xrec{color:var(--azure-300,#5BC0EE);letter-spacing:.1em}
+#printBtn{background:var(--grad-azure)!important;border:1px solid transparent!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,30,60,.45);box-shadow:0 6px 18px rgba(58,159,219,.28)}
+#printBtn .xnote{color:rgba(255,255,255,.88)!important;opacity:1!important;text-shadow:none}
+#printBtn:hover:not(:disabled),#printBtn:focus-visible{filter:brightness(1.08);box-shadow:0 8px 22px rgba(58,159,219,.4)}
+#printBtn:disabled{opacity:.5;box-shadow:none}
 .xlib{margin:14px 0 4px;padding-top:12px;border-top:1px solid var(--line-2)}
 .xhead{font:500 10px/1 var(--f-sans);letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted,#8a8f98);padding:6px 2px 2px}
 #quickBtn,#printBtn{display:flex!important;align-items:center;justify-content:space-between;gap:10px}
@@ -575,7 +580,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
     <button type="button" role="menuitem" id="export">Download PNG for Niimbot</button>
     <button type="button" role="menuitem" id="quickBtn">Quick print<span class="xnote">Chrome / Edge only</span></button>
   </div>
-  <div class="xsec" id="xsHigh"><div class="xhead">High quality</div>
+  <div class="xsec" id="xsHigh"><div class="xhead">High quality <span class="xrec">(Recommended)</span></div>
     <button type="button" role="menuitem" id="printBtn">High quality export<span class="xnote">Cost: 1 label</span></button>
   </div>
   <div class="xsec xlib"><div class="xhead">Library</div>
@@ -2020,6 +2025,7 @@ function calLoad() { for (const id in CAL) calIn(id).value = calFmt(cfg[CAL[id][
 function calMarks() { calBtn.classList.toggle("cal-on", !!(+cfg.printX || +cfg.printY || +cfg.printR)); }
 function calToggle(open, zero) {
   if (open) { calLoad(); if (zero) for (const id in CAL) calIn(id).value = "0"; calViewReset(); }
+  prPrev.hidden = open || !(prState === "print" || prState === "again"); // the top preview steps aside while the calibration preview is open
   document.getElementById("prWrap").classList.toggle("cal-open", open); document.getElementById("calDone").hidden = !open;
   if (open) { calDraw(); calGfx().then(calDraw); }
   calSub.classList.toggle("open", open); calBtn.setAttribute("aria-expanded", open ? "true" : "false");
