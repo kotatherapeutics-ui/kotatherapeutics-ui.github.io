@@ -386,6 +386,29 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .pr-copies{display:flex;align-items:center;gap:10px;margin:0 0 16px;font:500 11px/1 var(--f-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
 .pr-copies input{width:76px}
 #prMsg.err{color:#e0a46a}
+.pr-dens{display:grid;gap:8px;margin:0 0 14px}
+.pr-dens label{display:flex;justify-content:space-between;font:500 11px/1 var(--f-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.pr-dens input{width:100%}
+.pr-dens .ticks{display:flex;justify-content:space-between;font:400 10px/1 var(--f-sans);color:var(--ink-2);padding:0 2px}
+#calBtn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:11px 14px;border:1px solid var(--line-2);border-radius:8px;background:transparent;color:var(--ink);font:500 11px/1 var(--f-sans);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background 400ms var(--ease),color 400ms var(--ease),border-color 400ms var(--ease)}
+#calBtn:hover,#calBtn:focus-visible{border-color:var(--accent);outline:none}
+#calBtn .chev{transition:transform 500ms var(--ease);font-size:10px}
+#calBtn[aria-expanded=true] .chev{transform:rotate(180deg)}
+#calBtn.cal-on{background:var(--grad-azure);border-color:transparent;color:#fff;text-shadow:0 1px 2px rgba(0,30,60,.45)}
+.cal-sub{display:grid;grid-template-rows:0fr;transition:grid-template-rows 640ms var(--ease) 200ms}
+.cal-sub.open{grid-template-rows:1fr;transition-delay:0ms}
+.cal-in{overflow:hidden;min-height:0}
+.cal-body{opacity:0;transform:translateY(-8px);transition:opacity 220ms var(--ease),transform 300ms var(--ease);pointer-events:none;padding:2px 2px 4px}
+.cal-sub.open .cal-body{opacity:1;transform:none;pointer-events:auto;transition-delay:170ms,170ms}
+.cal-row{display:grid;grid-template-columns:76px 1fr;align-items:center;gap:8px;margin:0 0 10px}
+.cal-row>span{font:500 11px/1.2 var(--f-sans);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.cal-ctl{display:flex;align-items:center;gap:6px}
+.cal-ctl button{width:38px;height:34px;flex:none;border:1px solid var(--line-2);border-radius:4px;background:transparent;color:var(--ink);font:500 15px/1 var(--f-sans);cursor:pointer}
+.cal-ctl button:hover,.cal-ctl button:focus-visible{border-color:var(--accent);outline:none}
+.cal-ctl input{flex:1;min-width:0;width:100%;height:34px;text-align:center}
+.cal-foot{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:4px}
+.cal-note{margin:0 0 12px!important;font:400 11.5px/1.5 var(--f-sans)}
+@media (prefers-reduced-motion:reduce){.cal-sub,.cal-body,#calBtn .chev{transition:none}}
 .xmenu .pmhead{padding:0 0 12px;margin-bottom:8px;align-self:stretch;width:100%}
 .xmenu .pmhead h3{font-size:22px}
 header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
@@ -555,6 +578,15 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
     <h3 id="prT">Print to Niimbot</h3>
     <p id="prMsg" aria-live="polite">Turn on your Niimbot M2-H, then connect it.</p>
     <label class="pr-copies" id="prCopiesRow" hidden>Copies <input type="number" id="prCopies" min="1" max="50" value="1" inputmode="numeric"></label>
+    <div class="pr-dens"><label for="prDens">Print density <output id="prDensO">3</output></label><input type="range" id="prDens" min="1" max="5" step="1" value="3"><div class="ticks" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div></div>
+    <button type="button" id="calBtn" aria-expanded="false" aria-controls="calSub"><span>Advanced printer calibration</span><span class="chev" aria-hidden="true">&#9660;</span></button>
+    <div class="cal-sub" id="calSub"><div class="cal-in"><div class="cal-body">
+      <p class="note cal-note">Corrects how your printer lays the design down. Print the Calibration preset, then nudge until its frame sits evenly on the label edge. Positive Y moves up, positive rotation turns clockwise.</p>
+      <div class="cal-row"><span>Left / Right</span><div class="cal-ctl"><button type="button" data-f="calX" data-d="-0.05" aria-label="Move left 0.05 mm">&#9664;</button><input type="text" inputmode="decimal" id="calX" aria-label="Horizontal offset in mm" autocomplete="off"><button type="button" data-f="calX" data-d="0.05" aria-label="Move right 0.05 mm">&#9654;</button></div></div>
+      <div class="cal-row"><span>Down / Up</span><div class="cal-ctl"><button type="button" data-f="calY" data-d="-0.05" aria-label="Move down 0.05 mm">&#9660;</button><input type="text" inputmode="decimal" id="calY" aria-label="Vertical offset in mm" autocomplete="off"><button type="button" data-f="calY" data-d="0.05" aria-label="Move up 0.05 mm">&#9650;</button></div></div>
+      <div class="cal-row"><span>Rotate</span><div class="cal-ctl"><button type="button" data-f="calR" data-d="-0.1" aria-label="Rotate counterclockwise 0.1 degrees">&#8634;</button><input type="text" inputmode="decimal" id="calR" aria-label="Rotation in degrees" autocomplete="off"><button type="button" data-f="calR" data-d="0.1" aria-label="Rotate clockwise 0.1 degrees">&#8635;</button></div></div>
+      <div class="cal-foot"><button type="button" class="btn" id="calReset">Reset to 0</button><button type="button" class="btn primary" id="calDone">Done</button></div>
+    </div></div></div>
     <div class="actions"><button type="button" class="btn" id="prClose">Close</button><button type="button" class="btn primary" id="prGo">Connect printer</button></div>
   </div>
 </div>
@@ -700,9 +732,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
         <div class="field"><label for="sideTrack">Vertical text spacing <output data-o="sideTrack"></output></label><input type="range" id="sideTrack" data-k="sideTrack" min="0" max="0.6" step="0.01"></div>
         <div class="field"><label for="textAlign">Text alignment</label><select id="textAlign" data-k="textAlign"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
         <div class="field"><label for="threshold">Ink threshold <output data-o="threshold"></output></label><input type="range" id="threshold" data-k="threshold" min="40" max="220" step="1"></div>
-        <div class="field"><label for="printX">Printer offset X <output data-o="printX"></output></label><input type="range" id="printX" data-k="printX" min="-2" max="2" step="0.05"></div>
-        <div class="field"><label for="printY">Printer offset Y <output data-o="printY"></output></label><input type="range" id="printY" data-k="printY" min="-2" max="2" step="0.05"></div>
-        <p class="note full" style="margin:0">Printer offset shifts the whole design to correct for where the M2 lays it down. Negative X moves everything left; positive Y moves it up.</p>
+        <div hidden id="calStore"><input type="range" id="printX" data-k="printX" min="-3" max="3" step="0.01"><input type="range" id="printY" data-k="printY" min="-3" max="3" step="0.01"><input type="range" id="printR" data-k="printR" min="-5" max="5" step="0.01"><input type="range" id="printDensity" data-k="printDensity" min="1" max="5" step="1"></div>
         <label class="check"><input type="checkbox" id="showLogo" data-k="showLogo"> Logo mark</label>
         <label class="check"><input type="checkbox" id="showSide" data-k="showSide"> Vertical text</label>
         <label class="check"><input type="checkbox" id="showRules" data-k="showRules"> Hairline dividers</label>
@@ -768,9 +798,9 @@ const DEFAULTS = {
   margin: 1.2, topPad: 0.6, gap: 0.9, bottomPad: 0.2,
   logoH: 9, colGap: 1.4, threshold: 128,
   sideText: "TheBioChem Society", sideSize: 2.4, sideWeight: "600", sideTrack: 0.2,
-  printX: -0.4, printY: 0,
+  printX: 0, printY: 0, printR: 0, printDensity: 3,
   showLogo: true, showSide: true, showRules: true, showEdge: true,
-  off: {}, graphics: [], texts: [], fonts: {}, rot: {}, ang: {}, padL: 0, padR: 0, legalCenter: true, textAlign: "left", logoFree: false, logoColW: 0, styles: {}, defaultsVersion: 5
+  off: {}, graphics: [], texts: [], fonts: {}, rot: {}, ang: {}, padL: 0, padR: 0, legalCenter: true, textAlign: "left", logoFree: false, logoColW: 0, styles: {}, defaultsVersion: 6
 };
 function norm(c) {
   if (c.lot !== undefined) { if (!c.batch) c.batch = c.lot; delete c.lot; }
@@ -800,6 +830,7 @@ if (storedCfg) {
   // earlier starter label: rotated BCS logo at 11 mm. Only that untouched starter state is adjusted for the beaker.
   let rawLogo = null; try { rawLogo = localStorage.getItem(LS_LOGO); } catch {}
   if (storedCfg.defaultsVersion === 4 && !rawLogo) { storedCfg.rot = Object.assign({}, storedCfg.rot, { logo: 0 }); if (storedCfg.logoH === 11) storedCfg.logoH = DEFAULTS.logoH; }
+  if (storedCfg.defaultsVersion < 6 && +storedCfg.printX === -0.4) storedCfg.printX = 0; // the old built-in -0.4 mm shift is gone; a value you chose yourself is kept
   storedCfg.defaultsVersion = DEFAULTS.defaultsVersion;
 }
 let cfg = norm(Object.assign({}, DEFAULTS, storedCfg || {}));
@@ -946,6 +977,7 @@ function drawLabel(ctx, c, ink, stock, inner) {
   // printer registration: shifts the whole design (Y stored up-positive)
   const PX = +c.printX || 0, PY = -(+c.printY || 0);
   ctx.save(); ctx.translate(PX, PY);
+  { const pr = +c.printR || 0; if (pr) { ctx.translate(W / 2, H / 2); ctx.rotate(pr * Math.PI / 180); ctx.translate(-W / 2, -H / 2); } } // printer rotation about the label centre
   ctx.fillStyle = ink; ctx.strokeStyle = ink; ctx.textBaseline = "alphabetic";
   const m = c.margin;
   let left = m, right = W - m;
@@ -1760,7 +1792,7 @@ function onLegalMode() {
 function updateOutputs() {
   document.querySelectorAll("output[data-o]").forEach(o => {
     const k = o.dataset.o, v = cfg[k];
-    o.textContent = k === "threshold" ? v : (k === "strengthTrack" || k === "sideTrack") ? (+v).toFixed(2) + " em" : (+v).toFixed(2) + " mm";
+    o.textContent = k === "threshold" ? v : k === "printR" ? (+v).toFixed(2) + "\u00b0" : (k === "strengthTrack" || k === "sideTrack") ? (+v).toFixed(2) + " em" : (+v).toFixed(2) + " mm";
   });
 }
 for (const el of inputs) {
@@ -1874,8 +1906,36 @@ function prSet(state) {
   prGo.textContent = state === "connect" ? "Connect printer" : state === "again" ? "Print again" : "Print label";
 }
 function prOpen(on) { prWrap.hidden = !on; if (on) { prGo.disabled = false; prGo.focus(); } }
+
+// Advanced printer calibration (offset + rotation) and print density live in the print dialog.
+const calBtn = document.getElementById("calBtn"), calSub = document.getElementById("calSub"), prDens = document.getElementById("prDens"), prDensO = document.getElementById("prDensO");
+const CAL = { calX: ["printX", 3, 2], calY: ["printY", 3, 2], calR: ["printR", 5, 2] };
+const calIn = (id) => document.getElementById(id);
+const calFmt = (v) => String(Math.round((+v || 0) * 100) / 100);
+function calLoad() { for (const id in CAL) calIn(id).value = calFmt(cfg[CAL[id][0]]); }
+function calMarks() { calBtn.classList.toggle("cal-on", !!(+cfg.printX || +cfg.printY || +cfg.printR)); }
+function calToggle(open) {
+  if (open) calLoad();
+  calSub.classList.toggle("open", open); calBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  calSub.querySelectorAll("button,input").forEach((el) => { el.tabIndex = open ? 0 : -1; });
+}
+function calVal(id) { const lim = CAL[id][1], v = parseFloat(String(calIn(id).value).replace(",", ".")); return Math.max(-lim, Math.min(lim, isFinite(v) ? v : 0)); }
+calBtn.addEventListener("click", () => calToggle(!calSub.classList.contains("open")));
+calSub.addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-f]"); if (!b) return;
+  const id = b.dataset.f; calIn(id).value = calFmt(Math.max(-CAL[id][1], Math.min(CAL[id][1], calVal(id) + parseFloat(b.dataset.d))));
+});
+document.getElementById("calReset").addEventListener("click", () => { for (const id in CAL) calIn(id).value = "0"; });
+document.getElementById("calDone").addEventListener("click", () => {
+  for (const id in CAL) { const v = calVal(id); calIn(id).value = calFmt(v); setField(CAL[id][0], v); }
+  calMarks(); calToggle(false);
+});
+calSub.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); document.getElementById("calDone").click(); } });
+prDens.addEventListener("input", () => { prDensO.textContent = prDens.value; setField("printDensity", +prDens.value); });
+function prSync() { prDens.value = Math.max(1, Math.min(5, Math.round(+cfg.printDensity || 3))); prDensO.textContent = prDens.value; calMarks(); calToggle(false); }
+prSync();
 printBtn.addEventListener("click", () => {
-  prOpen(true);
+  prOpen(true); prSync();
   if (!navigator.bluetooth) { prShow("Direct printing needs Chrome or Edge on a computer or Android. This browser can't connect to the printer.", true); prGo.disabled = true; return; }
   loadNiimbot().catch(() => {});
   if (prState === "connect") prShow("Turn on your Niimbot M2-H, then tap Connect printer.");
@@ -1897,7 +1957,7 @@ prGo.addEventListener("click", async () => {
       await ensureGfx("#000000");
       const c = renderMono("#000000", null, 1), blob = await new Promise((r) => c.toBlob(r, "image/png")), url = URL.createObjectURL(blob);
       const n = Math.max(1, Math.min(50, parseInt(prCopies.value, 10) || 1)); prCopies.value = n;
-      try { await Niimbot.printImage(url, { model: NIIM_MODEL, size: NIIM_SIZE, copies: n, onProgress: (t) => { if (t && t !== "ok") prShow(String(t).replace(/^./, (m) => m.toUpperCase())); } }); }
+      try { await Niimbot.printImage(url, { model: NIIM_MODEL, size: NIIM_SIZE, density: Math.max(1, Math.min(5, Math.round(+cfg.printDensity || 3))), copies: n, onProgress: (t) => { if (t && t !== "ok") prShow(String(t).replace(/^./, (m) => m.toUpperCase())); } }); }
       finally { URL.revokeObjectURL(url); }
       prShow(n > 1 ? `Printed ${n} labels.` : "Printed."); prSet("again");
     }
@@ -2343,8 +2403,7 @@ presetWrap.addEventListener("keydown", (e) => {
 let presetShown = null; // presetShown: the label as the last preset left it, so browsing presets keeps your original for Undo
 const presetReset = document.getElementById("presetReset");
 function applyPreset(p, snapshot) {
-  const keep = {}; for (const k of ["printX", "printY", "threshold", "showEdge"]) keep[k] = cfg[k]; // printer calibration is not part of a design
-  if (p.id === "calibration") { keep.printX = 0; keep.printY = 0; } // the calibration label is measured with no printer offset applied; set your own offset afterwards from what it shows
+  const keep = {}; for (const k of ["printX", "printY", "printR", "printDensity", "threshold", "showEdge"]) keep[k] = cfg[k]; // printer calibration is not part of a design
   cfg = presetCfg(p, keep);
   if (cfg.showLogo && !logoImg) restoreDefaultLogo();
   sel = null; jsonDirty = false; lsSet(LS_CFG, cfg); fillControls(); updatePos(); render();
