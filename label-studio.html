@@ -1882,7 +1882,7 @@ printBtn.addEventListener("click", () => {
 prClose.addEventListener("click", () => { if (!prBusy) prOpen(false); });
 prWrap.addEventListener("click", (e) => { if (e.target === prWrap && !prBusy) prOpen(false); });
 prWrap.addEventListener("keydown", (e) => { if (e.key === "Escape" && !prBusy) prOpen(false); });
-const prErr = (e) => { const m = String((e && e.message) || e); return (e && e.name === "NotFoundError") || /cancel|chooser/i.test(m) ? "No printer was chosen. Tap Connect printer to try again." : m === "driver" ? "Could not load the printer driver. Check your connection and try again." : m.slice(0, 220); };
+const prErr = (e) => { const m = String((e && e.message) || e), nm = (e && e.name) || "Error"; return /user cancelled|cancelled the requestDevice|chooser/i.test(m) ? "No printer was chosen. Tap Connect printer to try again." : m === "driver" ? "Could not load the printer driver. Check your connection and try again." : (nm !== "Error" ? nm + ": " : "") + m.slice(0, 240); }; // a NotFoundError after pairing means the printer's Bluetooth service was not found, not that the chooser was cancelled
 prGo.addEventListener("click", async () => {
   if (prBusy) return; prBusy = true; prGo.disabled = true; prClose.disabled = true;
   try {
