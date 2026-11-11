@@ -1156,7 +1156,7 @@ function edge(ctx, scale) { // die-cut outline, preview only
 }
 
 // 300 dpi, one-colour raster (what the printer gets)
-const NIIMBOT_FILL = 1.03; // the Niimbot app places an imported picture at about 97% of the label, centred; drawing the label 3% larger makes it reach the real edges
+const NIIMBOT_FILL = 1; // 1 = exact label size. Testing a 3% enlargement to offset the Niimbot app's own shrink was switched off again (set to 1.03 to bring it back)
 function renderMono(ink = "#000000", stock = null, k = 1, grow = 1) { // k > 1 draws the same label at k times the pixels (same shape and aspect, finer edges)
   const EW = EX_W * k, EH = EX_H * k, c = document.createElement("canvas"); c.width = EW; c.height = EH;
   const x = c.getContext("2d"); x.setTransform(grow * EW / W, 0, 0, grow * EH / H, EW * (1 - grow) / 2, EH * (1 - grow) / 2);
