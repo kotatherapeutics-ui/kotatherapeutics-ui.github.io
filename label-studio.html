@@ -426,6 +426,11 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .cal-zoom button:disabled{opacity:.35;cursor:default}
 .cal-zoom output{min-width:30px;text-align:center;color:var(--ink)}
 .cal-prev{touch-action:none;cursor:grab}
+.col{display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;transition:grid-template-rows 640ms var(--ease),opacity 360ms var(--ease),visibility 0s linear 640ms}
+.col.open{grid-template-rows:1fr;opacity:1;visibility:visible;transition:grid-template-rows 640ms var(--ease) 200ms,opacity 460ms var(--ease) 380ms,visibility 0s 200ms}
+.col-in{overflow:hidden;min-height:0}
+#prWrap.instant *{transition:none!important}
+@media (prefers-reduced-motion:reduce){.col,.col.open{transition:none}}
 .pr-prev{display:block;width:100%;height:auto;aspect-ratio:2/1;margin:0 0 14px;border-radius:8px;background:#fff;border:1px solid var(--line-2)}
 .pr-prev[hidden]{display:none}
 .fly{position:fixed;z-index:300;pointer-events:none;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.45)}
@@ -618,10 +623,14 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="prT" aria-describedby="prMsg">
     <h3 id="prT">Print to Niimbot</h3>
     <p id="prMsg" aria-live="polite">Turn on your Niimbot M2-H, then connect it.</p>
-    <canvas id="prPrev" class="pr-prev" width="944" height="472" hidden role="img" aria-label="Preview of the label that will print"></canvas>
-    <label class="pr-copies" id="prCopiesRow" hidden>Copies <input type="number" id="prCopies" min="1" max="50" value="1" inputmode="numeric"></label>
+    <div class="col" id="prTop"><div class="col-in">
+    <canvas id="prPrev" class="pr-prev" width="944" height="472" role="img" aria-label="Preview of the label that will print"></canvas>
+    <label class="pr-copies" id="prCopiesRow">Copies <input type="number" id="prCopies" min="1" max="50" value="1" inputmode="numeric"></label>
+    </div></div>
     <div id="prAdv" hidden>
+    <div class="col" id="densCol"><div class="col-in">
     <div class="pr-dens"><label for="prDens">Print density <output id="prDensO">3</output></label><input type="range" id="prDens" min="1" max="5" step="1" value="3"><div class="ticks" aria-hidden="true"><span style="left:calc(8px + (100% - 16px) * 0)">1</span><span style="left:calc(8px + (100% - 16px) * .25)">2</span><span style="left:calc(8px + (100% - 16px) * .5)">3</span><span style="left:calc(8px + (100% - 16px) * .75)">4</span><span style="left:calc(100% - 8px)">5</span></div></div>
+    </div></div>
     <button type="button" id="calBtn" aria-expanded="false" aria-controls="calSub"><span>Advanced printer calibration</span><span class="chev" aria-hidden="true">&#9660;</span></button>
     <div class="cal-sub" id="calSub"><div class="cal-in"><div class="cal-body">
       <p class="note cal-note">Corrects how your printer lays the design down. Match the preview to your printed test label: nudge until the printed frame sits evenly on the label edge. Positive Y moves up, positive rotation turns clockwise.</p>
@@ -1982,33 +1991,32 @@ async function prPreviewDraw() { // a copy of the studio label, drawn the way it
 }
 const bez = (x1, y1, x2, y2) => (t) => { let u = t; for (let i = 0; i < 8; i++) { const cx = 3 * x1 * u * (1 - u) ** 2 + 3 * x2 * u * u * (1 - u) + u ** 3 - t, dx = 3 * x1 * (1 - u) ** 2 + 6 * (x2 - x1) * u * (1 - u) + 3 * (1 - x2) * u * u; if (Math.abs(cx) < 1e-5 || !dx) break; u -= cx / dx; } u = Math.max(0, Math.min(1, u)); return 3 * y1 * u * (1 - u) ** 2 + 3 * y2 * u * u * (1 - u) + u ** 3; };
 const flyEase = bez(.22, 1, .36, 1);
-function prFly(snap, from) { // the calibration preview glides into the print dialog and turns into the studio label, same easing as the panels
-  const to0 = prPrev.getBoundingClientRect();
-  if (matchMedia("(prefers-reduced-motion:reduce)").matches || !to0.width) { prPrev.style.visibility = ""; return; }
-  const box = document.createElement("div"); box.className = "fly";
-  const A = snap, B = document.createElement("canvas"); B.width = prPrev.width; B.height = prPrev.height; B.getContext("2d").drawImage(prPrev, 0, 0);
+function prFly(snap, from, to) { // the calibration preview glides into the print dialog and turns into the studio label. Transform and opacity only, aimed at where the preview will finally sit, so it stays smooth
+  if (matchMedia("(prefers-reduced-motion:reduce)").matches || !to.width || !from.width || !box0(from)) { prPrev.style.visibility = ""; return; }
+  const box = document.createElement("div"); box.className = "fly"; box.style.cssText = `left:${from.left}px;top:${from.top}px;width:${from.width}px;height:${from.height}px;transform-origin:0 0;will-change:transform,opacity`;
+  const A = snap, B = document.createElement("canvas"); B.width = prPrev.width; B.height = prPrev.height; B.getContext("2d").drawImage(prPrev, 0, 0); B.style.opacity = "0";
   box.append(A, B); document.body.append(box);
-  const t0 = performance.now(), D = 700;
-  const step = (now) => {
-    const p = Math.min(1, (now - t0) / D), e = flyEase(p), t = prPrev.getBoundingClientRect(), f = Math.max(0, Math.min(1, (p - .15) / .6)), m = f * f * (3 - 2 * f);
-    box.style.left = from.left + (t.left - from.left) * e + "px"; box.style.top = from.top + (t.top - from.top) * e + "px";
-    box.style.width = from.width + (t.width - from.width) * e + "px"; box.style.height = from.height + (t.height - from.height) * e + "px";
-    A.style.opacity = String(1 - m); B.style.opacity = String(m);
-    if (p < 1) requestAnimationFrame(step); else { prPrev.style.visibility = ""; box.remove(); }
-  };
-  requestAnimationFrame(step);
+  const D = 900, ez = "cubic-bezier(.22,1,.36,1)", end = `translate(${to.left - from.left}px,${to.top - from.top}px) scale(${to.width / from.width},${to.height / from.height})`;
+  const done = () => { prPrev.style.visibility = ""; box.remove(); };
+  const mv = box.animate([{ transform: "none" }, { transform: end }], { duration: D, easing: ez, fill: "forwards" });
+  A.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D * .55, delay: D * .2, easing: "ease-in-out", fill: "forwards" });
+  B.animate([{ opacity: 0 }, { opacity: 1 }], { duration: D * .55, delay: D * .2, easing: "ease-in-out", fill: "forwards" });
+  mv.onfinish = done; mv.oncancel = done;
 }
+const box0 = (r) => r.width > 0 && r.height > 0;
 const CAL_KEY = "bcs-label-calibrated", calDoneYet = () => { try { return localStorage.getItem(CAL_KEY) === "1"; } catch { return false; } }, calSet = () => { try { localStorage.setItem(CAL_KEY, "1"); } catch {} };
 function prShow(msg, err) { prMsg.textContent = msg; prMsg.classList.toggle("err", !!err); }
 function prSet(state) {
   prState = state; const hq = prMode === "hq", printing = state === "print" || state === "again";
-  prRow.hidden = !printing; prPrev.hidden = !printing; if (printing) prDrawP = prPreviewDraw();
+  if (printing) prDrawP = prPreviewDraw();
   document.getElementById("prAdv").hidden = !(hq && (printing || state === "cal"));
-  document.querySelector(".pr-dens").hidden = state === "cal"; document.getElementById("calBtn").disabled = state === "cal";
+  document.getElementById("densCol").classList.toggle("open", state !== "cal"); document.getElementById("calBtn").disabled = state === "cal";
   prGo.textContent = state === "connect" ? "Connect printer" : state === "calneed" ? "Proceed" : state === "again" ? "Print again" : "Print label";
   prClose.textContent = state === "calneed" ? "Go back" : "Close";
   if (state !== "cal") calToggle(false);
+  prTopSync();
 }
+function prTopSync() { document.getElementById("prTop").classList.toggle("open", (prState === "print" || prState === "again") && !calSub.classList.contains("open")); } // the label preview and copies row slide in once the calibration panel has closed
 function prRoute() {
   if (!prConn) { prSet("connect"); prShow("Turn on your Niimbot M2-H, then tap Connect printer."); }
   else if (prMode === "hq" && !calDoneYet()) { prSet("calneed"); prShow("A calibration label is required for this method. It prints one test label so you can fine tune your printer."); }
@@ -2023,12 +2031,11 @@ const calIn = (id) => document.getElementById(id);
 const calFmt = (v) => String(Math.round((+v || 0) * 100) / 100);
 function calLoad() { for (const id in CAL) calIn(id).value = calFmt(cfg[CAL[id][0]]); }
 function calMarks() { calBtn.classList.toggle("cal-on", !!(+cfg.printX || +cfg.printY || +cfg.printR)); }
-function calToggle(open, zero) {
-  if (open) { calLoad(); if (zero) for (const id in CAL) calIn(id).value = "0"; calViewReset(); }
-  prPrev.hidden = open || !(prState === "print" || prState === "again"); // the top preview steps aside while the calibration preview is open
+function calToggle(open, zero, restore) {
+  if (open && !restore) { calLoad(); if (zero) for (const id in CAL) calIn(id).value = "0"; calViewReset(); }
   document.getElementById("prWrap").classList.toggle("cal-open", open); document.getElementById("calDone").hidden = !open;
-  if (open) { calDraw(); calGfx().then(calDraw); }
-  calSub.classList.toggle("open", open); calBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  if (open && !restore) { calDraw(); calGfx().then(calDraw); }
+  calSub.classList.toggle("open", open); calBtn.setAttribute("aria-expanded", open ? "true" : "false"); prTopSync();
   calSub.querySelectorAll("button,input").forEach((el) => { el.tabIndex = open ? 0 : -1; });
 }
 const calGfx = () => Promise.all((GFX.calibration ? [gfxImage("calibration", "#000000", 1).p] : []));
@@ -2075,9 +2082,13 @@ document.getElementById("calDone").addEventListener("click", async () => {
   calMarks();
   if (prState === "cal") {
     const cv = document.getElementById("calPrev"), from = cv.getBoundingClientRect(), snap = document.createElement("canvas"); snap.width = cv.width; snap.height = cv.height; snap.getContext("2d").drawImage(cv, 0, 0);
-    calSet(); prPrev.style.visibility = "hidden"; prSet("print"); prShow("Printer Connected");
+    calSet(); prPrev.style.visibility = "hidden";
+    // measure where the label preview will finally sit (instant, never painted), put everything back, then let the real transition run
+    prWrap.classList.add("instant"); prSet("print"); prShow("Printer Connected"); void prWrap.offsetHeight; const to = prPrev.getBoundingClientRect();
+    prSet("cal"); calToggle(true, false, true); void prWrap.offsetHeight; prWrap.classList.remove("instant"); void prWrap.offsetHeight;
+    prSet("print"); prShow("Printer Connected");
     try { await prDrawP; } catch {}
-    prFly(snap, from);
+    prFly(snap, from, to);
   } else { calToggle(false); if (prState === "print" || prState === "again") prDrawP = prPreviewDraw(); }
 });
 calSub.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); document.getElementById("calDone").click(); } });
