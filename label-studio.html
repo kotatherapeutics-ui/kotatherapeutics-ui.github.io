@@ -389,7 +389,7 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .pr-dens{display:grid;gap:8px;margin:0 0 14px}
 .pr-dens label{display:flex;justify-content:space-between;font:500 11px/1 var(--f-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
 .pr-dens input{width:100%}
-.pr-dens .ticks{display:flex;justify-content:space-between;font:400 10px/1 var(--f-sans);color:var(--ink-2);padding:0 2px}
+.pr-dens .ticks{font:400 10px/1 var(--f-sans);color:var(--ink-2)}
 #calBtn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:11px 14px;border:1px solid var(--line-2);border-radius:8px;background:transparent;color:var(--ink);font:500 11px/1 var(--f-sans);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background 400ms var(--ease),color 400ms var(--ease),border-color 400ms var(--ease)}
 #calBtn:hover,#calBtn:focus-visible{border-color:var(--accent);outline:none}
 #calBtn .chev{transition:transform 500ms var(--ease);font-size:10px}
@@ -406,6 +406,12 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .cal-ctl button{width:38px;height:34px;flex:none;border:1px solid var(--line-2);border-radius:4px;background:transparent;color:var(--ink);font:500 15px/1 var(--f-sans);cursor:pointer}
 .cal-ctl button:hover,.cal-ctl button:focus-visible{border-color:var(--accent);outline:none}
 .cal-ctl input{flex:1;min-width:0;width:100%;height:34px;text-align:center}
+.cal-prev{display:block;width:100%;height:auto;aspect-ratio:2/1;margin:0 0 12px;border-radius:8px;background:#0b0c0e}
+#prWrap.cal-open #prGo,#prWrap.cal-open #prClose{display:none}
+#prWrap.cal-open #calDone{display:inline-flex}
+#calDone[hidden]{display:none}
+.pr-dens .ticks{position:relative;height:10px;padding:0}
+.pr-dens .ticks span{position:absolute;top:0;transform:translateX(-50%)}
 .cal-foot{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:4px}
 .cal-note{margin:0 0 12px!important;font:400 11.5px/1.5 var(--f-sans)}
 @media (prefers-reduced-motion:reduce){.cal-sub,.cal-body,#calBtn .chev{transition:none}}
@@ -578,16 +584,19 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
     <h3 id="prT">Print to Niimbot</h3>
     <p id="prMsg" aria-live="polite">Turn on your Niimbot M2-H, then connect it.</p>
     <label class="pr-copies" id="prCopiesRow" hidden>Copies <input type="number" id="prCopies" min="1" max="50" value="1" inputmode="numeric"></label>
-    <div class="pr-dens"><label for="prDens">Print density <output id="prDensO">3</output></label><input type="range" id="prDens" min="1" max="5" step="1" value="3"><div class="ticks" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div></div>
+    <div id="prAdv" hidden>
+    <div class="pr-dens"><label for="prDens">Print density <output id="prDensO">3</output></label><input type="range" id="prDens" min="1" max="5" step="1" value="3"><div class="ticks" aria-hidden="true"><span style="left:calc(8px + (100% - 16px) * 0)">1</span><span style="left:calc(8px + (100% - 16px) * .25)">2</span><span style="left:calc(8px + (100% - 16px) * .5)">3</span><span style="left:calc(8px + (100% - 16px) * .75)">4</span><span style="left:calc(100% - 8px)">5</span></div></div>
     <button type="button" id="calBtn" aria-expanded="false" aria-controls="calSub"><span>Advanced printer calibration</span><span class="chev" aria-hidden="true">&#9660;</span></button>
     <div class="cal-sub" id="calSub"><div class="cal-in"><div class="cal-body">
       <p class="note cal-note">Corrects how your printer lays the design down. Print the Calibration preset, then nudge until its frame sits evenly on the label edge. Positive Y moves up, positive rotation turns clockwise.</p>
+      <canvas id="calPrev" class="cal-prev" width="800" height="400" role="img" aria-label="Preview of the label with your adjustments applied"></canvas>
       <div class="cal-row"><span>Left / Right</span><div class="cal-ctl"><button type="button" data-f="calX" data-d="-0.05" aria-label="Move left 0.05 mm">&#9664;</button><input type="text" inputmode="decimal" id="calX" aria-label="Horizontal offset in mm" autocomplete="off"><button type="button" data-f="calX" data-d="0.05" aria-label="Move right 0.05 mm">&#9654;</button></div></div>
       <div class="cal-row"><span>Down / Up</span><div class="cal-ctl"><button type="button" data-f="calY" data-d="-0.05" aria-label="Move down 0.05 mm">&#9660;</button><input type="text" inputmode="decimal" id="calY" aria-label="Vertical offset in mm" autocomplete="off"><button type="button" data-f="calY" data-d="0.05" aria-label="Move up 0.05 mm">&#9650;</button></div></div>
       <div class="cal-row"><span>Rotate</span><div class="cal-ctl"><button type="button" data-f="calR" data-d="-0.1" aria-label="Rotate counterclockwise 0.1 degrees">&#8634;</button><input type="text" inputmode="decimal" id="calR" aria-label="Rotation in degrees" autocomplete="off"><button type="button" data-f="calR" data-d="0.1" aria-label="Rotate clockwise 0.1 degrees">&#8635;</button></div></div>
-      <div class="cal-foot"><button type="button" class="btn" id="calReset">Reset to 0</button><button type="button" class="btn primary" id="calDone">Done</button></div>
+      <div class="cal-foot"><button type="button" class="btn" id="calReset">Reset to 0</button></div>
     </div></div></div>
-    <div class="actions"><button type="button" class="btn" id="prClose">Close</button><button type="button" class="btn primary" id="prGo">Connect printer</button></div>
+    </div>
+    <div class="actions"><button type="button" class="btn" id="prClose">Close</button><button type="button" class="btn primary" id="prGo">Connect printer</button><button type="button" class="btn primary" id="calDone" hidden>Done</button></div>
   </div>
 </div>
 <header>
@@ -1902,7 +1911,7 @@ const prWrap = document.getElementById("prWrap"), prMsg = document.getElementByI
 let prState = "connect", prBusy = false;
 function prShow(msg, err) { prMsg.textContent = msg; prMsg.classList.toggle("err", !!err); }
 function prSet(state) {
-  prState = state; prRow.hidden = state === "connect";
+  prState = state; prRow.hidden = state === "connect"; document.getElementById("prAdv").hidden = state === "connect"; if (state === "connect") calToggle(false);
   prGo.textContent = state === "connect" ? "Connect printer" : state === "again" ? "Print again" : "Print label";
 }
 function prOpen(on) { prWrap.hidden = !on; if (on) { prGo.disabled = false; prGo.focus(); } }
@@ -1916,16 +1925,31 @@ function calLoad() { for (const id in CAL) calIn(id).value = calFmt(cfg[CAL[id][
 function calMarks() { calBtn.classList.toggle("cal-on", !!(+cfg.printX || +cfg.printY || +cfg.printR)); }
 function calToggle(open) {
   if (open) calLoad();
+  document.getElementById("prWrap").classList.toggle("cal-open", open); document.getElementById("calDone").hidden = !open;
+  if (open) calDraw();
   calSub.classList.toggle("open", open); calBtn.setAttribute("aria-expanded", open ? "true" : "false");
   calSub.querySelectorAll("button,input").forEach((el) => { el.tabIndex = open ? 0 : -1; });
+}
+function calDraw() {
+  const cv = document.getElementById("calPrev"), x = cv.getContext("2d"), pad = 16, sc = (cv.width - pad * 2) / W, lw = W * sc, lh = H * sc, oy = (cv.height - lh) / 2;
+  const c = Object.assign({}, cfg, { printX: calVal("calX"), printY: calVal("calY"), printR: calVal("calR") });
+  x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, cv.width, cv.height); x.fillStyle = "#0b0c0e"; x.fillRect(0, 0, cv.width, cv.height);
+  x.save(); x.beginPath(); x.rect(pad, oy, lw, lh); x.clip(); x.translate(pad, oy); x.scale(sc, sc);
+  const sh = hits, sl = legalOver; try { drawLabel(x, c, "#000000", "#ffffff"); } catch {} hits = sh; legalOver = sl;
+  x.restore();
+  x.strokeStyle = "#5BC0EE"; x.lineWidth = 2; x.strokeRect(pad - 1, oy - 1, lw + 2, lh + 2);
+  x.strokeStyle = "rgba(91,192,238,.55)"; x.lineWidth = 1; x.beginPath();
+  x.moveTo(pad + lw / 2, oy - 8); x.lineTo(pad + lw / 2, oy); x.moveTo(pad + lw / 2, oy + lh); x.lineTo(pad + lw / 2, oy + lh + 8);
+  x.moveTo(pad - 8, oy + lh / 2); x.lineTo(pad, oy + lh / 2); x.moveTo(pad + lw, oy + lh / 2); x.lineTo(pad + lw + 8, oy + lh / 2); x.stroke();
 }
 function calVal(id) { const lim = CAL[id][1], v = parseFloat(String(calIn(id).value).replace(",", ".")); return Math.max(-lim, Math.min(lim, isFinite(v) ? v : 0)); }
 calBtn.addEventListener("click", () => calToggle(!calSub.classList.contains("open")));
 calSub.addEventListener("click", (e) => {
   const b = e.target.closest("button[data-f]"); if (!b) return;
-  const id = b.dataset.f; calIn(id).value = calFmt(Math.max(-CAL[id][1], Math.min(CAL[id][1], calVal(id) + parseFloat(b.dataset.d))));
+  const id = b.dataset.f; calIn(id).value = calFmt(Math.max(-CAL[id][1], Math.min(CAL[id][1], calVal(id) + parseFloat(b.dataset.d)))); calDraw();
 });
-document.getElementById("calReset").addEventListener("click", () => { for (const id in CAL) calIn(id).value = "0"; });
+calSub.addEventListener("input", () => calDraw());
+document.getElementById("calReset").addEventListener("click", () => { for (const id in CAL) calIn(id).value = "0"; calDraw(); });
 document.getElementById("calDone").addEventListener("click", () => {
   for (const id in CAL) { const v = calVal(id); calIn(id).value = calFmt(v); setField(CAL[id][0], v); }
   calMarks(); calToggle(false);
