@@ -850,6 +850,7 @@ function gfxSvg(key, color, weight) {
   if (d.fill) return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${w} ${h}" width="${w}" height="${h}" fill="${color}" stroke="none"><title>${d.name}</title>${d.body}</svg>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${w} ${h}" width="${w * 4}" height="${h * 4}" color="${color}" fill="none" stroke="${color}" stroke-width="${(d.sw * weight).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"><title>${d.name}</title>${d.body}</svg>`;
 }
+GFX.calibration = { name: "Calibration", hidden: true, vb: [0, 0, 400, 200], sw: 0, fill: true, body: '<path fill-rule="evenodd" d="M0 0H400V200H0Z M4 4V196H396V4Z M10 10H390V190H10Z M11.5 11.5V188.5H388.5V11.5Z M49 4h2v8h-2Z M49 188h2v8h-2Z M99 4h2v14h-2Z M99 182h2v14h-2Z M149 4h2v8h-2Z M149 188h2v8h-2Z M199 4h2v14h-2Z M199 182h2v14h-2Z M249 4h2v8h-2Z M249 188h2v8h-2Z M299 4h2v14h-2Z M299 182h2v14h-2Z M349 4h2v8h-2Z M349 188h2v8h-2Z M4 49h8v2h-8Z M388 49h8v2h-8Z M4 99h14v2h-14Z M382 99h14v2h-14Z M4 149h8v2h-8Z M388 149h8v2h-8Z M172 99H228V101H172Z M199 72H201V128H199Z"/>' };
 GFX.bar = { name: "Bar", vb: [0, 0, 100, 24], sw: 0, bar: true, body: '<rect x="2" y="2" width="96" height="20" rx="1.5" fill="currentColor" stroke="none"/>' };
 GFX.flex = { name: "Flex", vb: [0, 0, 609, 451], sw: 0, fill: true, body: '<path fill-rule="evenodd" d="M216.6 449.9 C216.3 449.1 215.2 426.5 214.0 399.7 L211.9 350.9 L204.6 338.7 C196.2 324.7 185.3 303.3 182.1 294.4 C180.2 289.3 179.3 288.0 176.2 286.5 C167.3 282.3 155.5 272.1 148.0 262.2 L145.5 258.9 L132.4 260.0 C111.0 261.9 88.4 259.0 74.1 252.4 C71.0 251.0 63.6 246.7 57.7 242.8 C44.8 234.5 31.9 227.6 19.6 222.5 C2.1 215.3 -1.1 211.7 0.8 201.4 C1.4 198.1 4.0 184.0 6.5 170.0 C14.6 124.6 18.3 116.6 46.4 84.0 C58.9 69.5 70.0 53.2 73.0 45.1 C75.6 38.3 77.8 35.8 85.0 31.8 C88.0 30.0 95.2 25.5 101.0 21.6 C139.9 -4.3 137.3 -3.7 152.3 8.2 C158.1 12.8 164.4 17.8 166.4 19.3 C169.4 21.6 170.0 22.7 170.0 25.9 C170.0 28.6 170.7 30.3 172.5 32.0 C175.9 35.2 175.6 37.4 170.9 44.9 L166.8 51.2 L162.5 50.5 C157.5 49.8 154.5 51.0 146.5 57.1 C135.1 65.7 127.7 67.5 117.7 64.0 C109.2 61.0 106.9 62.4 99.8 75.3 C89.4 94.2 87.6 102.0 86.0 134.0 C85.4 147.2 84.4 155.9 83.1 161.0 C82.1 165.1 81.3 168.6 81.5 168.8 C81.7 169.0 86.1 167.6 91.3 165.6 C112.8 157.5 128.1 159.1 148.6 171.4 L155.9 175.8 L166.7 171.4 C194.5 160.2 215.3 160.3 233.4 171.7 L238.4 174.8 L254.5 166.7 L270.7 158.7 L270.3 151.6 C270.0 146.7 269.0 142.5 267.0 138.0 C265.4 134.4 263.8 129.7 263.5 127.5 C263.1 125.3 261.5 120.8 259.9 117.5 C254.4 106.2 252.2 87.5 256.0 84.3 C258.5 82.2 258.5 78.9 256.5 61.5 C255.6 54.3 255.2 46.5 255.5 44.1 C256.4 37.8 263.0 31.5 275.1 25.7 C295.8 15.5 317.7 15.4 338.6 25.4 C354.5 33.0 359.9 40.1 358.6 51.8 C358.3 54.9 357.5 62.5 357.0 68.5 C356.4 74.5 355.7 80.3 355.4 81.3 C355.1 82.4 355.4 83.0 356.3 83.0 C361.0 83.0 359.3 105.9 353.6 118.8 C352.2 121.9 350.6 126.7 350.0 129.3 C349.4 132.0 348.1 135.9 347.0 138.0 C344.6 142.7 342.6 157.8 344.1 159.6 C344.6 160.3 351.6 164.0 359.4 167.9 L373.8 175.0 L379.6 171.5 C391.1 164.6 395.0 163.6 410.0 163.6 C423.2 163.6 423.8 163.7 435.7 167.7 C442.4 170.0 449.6 172.8 451.7 173.8 L455.4 175.8 L466.5 170.0 C487.3 159.0 498.3 157.9 518.5 164.8 C525.1 167.0 530.6 168.8 530.7 168.6 C530.8 168.5 530.3 166.0 529.5 163.0 C528.0 157.6 527.0 147.5 525.0 118.5 C523.8 100.6 522.3 94.4 516.3 82.5 C506.1 62.3 504.2 60.7 494.3 64.1 C483.9 67.7 479.3 66.5 464.9 56.3 C457.0 50.8 456.2 50.5 450.6 50.5 L444.7 50.5 L440.9 44.1 C436.3 36.7 436.2 36.1 439.5 33.0 C441.2 31.4 442.0 29.6 442.0 27.3 C442.0 22.6 443.3 20.6 448.8 16.8 C451.4 15.0 457.2 10.5 461.8 6.8 C471.0 -0.7 474.1 -1.5 480.3 1.7 C483.0 3.0 515.2 23.7 531.2 34.3 C536.2 37.6 536.9 38.6 539.9 46.7 C542.7 54.5 551.1 66.4 566.8 85.1 C593.9 117.5 598.2 126.7 605.4 168.4 C608.2 184.5 609.0 191.6 609.0 201.4 L609.0 213.9 L606.1 216.0 C604.4 217.1 597.0 220.7 589.4 224.0 C581.9 227.3 570.1 233.4 563.1 237.6 C526.6 259.9 516.7 262.7 483.8 260.1 L468.1 258.9 L456.8 270.2 C449.2 277.9 443.5 282.7 439.2 285.0 C433.0 288.4 432.8 288.6 429.5 296.8 C425.2 307.4 414.8 327.1 406.6 340.3 L400.2 350.5 L398.6 391.5 C397.7 414.1 396.7 436.4 396.3 441.2 L395.7 450.0 L311.6 450.0 C265.3 450.0 225.1 450.3 222.3 450.6 C218.3 451.1 216.9 450.9 216.6 449.9 Z"/>' };
 GFX.bow = { name: "Bow", vb: [0, 0, 246, 195], sw: 0, fill: true, body: '<path fill-rule="evenodd" d="M33.0 147.7 C33.0 147.0 34.8 141.9 37.0 136.5 C39.2 131.1 41.0 126.4 41.0 126.1 C41.0 125.8 36.3 123.0 30.5 120.0 C24.7 117.0 20.0 114.3 20.0 114.0 C20.0 113.7 22.1 112.7 24.8 111.6 C32.8 108.5 64.0 92.9 64.0 92.1 C64.0 91.7 62.1 90.8 59.8 90.1 C52.5 87.9 43.0 83.0 41.4 80.5 C38.3 75.7 47.8 46.9 54.3 41.4 C61.7 35.2 78.1 41.8 95.5 58.1 C110.1 71.6 113.0 72.7 131.3 70.8 C136.3 70.3 136.7 70.0 147.1 60.4 C155.5 52.7 161.4 48.6 169.7 44.8 C187.4 36.8 192.9 41.1 200.0 68.5 C201.7 74.9 203.0 80.8 203.0 81.5 C203.0 83.8 196.6 88.0 189.3 90.5 L182.6 92.9 L197.0 99.9 C205.0 103.8 214.7 107.8 218.7 108.8 L225.8 110.6 L218.2 115.2 C214.0 117.7 209.0 120.5 207.2 121.4 C205.5 122.3 204.0 123.2 204.0 123.4 C204.0 123.7 206.4 129.3 209.4 135.9 C212.4 142.6 214.4 148.0 213.9 148.0 C212.5 148.0 185.4 136.3 171.5 129.6 C152.1 120.3 142.9 112.3 134.9 98.0 C132.5 93.8 131.5 93.3 121.4 92.4 L114.5 91.8 L111.0 96.1 C103.7 105.2 93.5 115.1 87.1 119.3 C71.3 129.7 33.0 149.8 33.0 147.7 Z"/>' };
@@ -1209,6 +1210,7 @@ function render() { histNote(); cancelAnimationFrame(raf); raf = requestAnimatio
 const CUT_S = 8, CUT_P = 3; let cutCv = null, cutNow = false;
 const expBtn = document.getElementById("export");
 function isCut() {
+  if (cfg.preset === "calibration") return false; // its frame sits right on the label edge on purpose
   if (!cutCv) { cutCv = document.createElement("canvas"); cutCv.width = (W + 2 * CUT_P) * CUT_S; cutCv.height = (H + 2 * CUT_P) * CUT_S; }
   const x = cutCv.getContext("2d", { willReadFrequently: true }), w = cutCv.width, h = cutCv.height;
   x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, w, h);
@@ -2050,7 +2052,7 @@ const gfxGrid = document.getElementById("gfxGrid"), gfxSec = document.getElement
 const LS_GFX = "vial-label-studio-gfx-v1", MAX_CUSTOM_GFX = 12;
 let customGfx = []; // [{ key, name, url }]
 function drawGfxLib() {
-  const byName = (a, b) => GFX[a].name.localeCompare(GFX[b].name, undefined, { sensitivity: "base" }), all = Object.keys(GFX), keys = [...all.filter(k => !GFX[k].custom).sort(byName), ...all.filter(k => GFX[k].custom).sort(byName)]; gfxGrid.textContent = ""; // built-in graphics A to Z, then your own uploads A to Z
+  const byName = (a, b) => GFX[a].name.localeCompare(GFX[b].name, undefined, { sensitivity: "base" }), all = Object.keys(GFX).filter(k => !GFX[k].hidden), keys = [...all.filter(k => !GFX[k].custom).sort(byName), ...all.filter(k => GFX[k].custom).sort(byName)]; gfxGrid.textContent = ""; // built-in graphics A to Z, then your own uploads A to Z
   for (const key of keys) {
     const d = GFX[key], t = document.createElement("div"); t.className = "gtile";
     if (d.custom) {
@@ -2235,6 +2237,9 @@ const PRESETS = [
       fonts: { name: "Bodoni Moda", variant: "Josefin Sans", strength: "Josefin Sans", legal: "Josefin Sans" } } },
   { id: "blank", name: "Blank", note: "empty label with only the disclaimer",
     cfg: { compound: "", variant: "", strength: "", showLogo: false, showSide: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true } },
+  { id: "calibration", name: "Calibration", note: "edge frame, 1 mm frame and 5 mm ticks to check how the printer places a label",
+    cfg: { compound: "", variant: "", strength: "", showLogo: false, showSide: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true, disclaimer: "",
+      graphics: [{ id: "gfx1", key: "calibration", h: 20 }], off: { gfx1: { x: 0, y: 0 } } } },
   { id: "lux", name: "Lux", note: "slim vase, divider rules and a two-part vertical brand",
     cfg: { compound: "Adamax", variant: "1032 Da", variantSize: 1.7, strength: "10 mg", showLogo: false, showSide: false, showRules: true, textAlign: "left", legalCenter: false,
       disclaimer: "For research use only \u00b7 Not for human consumption", legalLines: "2", legalSize: 0.95,
@@ -2296,7 +2301,7 @@ const PRESETS = [
 ];
 const presetBtn = document.getElementById("presetBtn"), presetMenu = document.getElementById("presetMenu"), presetUndo = document.getElementById("presetUndo");
 const presetCfg = (p, keep) => norm(Object.assign({}, DEFAULTS, { compound: "", variant: "", strength: "", sideText: "", showSide: false, showLogo: false }, p.cfg, keep || {}, { preset: p.id }));
-{ const ORDER = ["boutique", "club", "atom", "holo", "research", "butterfly", "apothecary", "notebook", "lux", "floral", "blank"]; PRESETS.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id)); } // display order; Blank always last
+{ const ORDER = ["boutique", "club", "atom", "holo", "research", "butterfly", "apothecary", "notebook", "lux", "floral", "blank", "calibration"]; PRESETS.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id)); } // display order; Blank always last
 // Each preset is shown as a picture of the label it makes
 const thumbs = [];
 function drawThumb(p, cv) {
@@ -2339,6 +2344,7 @@ let presetShown = null; // presetShown: the label as the last preset left it, so
 const presetReset = document.getElementById("presetReset");
 function applyPreset(p, snapshot) {
   const keep = {}; for (const k of ["printX", "printY", "threshold", "showEdge"]) keep[k] = cfg[k]; // printer calibration is not part of a design
+  if (p.id === "calibration") { keep.printX = 0; keep.printY = 0; } // the calibration label is measured with no printer offset applied; set your own offset afterwards from what it shows
   cfg = presetCfg(p, keep);
   if (cfg.showLogo && !logoImg) restoreDefaultLogo();
   sel = null; jsonDirty = false; lsSet(LS_CFG, cfg); fillControls(); updatePos(); render();
