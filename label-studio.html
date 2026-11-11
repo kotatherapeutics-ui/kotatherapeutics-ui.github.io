@@ -1516,7 +1516,7 @@ function drawGizmo() {
     if (drag.snap.y === "t") { pctx.moveTo(0, 1); pctx.lineTo(g.cw, 1); } if (drag.snap.y === "b") { pctx.moveTo(0, g.cw / 2 - 1); pctx.lineTo(g.cw, g.cw / 2 - 1); }
     pctx.stroke();
   }
-  if (ids.length === 1 && isGfx(sel) && !angOf(sel)) { // resize handles, graphics only (not while turned off-square)
+  if (ids.length === 1 && isGfx(sel)) { // resize handles, graphics only
     for (const [cx2, cy2, key] of cornerPts(b, k)) {
       const hot = (drag ? drag.mode : hover) === key, hs = hot ? 11 : 9;
       pctx.save(); pctx.shadowColor = "rgba(0,0,0,.75)"; pctx.shadowBlur = 7; pctx.shadowOffsetY = 2;
@@ -1570,7 +1570,7 @@ function cornerPts(b, k) { // [x, y, mode] in css px; mode "r<sx>,<sy>" names th
 function gizmoHit(px, py) {
   const g = gizmoGeom(); if (!g) return null;
   if (canSpin() && Math.hypot(px - g.rx, py - g.ry) <= 12) return "spin";
-  if (selIds().length === 1 && isGfx(sel) && !angOf(sel)) for (const [hx, hy, key] of cornerPts(g.b, g.k)) if (Math.abs(px - hx) <= 9 && Math.abs(py - hy) <= 9) return key;
+  if (selIds().length === 1 && isGfx(sel)) for (const [hx, hy, key] of cornerPts(g.b, g.k)) if (Math.abs(px - hx) <= 9 && Math.abs(py - hy) <= 9) return key;
   const dx = (px - g.cx) * g.dx, dy = (g.cy - py) * g.dy;
   if (Math.abs(px - g.cx) <= G.sq / 2 + 2 && Math.abs(py - g.cy) <= G.sq / 2 + 2) return "xy";
   if (dx > G.sq / 2 && dx <= G.len + G.head + 4 && Math.abs(py - g.cy) <= G.tol) return "x";
@@ -1702,7 +1702,7 @@ pv.addEventListener("pointerdown", (e) => {
     const [csx, csy] = mode.slice(1).split(",").map(Number), b = hits.find(h => h.id === sel);
     const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
     // the opposite corner stays put while this one is dragged; bx/by is where the element sits with no offset
-    drag.rs = { csx, csy, fx: cx - csx * b.w / 2, fy: cy - csy * b.h / 2, aspect: b.w / b.h, bx: cx - o.x, by: cy + o.y, odd: rotOf(sel) % 2 === 1, dh0: b.h };
+    drag.rs = { csx, csy, fx: cx - csx * b.w / 2, fy: cy - csy * b.h / 2, aspect: b.w / b.h, bx: cx - o.x, by: cy + o.y, odd: rotOf(sel) % 2 === 1, dh0: b.h, ang: !!angOf(sel), gh0: +((cfg.graphics || []).find(q => q.id === sel) || {}).h || 8, gw0: +((cfg.graphics || []).find(q => q.id === sel) || {}).w || 20 };
   }
   try { pv.setPointerCapture(e.pointerId); } catch {}
   pv.focus({ preventScroll: true }); e.preventDefault(); updatePos(); render();
@@ -1726,6 +1726,12 @@ pv.addEventListener("pointermove", (e) => {
     let dh = Math.max(((mx - r.fx) * r.csx) / r.aspect, (my - r.fy) * r.csy); // displayed height (after any rotation)
     { let dd = dh - r.dh0; const dz = RESIZE_DEAD / k; dd = Math.abs(dd) < dz ? 0 : dd - Math.sign(dd) * dz; dh = r.dh0 + dd * RESIZE_FEEL; } // a small dead zone, then only a fraction of the movement counts
     let lo, hi; // limits on the displayed height so the graphic's own size stays in range
+    if (r.ang) { // turned by a free angle: the box around it grows in proportion, so scale the graphic by the same factor
+      let sLo = (isBar ? 0.8 : 2) / r.gh0, sHi = (isBar ? 19 : GFX_MAXH) / r.gh0; if (isBar) { sLo = Math.max(sLo, 2 / r.gw0); sHi = Math.min(sHi, 40 / r.gw0); }
+      const sc = Math.min(sHi, Math.max(sLo, dh / r.dh0)); dh = r.dh0 * sc; const dw = dh * r.aspect, ncx = r.fx + r.csx * dw / 2, ncy = r.fy + r.csy * dh / 2;
+      cfg.graphics = (cfg.graphics || []).map(g => g.id === sel ? Object.assign({}, g, isBar ? { h: Math.round(r.gh0 * sc * 100) / 100, w: Math.round(r.gw0 * sc * 100) / 100 } : { h: Math.round(r.gh0 * sc * 100) / 100 }) : g);
+      setOff(sel, ncx - r.bx, r.by - ncy); updatePos(); render(); return;
+    }
     if (!r.odd) { lo = isBar ? Math.max(0.8, 2 / r.aspect) : 2; hi = isBar ? Math.min(19, 40 / r.aspect) : GFX_MAXH; }
     else { lo = isBar ? Math.max(2, 0.8 / r.aspect) : 2 / r.aspect; hi = isBar ? Math.min(40, 19 / r.aspect) : GFX_MAXH / r.aspect; }
     dh = Math.min(hi, Math.max(lo, dh)); dh = e.shiftKey ? Math.round(dh * 2) / 2 : Math.round(dh * 20) / 20;
@@ -2156,7 +2162,7 @@ function calToggle(open, zero, restore) {
   calSub.querySelectorAll("button,input").forEach((el) => { el.tabIndex = open ? 0 : -1; });
 }
 const calGfx = () => Promise.all((GFX.calibration ? [gfxImage("calibration", "#000000", 1).p] : []));
-const calView = { z: 1, cx: 0, cy: 0 }, CAL_Z = [1, 2, 4, 8];
+const calView = { z: 1, cx: 0, cy: 0 }, CAL_Z = [0.5, 0.75, 1, 2, 4, 8];
 function calViewReset() { calView.z = 1; calView.cx = W / 2; calView.cy = H / 2; }
 function calDraw() {
   const cv = document.getElementById("calPrev"), x = cv.getContext("2d"), pad = 16, sc = (cv.width - pad * 2) / W * calView.z, lw = W * sc, lh = H * sc;
@@ -2174,7 +2180,7 @@ function calDraw() {
   document.getElementById("calZ").textContent = calView.z + "\u00d7";
   document.getElementById("calZo").disabled = calView.z <= CAL_Z[0]; document.getElementById("calZi").disabled = calView.z >= CAL_Z[CAL_Z.length - 1];
 }
-function calZoom(dir) { const i = CAL_Z.indexOf(calView.z), n = Math.max(0, Math.min(CAL_Z.length - 1, i + dir)); calView.z = CAL_Z[n]; if (calView.z === 1) { calView.cx = W / 2; calView.cy = H / 2; } calDraw(); }
+function calZoom(dir) { const i = CAL_Z.indexOf(calView.z), n = Math.max(0, Math.min(CAL_Z.length - 1, i + dir)); calView.z = CAL_Z[n]; if (calView.z <= 1) { calView.cx = W / 2; calView.cy = H / 2; } calDraw(); }
 function calVal(id) { const lim = CAL[id][1], v = parseFloat(String(calIn(id).value).replace(",", ".")); return Math.max(-lim, Math.min(lim, isFinite(v) ? v : 0)); }
 calBtn.addEventListener("click", () => calToggle(!calSub.classList.contains("open")));
 calSub.addEventListener("click", (e) => {
@@ -2185,7 +2191,7 @@ calSub.addEventListener("input", () => calDraw());
 document.getElementById("calZi").addEventListener("click", () => calZoom(1));
 document.getElementById("calZo").addEventListener("click", () => calZoom(-1));
 { const cv = document.getElementById("calPrev"); let drag = null;
-  cv.addEventListener("pointerdown", (e) => { if (calView.z === 1) return; drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); cv.style.cursor = "grabbing"; });
+  cv.addEventListener("pointerdown", (e) => { if (calView.z <= 1) return; drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); cv.style.cursor = "grabbing"; });
   cv.addEventListener("pointermove", (e) => {
     if (!drag) return; const r = cv.getBoundingClientRect(), k = cv.width / r.width, sc = (cv.width - 32) / W * calView.z;
     calView.cx = Math.max(0, Math.min(W, calView.cx - (e.clientX - drag.x) * k / sc)); calView.cy = Math.max(0, Math.min(H, calView.cy - (e.clientY - drag.y) * k / sc));
@@ -2222,7 +2228,7 @@ document.getElementById("quickBtn").addEventListener("click", () => prLaunch("qu
 prClose.addEventListener("click", () => { if (prBusy) return; const back = prState === "calneed"; prOpen(false); if (back && typeof exportOpen === "function") setTimeout(() => exportOpen(true, exportAnchor), 0); }); // after the click has finished, so the page-level outside-click close does not shut it again
 prWrap.addEventListener("click", (e) => { if (e.target === prWrap && !prBusy) prOpen(false); });
 prWrap.addEventListener("keydown", (e) => { if (e.key === "Escape" && !prBusy) prOpen(false); });
-const prErr = (e) => { const m = String((e && e.message) || e), nm = (e && e.name) || "Error"; return /user cancelled|cancelled the requestDevice|chooser/i.test(m) ? "No printer was chosen. Tap Connect printer to try again." : m === "driver" ? "Could not load the printer driver. Check your connection and try again." : (nm !== "Error" ? nm + ": " : "") + m.slice(0, 240); }; // a NotFoundError after pairing means the printer's Bluetooth service was not found, not that the chooser was cancelled
+const prErr = (e) => { const m = String((e && e.message) || e), nm = (e && e.name) || "Error"; return /user cancelled|cancelled the requestDevice|chooser/i.test(m) ? "No printer was chosen. Tap Connect printer to try again." : m === "driver" ? "Could not load the printer driver. Check your connection and try again." : /globally disabled/i.test(m) ? "Bluetooth is turned off for websites in this browser. In Chrome, open the menu, then Settings, Site settings, Bluetooth devices, and allow sites to ask to connect. Then come back and tap Connect printer. If you opened this from inside another app (Instagram, Discord, Facebook), open it in Chrome instead." : (nm !== "Error" ? nm + ": " : "") + m.slice(0, 240); }; // a NotFoundError after pairing means the printer's Bluetooth service was not found, not that the chooser was cancelled
 const prDensity = () => Math.max(1, Math.min(5, Math.round(+cfg.printDensity || 3)));
 async function renderCalLabel(o) { // the Calibration preset label, drawn with the given offset and rotation (not the saved ones)
   const pr = PRESETS.find((x) => x.id === "calibration"), c = presetCfg(pr, { printX: o.x, printY: o.y, printR: o.r, threshold: cfg.threshold, printDensity: cfg.printDensity });
@@ -3283,7 +3289,8 @@ if (document.fonts) {
     "BCS Label Studio is a free tool from The BioChem Society. Join the community on Discord.",
     "Swipe a tip sideways to send it away and see the next one.",
     "Uploading your label in the Niimbot app? Set the photo\u2019s contrast to 0 to get rid of the white outline around your label\u2019s contents.",
-    "Tuck away settings you are not using with the minimise button on each panel."
+    "Tuck away settings you are not using with the minimise button on each panel.",
+    "For the best image quality, have ChatGPT convert your logos and graphics to SVG before uploading them."
   ];
   const KEY = "vial-label-studio-hints-v1", box = document.getElementById("hints"), track = document.getElementById("hTrack");
   const sw = document.getElementById("hintsSwitch");
