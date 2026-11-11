@@ -159,7 +159,7 @@ input[type=range]{width:100%;accent-color:var(--accent-d)}
 .fopt.active{background:var(--raised)}
 .fopt .tick{width:14px;flex:none;color:var(--accent)}
 .gfxgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px}
-.gfxgrid{overflow-y:auto;overscroll-behavior:contain;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.gfxgrid{overflow-y:auto;overscroll-behavior:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
 .gtile{background:var(--sunken);border:1px solid var(--line);border-radius:4px;padding:14px 12px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
 .gtile svg{width:64px;height:72px;color:var(--accent)}
 .gtile .gname{font-family:var(--f-display);font-size:18px;font-weight:600}
@@ -955,7 +955,7 @@ if (storedCfg) {
   if (storedCfg.defaultsVersion < 6 && +storedCfg.printX === -0.4) storedCfg.printX = 0; // the old built-in -0.4 mm shift is gone; a value you chose yourself is kept
   storedCfg.defaultsVersion = DEFAULTS.defaultsVersion;
 }
-const BLANK_CFG = { compound: "", variant: "", strength: "", sideText: "", showSide: false, showLogo: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true };
+const BLANK_CFG = { compound: "", variant: "", strength: "", disclaimer: "", sideText: "", showSide: false, showLogo: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true };
 let cfg = norm(storedCfg ? Object.assign({}, DEFAULTS, storedCfg) : Object.assign({}, DEFAULTS, BLANK_CFG, { preset: "blank" })); // a first visit opens on the Blank preset; a saved label is never replaced
 lsSet(LS_CFG, cfg);
 let view = { mode: "smooth", ink: "#111111", stock: "#ffffff", tex: null };
@@ -2440,6 +2440,10 @@ function sizeGfxScroll() { // six graphics show at a time; the rest scroll
   gfxGrid.style.maxHeight = Math.ceil(rows * t.offsetHeight + (rows - 1) * gap + 2) + "px";
 }
 if (window.ResizeObserver) new ResizeObserver(() => sizeGfxScroll()).observe(gfxGrid);
+gfxGrid.addEventListener("wheel", (e) => { // at the very top or bottom the page takes over, so the wheel never gets stuck on this list
+  if (e.ctrlKey || !e.deltaY) return; const atTop = gfxGrid.scrollTop <= 0, atEnd = gfxGrid.scrollTop + gfxGrid.clientHeight >= gfxGrid.scrollHeight - 1;
+  if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atEnd)) { e.preventDefault(); window.scrollBy({ top: e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY, left: 0 }); }
+}, { passive: false });
 gfxSec.addEventListener("toggle", () => { if (gfxSec.open) requestAnimationFrame(sizeGfxScroll); });
 const gfxFile = document.getElementById("gfxFile");
 function persistCustomGfx() { return lsSet(LS_GFX, customGfx); }
@@ -2697,7 +2701,7 @@ const PRESETS = [
       nameSize: 4.4, nameWeight: "500", variantSize: 1.5, strengthSize: 1.9, strengthTrack: 0.34, legalSize: 0.7, topPad: 0.3, gap: 0.8,
       graphics: [{ id: "gfx1", key: "molecule", h: 5.2, stroke: 1, fit: true }],
       fonts: { name: "Bodoni Moda", variant: "Josefin Sans", strength: "Josefin Sans", legal: "Josefin Sans" } } },
-  { id: "blank", name: "Blank", note: "empty label with only the disclaimer",
+  { id: "blank", name: "Blank", note: "a completely empty label",
     cfg: Object.assign({}, BLANK_CFG) },
   { id: "calibration", name: "Calibration", note: "edge frame, 1 mm frame and 5 mm ticks to check how the printer places a label",
     cfg: { compound: "", variant: "", strength: "", showLogo: false, showSide: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true, disclaimer: "",
