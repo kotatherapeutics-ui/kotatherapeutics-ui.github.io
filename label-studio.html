@@ -576,6 +576,114 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
 @media (hover:none) and (pointer:coarse),(max-width:880px){
   input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}
 }
+/* ===== Glass sidebar + soft (neumorphic) surfaces ===== */
+:root{--sbw:392px;--nm-bg:#101218;--nm-hi:rgba(255,255,255,.05);--nm-lo:rgba(0,0,0,.6);
+  --nm-raise:7px 7px 16px var(--nm-lo),-5px -5px 14px var(--nm-hi),inset 0 1px 0 rgba(255,255,255,.05);
+  --nm-raise-sm:4px 4px 10px var(--nm-lo),-3px -3px 9px var(--nm-hi),inset 0 1px 0 rgba(255,255,255,.05);
+  --nm-inset:inset 4px 4px 9px rgba(0,0,0,.6),inset -3px -3px 8px rgba(255,255,255,.045);
+  --nm-face:linear-gradient(145deg,#181b23,#0f1117);--nm-face-in:linear-gradient(145deg,#0c0e13,#12151b)}
+body{--bg:var(--nm-bg);background:var(--nm-bg)}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(620px 520px at 6% 38%,rgba(58,159,219,.20),transparent 62%),radial-gradient(560px 480px at 96% 86%,rgba(234,225,207,.09),transparent 62%),radial-gradient(480px 420px at 50% -6%,rgba(138,213,245,.07),transparent 60%)}
+.nav-wrap,.shell,header,.hints,main,.site-foot,.legal{position:relative;z-index:1}
+.nav-wrap{z-index:50}
+/* layout: sidebar column + preview */
+main{display:flex;align-items:flex-start;gap:26px;max-width:1240px;padding-top:24px}
+main>.proof{flex:1 1 0;min-width:0;order:1}
+.controls.sidebar{order:0;flex:0 0 var(--sbw);width:var(--sbw);position:sticky;top:88px;max-height:calc(100dvh - 104px);overflow-y:auto;overflow-x:hidden;gap:6px;padding:14px 12px 16px;border-radius:30px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;
+  background:linear-gradient(158deg,rgba(255,255,255,.15),rgba(255,255,255,.045) 42%,rgba(255,255,255,.08)),rgba(22,25,32,.38);-webkit-backdrop-filter:blur(26px) saturate(155%);backdrop-filter:blur(26px) saturate(155%);
+  border:1px solid rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05),0 26px 64px rgba(0,0,0,.5);
+  transition:width 520ms var(--ease),flex-basis 520ms var(--ease),padding 400ms var(--ease)}
+.sb-head{display:flex;align-items:center;gap:12px;padding:4px 6px 12px;min-height:58px;position:relative}
+.sb-logo{width:38px;height:38px;border-radius:50%;flex:none;object-fit:contain;padding:6px;background:radial-gradient(circle at 32% 28%,#1c2330,#0c0f15);box-shadow:var(--nm-raise-sm)}
+.sb-title{display:grid;line-height:1.15;min-width:0;white-space:nowrap}
+.sb-title strong{font:600 15px/1.2 var(--f-sans);letter-spacing:.01em}
+.sb-title span{font:500 11px/1.3 var(--f-sans);color:var(--text-muted)}
+#sbToggle{position:absolute;right:2px;top:12px;width:28px;height:28px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;cursor:pointer;background:#fdfbf5;color:#14161b;box-shadow:0 4px 14px rgba(0,0,0,.45);transition:transform 420ms var(--ease)}
+#sbToggle svg{width:14px;height:14px}
+.controls.sidebar .spot{--mx:50%}
+.controls.sidebar details.spot,.controls.sidebar details.sub{background:transparent;border:0;border-radius:22px;box-shadow:none}
+.controls.sidebar details.spot::before{display:none}
+.controls.sidebar details.spot:hover{background:transparent;border:0;box-shadow:none}
+.controls.sidebar summary{position:relative;padding:10px 14px 10px 10px;border-radius:999px;border:1px solid transparent;align-items:center;gap:11px;transition:background 220ms var(--ease),border-color 220ms var(--ease),box-shadow 220ms var(--ease)}
+.controls.sidebar summary:hover{background:rgba(255,255,255,.07)}
+.controls.sidebar details[open]>summary{border-bottom-color:transparent;margin-bottom:4px}
+.controls.sidebar details.spot[open]>summary{background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.06));border-color:rgba(255,255,255,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 20px rgba(0,0,0,.35)}
+.controls.sidebar details.sub[open]>summary{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.16)}
+.controls.sidebar summary h2{font:600 14px/1.2 var(--f-sans);letter-spacing:.02em;margin-right:auto}
+.controls.sidebar details.sub>summary h2{font-weight:500;font-size:13px}
+.controls.sidebar summary .sumr{margin-left:auto;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.controls.sidebar summary span{font-size:9px;letter-spacing:.16em}
+.controls.sidebar .pmin{display:none}
+.controls.sidebar summary::after{content:"";flex:none;width:7px;height:7px;border-right:1.6px solid var(--text-muted);border-bottom:1.6px solid var(--text-muted);transform:rotate(45deg) translate(-2px,-2px);transition:transform 300ms var(--ease)}
+.controls.sidebar details[open]>summary::after{transform:rotate(-135deg) translate(-1px,-1px)}
+.sbi{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:50%;color:var(--cream-200)}
+.sbi svg{width:17px;height:17px}
+.controls.sidebar details.sub{margin:2px 0 6px 12px;border-left:1px solid rgba(255,255,255,.12);border-radius:0 18px 18px 0}
+.controls.sidebar details.spot[open]{background:rgba(255,255,255,.03)}
+.controls.sidebar .grid{padding:10px 8px 12px;grid-template-columns:minmax(0,1fr);gap:14px}
+@media (min-width:1500px){.controls.sidebar .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.controls.sidebar .field.full,.controls.sidebar .grid>.full{grid-column:1/-1}
+/* collapsed rail */
+body.sb-collapsed{--sbw:68px}
+body.sb-collapsed .controls.sidebar{padding:12px 8px 14px;overflow:visible}
+body.sb-collapsed .sb-title,body.sb-collapsed .controls.sidebar summary h2,body.sb-collapsed .controls.sidebar summary .sumr,body.sb-collapsed .controls.sidebar summary::after{display:none}
+body.sb-collapsed .controls.sidebar details>:not(summary){display:none!important}
+body.sb-collapsed .controls.sidebar summary{justify-content:center;padding:7px;margin:0 0 4px}
+body.sb-collapsed .controls.sidebar details.spot[open]>summary{margin-bottom:4px;background:transparent;border-color:transparent;box-shadow:none}
+body.sb-collapsed .controls.sidebar details.spot[open]>summary:hover{background:rgba(255,255,255,.09)}
+body.sb-collapsed .sb-head{padding:2px 0 12px;min-height:0;flex-direction:column;gap:10px;align-items:center}
+body.sb-collapsed #sbToggle{position:static;transform:none}
+body.sb-collapsed .sb-logo{width:40px;height:40px}
+body.sb-collapsed .controls.sidebar summary[data-tip]:hover::before{content:attr(data-tip);position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%);white-space:nowrap;padding:7px 12px;border-radius:999px;font:600 11px/1 var(--f-sans);letter-spacing:.04em;color:var(--cream-50);background:rgba(30,33,41,.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.18);box-shadow:0 10px 26px rgba(0,0,0,.45);pointer-events:none;z-index:5}
+body:not(.sb-collapsed) #sbToggle svg{transform:rotate(180deg)}
+.sb-scrim{display:none}
+/* phones and narrow windows: floating glass pill, tap or swipe to open */
+@media (max-width:880px){
+  main{display:block}
+  .controls.sidebar{position:fixed;z-index:35;left:10px;top:max(84px,env(safe-area-inset-top,0px));bottom:auto;order:0;flex:none;width:var(--sbw);max-height:calc(100dvh - 96px);transition:width 480ms var(--ease),padding 360ms var(--ease)}
+  body{--sbw:min(88vw,392px)}
+  body.sb-collapsed{--sbw:58px}
+  .controls.sidebar{background:linear-gradient(158deg,rgba(255,255,255,.16),rgba(255,255,255,.05) 42%,rgba(255,255,255,.09)),rgba(16,18,24,.82)}
+  body.sb-collapsed .controls.sidebar{top:auto;bottom:max(18px,env(safe-area-inset-bottom,0px));padding:10px 6px 12px;border-radius:29px}
+  body.sb-collapsed .controls.sidebar details{display:none}
+  body.sb-collapsed .sb-head{padding:0}
+  body.sb-collapsed .sb-logo{width:36px;height:36px}
+  body.sb-collapsed .controls.sidebar summary[data-tip]:hover::before{display:none}
+  .sb-scrim{display:block;position:fixed;inset:0;z-index:34;background:rgba(5,6,8,.45);opacity:0;pointer-events:none;transition:opacity 360ms var(--ease)}
+  body:not(.sb-collapsed) .sb-scrim{opacity:1;pointer-events:auto}
+}
+/* ---- soft, extruded surfaces ---- */
+.plate,.posbar,.hints{background:var(--nm-face);border:1px solid rgba(255,255,255,.045);box-shadow:var(--nm-raise);border-radius:20px}
+.plate{background:var(--nm-face)}
+.posbar{border-radius:20px;padding:14px 16px}
+#preview{border-radius:12px;box-shadow:var(--nm-inset)}
+.btn{background:var(--nm-face);border:1px solid rgba(255,255,255,.055);border-radius:12px;box-shadow:var(--nm-raise-sm);transition:box-shadow 180ms var(--ease),background 180ms var(--ease),transform 180ms var(--ease),border-color 180ms var(--ease)}
+.btn:hover{border-color:rgba(255,255,255,.12);box-shadow:5px 5px 12px var(--nm-lo),-4px -4px 11px rgba(255,255,255,.06),inset 0 1px 0 rgba(255,255,255,.07)}
+.btn:active{box-shadow:var(--nm-inset);background:var(--nm-face-in);transform:translateY(.5px)}
+.btn.primary{background:linear-gradient(145deg,#fdfbf5,#e4dccb);color:#14161b;border-color:rgba(255,255,255,.4);box-shadow:var(--nm-raise-sm)}
+.btn.primary:hover{background:linear-gradient(145deg,#ffffff,#ece5d6)}
+.btn.primary:active{background:linear-gradient(145deg,#e4dccb,#fdfbf5);box-shadow:inset 3px 3px 8px rgba(0,0,0,.28)}
+.btn.danger{background:linear-gradient(145deg,#ee6a62,#d4443c);border-color:rgba(255,255,255,.2)}
+.btn.gplus{border-radius:50%}
+input[type=text],input[type=number],textarea,select,#txtVal{background:var(--nm-face-in);border:1px solid rgba(255,255,255,.035);border-radius:12px;box-shadow:var(--nm-inset)}
+input[type=text]:focus,input[type=number]:focus,textarea:focus,select:focus{outline:none;box-shadow:var(--nm-inset),0 0 0 2px rgba(91,192,238,.55)}
+#fontBtn{background:var(--nm-face-in);border:1px solid rgba(255,255,255,.035);border-radius:12px;box-shadow:var(--nm-inset)}
+.fontlist{background:rgba(20,22,28,.92);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-radius:16px;border:1px solid rgba(255,255,255,.12)}
+.seg{border:0;border-radius:12px;box-shadow:var(--nm-inset);background:var(--nm-face-in);padding:3px;gap:2px}
+.seg button{border-radius:9px}
+.seg button[aria-pressed="true"]{background:var(--nm-face);color:var(--cream-50);box-shadow:var(--nm-raise-sm)}
+.gtile{background:var(--nm-face);border:1px solid rgba(255,255,255,.04);border-radius:18px;box-shadow:var(--nm-raise-sm)}
+.gtile.gadd{background:var(--nm-face-in);box-shadow:var(--nm-inset);border-style:dashed}
+.modal{background:var(--nm-face);border:1px solid rgba(255,255,255,.07);border-radius:24px;box-shadow:12px 12px 30px rgba(0,0,0,.6),-6px -6px 18px rgba(255,255,255,.035)}
+.sw{box-shadow:var(--nm-raise-sm);border-color:rgba(255,255,255,.1)}
+.check input{accent-color:#8ad5f5}
+input[type=range]{-webkit-appearance:none;appearance:none;height:22px;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:var(--nm-face-in);box-shadow:var(--nm-inset)}
+input[type=range]::-moz-range-track{height:8px;border-radius:99px;background:#0e1016;box-shadow:var(--nm-inset)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-6px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,#2a2f3a,#161920);box-shadow:3px 3px 8px rgba(0,0,0,.6),-2px -2px 6px rgba(255,255,255,.06)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,#2a2f3a,#161920);box-shadow:3px 3px 8px rgba(0,0,0,.6)}
+#hintsSwitch .hpill{box-shadow:var(--nm-inset)}
+main{z-index:3}
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -758,7 +866,7 @@ body.plate-resizing{cursor:nwse-resize;user-select:none;-webkit-user-select:none
 
   </section>
 
-  <section class="controls" aria-label="Label settings">
+  <section class="controls sidebar" id="sidebar" aria-label="Label settings">
     <details class="spot interactive" open id="contentSec">
       <summary><h2>Content</h2><div class="sumr"><button type="button" class="btn small ldef" data-defaults="content">Load defaults</button></div></summary>
       <div class="grid">
@@ -2491,22 +2599,23 @@ function sizeGfxScroll() { // six graphics show at a time; the rest scroll
   gfxGrid.style.maxHeight = Math.ceil(rows * t.offsetHeight + (rows - 1) * gap + 2) + "px";
 }
 if (window.ResizeObserver) new ResizeObserver(() => sizeGfxScroll()).observe(gfxGrid);
-let pgTgt = null, pgRaf = 0, pgLast = 0; // hands the wheel to the page at the ends of the list; mouse notches glide instead of jumping, trackpad movement passes straight through
+let pgTgt = null, pgRaf = 0, pgLast = 0; const pgSc = gfxGrid.closest(".controls") || document.scrollingElement; // hands the wheel to the side bar's own scroll at the ends of the list; mouse notches glide instead of jumping, trackpad movement passes straight through
 function pgStop() { if (pgRaf) cancelAnimationFrame(pgRaf); pgRaf = 0; pgTgt = null; }
 function pgStep() {
   pgRaf = 0; if (pgTgt == null) return;
-  const cur = window.scrollY; if (Math.abs(cur - pgLast) > 2) { pgTgt = null; return; } // something else moved the page (a normal scroll, a key, the scrollbar): let go at once
+  const cur = pgSc.scrollTop; if (Math.abs(cur - pgLast) > 2) { pgTgt = null; return; } // something else moved it (a normal scroll, a key, the scrollbar): let go at once
   const d = pgTgt - cur;
-  if (Math.abs(d) < 0.6) { window.scrollTo({ top: pgTgt, behavior: "instant" }); pgTgt = null; return; }
-  const nx = cur + d * 0.22; window.scrollTo({ top: nx, behavior: "instant" }); pgLast = window.scrollY; pgRaf = requestAnimationFrame(pgStep);
+  if (Math.abs(d) < 0.6) { pgSc.scrollTop = pgTgt; pgTgt = null; return; }
+  pgSc.scrollTop = cur + d * 0.22; pgLast = pgSc.scrollTop; pgRaf = requestAnimationFrame(pgStep);
 }
 ["wheel", "touchstart", "keydown", "pointerdown"].forEach(t => document.addEventListener(t, () => pgStop(), { capture: true, passive: true })); // any other input cancels a glide in progress, so nothing fights the person's hand
 gfxGrid.addEventListener("wheel", (e) => {
   if (e.ctrlKey || !e.deltaY) return; const atTop = gfxGrid.scrollTop <= 0, atEnd = gfxGrid.scrollTop + gfxGrid.clientHeight >= gfxGrid.scrollHeight - 1;
   if (!((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atEnd))) return;
-  e.preventDefault(); const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY, max = document.documentElement.scrollHeight - innerHeight;
-  if (Math.abs(dy) < 40 || matchMedia("(prefers-reduced-motion: reduce)").matches) { window.scrollBy({ top: dy, left: 0, behavior: "instant" }); return; }
-  const from = pgTgt == null ? window.scrollY : pgTgt; pgTgt = Math.max(0, Math.min(max, from + dy)); pgLast = window.scrollY; if (!pgRaf) pgRaf = requestAnimationFrame(pgStep);
+  const max = pgSc.scrollHeight - pgSc.clientHeight; if ((e.deltaY < 0 && pgSc.scrollTop <= 0) || (e.deltaY > 0 && pgSc.scrollTop >= max - 1)) return; // the bar is at its own end too: let the page have it
+  e.preventDefault(); const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
+  if (Math.abs(dy) < 40 || matchMedia("(prefers-reduced-motion: reduce)").matches) { pgSc.scrollTop += dy; return; }
+  const from = pgTgt == null ? pgSc.scrollTop : pgTgt; pgTgt = Math.max(0, Math.min(max, from + dy)); pgLast = pgSc.scrollTop; if (!pgRaf) pgRaf = requestAnimationFrame(pgStep);
 }, { passive: false });
 gfxSec.addEventListener("toggle", () => { if (gfxSec.open) requestAnimationFrame(sizeGfxScroll); });
 const gfxFile = document.getElementById("gfxFile");
@@ -3077,7 +3186,8 @@ if (document.fonts) {
 
   // visibility: shown when the stacked layout is active and the main preview has scrolled out of view
   let seen = 1;
-  const apply = () => { const on = mq.matches && seen < 0.35, was = box.classList.contains('on'); box.classList.toggle('on', on); if (on && !was) place(); };
+  let forced = false; window.addEventListener('bcs-float', (e) => { forced = !!(e.detail && e.detail.forced); apply(); });
+  const apply = () => { const on = mq.matches && (seen < 0.35 || forced), was = box.classList.contains('on'); box.classList.toggle('on', on); if (on && !was) place(); };
   if ('IntersectionObserver' in window) new IntersectionObserver((e) => { seen = e[0].intersectionRatio; apply(); }, { threshold: [0, 0.15, 0.35, 0.6, 1] }).observe(plate);
   (mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply));
   window.addEventListener('resize', () => { if (box.classList.contains('on') && !dragging) place(); });
@@ -3307,7 +3417,7 @@ if (document.fonts) {
     "BCS Label Studio is a free tool from The BioChem Society. Join the community on Discord.",
     "Swipe a tip sideways to send it away and see the next one.",
     "Uploading your label in the Niimbot app? Set the photo\u2019s contrast to 0 to get rid of the white outline around your label\u2019s contents.",
-    "Tuck away settings you are not using with the minimise button on each panel.",
+    "Tap a panel\u2019s title in the side bar to open or close it. Tap the arrow to tuck the whole bar away.",
     "For the best image quality, have ChatGPT convert your logos and graphics to SVG before uploading them."
   ];
   const KEY = "vial-label-studio-hints-v1", box = document.getElementById("hints"), track = document.getElementById("hTrack");
@@ -3472,6 +3582,65 @@ if (document.fonts) {
   const chk = () => { try { fix(); } catch (e) {} };
   new MutationObserver(chk).observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["style", "class", "hidden", "src", "href"] });
   setInterval(chk, 3000);
+})();
+</script>
+<script>
+(() => { // glass sidebar: header, icons, collapse, tap and swipe
+  const sb = document.getElementById("sidebar"); if (!sb) return;
+  const LS = "bcs-sidebar-v1", mqN = matchMedia("(max-width:880px)"), body = document.body;
+  const ic = (d) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+  const ICONS = {
+    "Content": ic('<path d="M5 6V4.5h14V6M12 4.5V19.5M9 19.5h6"/>'),
+    "Sizing": ic('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><rect x="8.5" y="8.5" width="7" height="7" rx="1.2"/>'),
+    "Layout": ic('<rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M3.5 10h17M10 10v10"/>'),
+    "My Media": ic('<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="m4.5 18 5-5 3.5 3.5L16 13l3.5 3.5"/>'),
+    "My design": ic('<path d="M12 3.5 14 9l5.5 2-5.5 2-2 5.5L10 13l-5.5-2L10 9z"/>'),
+    "Graphics": ic('<circle cx="8.5" cy="8.5" r="4"/><rect x="11" y="11" width="9" height="9" rx="1.8"/>'),
+    "Library": ic('<path d="M6.5 4h11a1 1 0 0 1 1 1v15l-6.5-4-6.5 4V5a1 1 0 0 1 1-1z"/>'),
+    "Settings code": ic('<path d="m8.5 8-4 4 4 4M15.5 8l4 4-4 4M13.5 5.5l-3 13"/>')
+  };
+  // header: logo, title, collapse button
+  const head = document.createElement("div"); head.className = "sb-head";
+  const brand = document.querySelector(".brand-mini"), logo = document.createElement("img"); logo.className = "sb-logo"; logo.alt = ""; logo.src = brand ? brand.src : "";
+  const ttl = document.createElement("div"); ttl.className = "sb-title"; ttl.innerHTML = "<strong>Label Studio</strong><span>Label settings</span>";
+  const tg = document.createElement("button"); tg.type = "button"; tg.id = "sbToggle"; tg.setAttribute("aria-controls", "sidebar");
+  tg.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>';
+  head.append(logo, ttl, tg); sb.prepend(head);
+  const scrim = document.createElement("div"); scrim.className = "sb-scrim"; body.append(scrim);
+  // icons on every row, tooltip text for the rail
+  sb.querySelectorAll("summary").forEach((s) => {
+    const h = s.querySelector("h2"), name = h ? h.textContent.trim() : ""; if (!ICONS[name] || s.querySelector(".sbi")) return;
+    const i = document.createElement("i"); i.className = "sbi"; i.innerHTML = ICONS[name]; s.prepend(i); s.dataset.tip = name;
+  });
+  const saved = () => { try { return localStorage.getItem(LS); } catch { return null; } };
+  const set = (collapsed, remember = true) => {
+    body.classList.toggle("sb-collapsed", collapsed); tg.setAttribute("aria-expanded", String(!collapsed)); tg.setAttribute("aria-label", collapsed ? "Expand side bar" : "Collapse side bar"); tg.title = collapsed ? "Expand" : "Collapse";
+    window.dispatchEvent(new CustomEvent("bcs-float", { detail: { forced: mqN.matches && !collapsed } }));
+    if (remember) try { localStorage.setItem(LS, collapsed ? "1" : "0"); } catch {}
+  };
+  const init = saved(); set(init == null ? (mqN.matches || innerWidth < 1100) : init === "1", false);
+  tg.addEventListener("click", () => set(!body.classList.contains("sb-collapsed")));
+  scrim.addEventListener("click", () => set(true));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && mqN.matches && !body.classList.contains("sb-collapsed") && !document.querySelector(".modalwrap:not([hidden])")) set(true); });
+  mqN.addEventListener && mqN.addEventListener("change", () => { if (saved() == null) set(mqN.matches || innerWidth < 1100, false); else set(body.classList.contains("sb-collapsed"), false); });
+  // on the rail, tapping an icon opens the bar with that panel open
+  sb.addEventListener("click", (e) => {
+    if (!body.classList.contains("sb-collapsed")) return; const s = e.target.closest("summary"); if (!s) return;
+    e.preventDefault(); e.stopPropagation(); const d = s.parentElement; set(false); if (!d.open) d.open = true;
+    setTimeout(() => d.scrollIntoView({ block: "nearest", behavior: "smooth" }), 80);
+  }, true);
+  // swipe: right from the rail or the screen edge opens, left on the open bar closes
+  let t0 = null;
+  document.addEventListener("touchstart", (e) => {
+    if (!mqN.matches || e.touches.length !== 1) { t0 = null; return; } const t = e.touches[0], col = body.classList.contains("sb-collapsed");
+    const inBar = !!e.target.closest("#sidebar"), skip = e.target.closest("input[type=range], canvas, textarea, select, #floatBox");
+    t0 = (!skip && ((col && (t.clientX < 26 || inBar)) || (!col && (inBar || e.target.closest(".sb-scrim"))))) ? { x: t.clientX, y: t.clientY } : null;
+  }, { passive: true });
+  document.addEventListener("touchend", (e) => {
+    if (!t0) return; const t = e.changedTouches[0], dx = t.clientX - t0.x, dy = t.clientY - t0.y, col = body.classList.contains("sb-collapsed"); t0 = null;
+    if (Math.abs(dx) < 56 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+    if (col && dx > 0) set(false); else if (!col && dx < 0) set(true);
+  }, { passive: true });
 })();
 </script>
 </body>
