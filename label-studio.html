@@ -27,11 +27,9 @@
 <meta name="theme-color" content="#050506">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600;700&family=DM+Serif+Display&family=Bodoni+Moda:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Yellowtail&family=Fredoka:wght@400;500;600;700&family=Chewy&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=Josefin+Sans:wght@400;500;600;700&family=Raleway:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap">
+<script>window.__fontCss = new Promise((ok) => { window.__fontCssOk = ok; setTimeout(ok, 6000); });</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600;700&family=DM+Serif+Display&family=Bodoni+Moda:wght@400;500;600;700&family=Pacifico&family=Yellowtail&family=Fredoka:wght@400;500;600;700&family=Chewy&family=Inter:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=Josefin+Sans:wght@400;500;600;700&family=Raleway:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" media="print" onload="this.media='all';window.__fontCssOk()" onerror="window.__fontCssOk()">
 <style>html{box-sizing:border-box}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <style>
 /* Layout: sticky label proof on the left, grouped controls on the right; stacks on phones. Built on the BCS design system tokens below. */
@@ -772,21 +770,24 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
   .controls.sidebar{top:max(84px,var(--fltb,0px),env(safe-area-inset-top,0px))!important;max-height:calc(100dvh - max(84px,var(--fltb,0px)) - 12px)!important}
   body{padding-bottom:max(0px,env(safe-area-inset-bottom,0px))}
 }
-/* r82: phone side panel = the desktop rail (icons) centred on screen; close bubble on the panel edge; no layout or blur animation */
+/* r83: phone side panel. Collapsed it disappears and only a half-bubble stays on the screen edge; open, the same half-bubble sits on the panel's edge */
+#sbBubble{display:none}
 @media (max-width:880px){
   .controls.sidebar{-webkit-backdrop-filter:none;backdrop-filter:none;transition:none!important;background:linear-gradient(158deg,rgba(255,255,255,.1),rgba(255,255,255,.03) 45%,rgba(255,255,255,.06)),rgba(17,19,25,.965);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 14px 34px rgba(0,0,0,.5)}
-  body.sb-collapsed{--sbw:68px}
-  body.sb-collapsed .controls.sidebar{left:10px!important;right:auto!important;top:50dvh!important;bottom:auto!important;translate:0 -50%;width:68px!important;height:auto;max-height:calc(100dvh - 24px)!important;padding:12px 8px 14px!important;border-radius:30px!important;overflow:visible;animation:sbFade 240ms var(--ease)}
-  body.sb-collapsed .controls.sidebar details{display:block}
-  body.sb-collapsed .controls.sidebar summary{padding:7px!important}
   body:not(.sb-collapsed) .controls.sidebar{animation:sbFade 260ms var(--ease)}
   @keyframes sbFade{from{opacity:0}}
-  body:not(.sb-collapsed) #sbToggle{position:fixed;left:calc(10px + var(--sbw) - 19px);right:auto;top:var(--tgy,50dvh);margin-top:-19px;width:38px;height:38px;z-index:80;box-shadow:0 6px 18px rgba(0,0,0,.55),0 0 0 3px rgba(17,19,25,.92)}
-  body:not(.sb-collapsed) .sb-head{padding-right:6px}
+  body.sb-collapsed .controls.sidebar{visibility:hidden;pointer-events:none;left:-400px!important}
+  #sbToggle{display:none!important}
+  #sbBubble{display:grid;place-items:center;position:fixed;z-index:90;top:var(--tgy,50dvh);margin-top:-32px;width:20px;height:64px;padding:0;border:0;border-radius:0 32px 32px 0;cursor:pointer;color:var(--cream-50,#fdfbf5);background:linear-gradient(158deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 55%),rgba(17,19,25,.97);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset -1px 0 0 rgba(255,255,255,.08),5px 0 16px rgba(0,0,0,.45);-webkit-tap-highlight-color:transparent;left:calc(10px + var(--sbw) - 1px)}
+  #sbBubble svg{width:12px;height:12px;transition:transform 240ms var(--ease)}
+  body.sb-collapsed #sbBubble{left:0;top:50dvh}
+  body:not(.sb-collapsed) #sbBubble svg{transform:rotate(180deg)}
   body:not(.sb-collapsed) .nav-wrap{opacity:0;pointer-events:none}
   body:not(.sb-collapsed) main{z-index:60}
   #floatBox{z-index:65}
 }
+/* r85: cheaper glass. Same look at a smaller blur radius, without the extra saturate pass */
+@media (min-width:881px){.controls.sidebar{-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}}
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -985,7 +986,7 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
           </div>
           <p class="note fwarn" id="fontWarn" hidden>Heads up: small vertical text in Montserrat has printed poorly on the Niimbot M2. Raise the size to 1.6 mm or more, or pick a sturdier font such as Oswald.</p>
         </div>
-        <label class="check full"><input type="checkbox" id="colsOn"> Columns (logo and vertical text)</label>
+        <label class="check full"><input type="checkbox" id="colsOn"> Columns (divider lines)</label>
         <div class="field full"><div class="lbl">Logo mark (optional)</div>
           <div class="logorow">
             <input type="file" id="logoFile" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden>
@@ -1270,7 +1271,7 @@ function gfxImage(key, color, weight) {
   let e = gfxCache.get(k);
   if (!e) {
     const img = new Image(); e = { img, ok: false, p: null };
-    e.p = new Promise(res => { img.onload = () => { e.ok = true; res(); render(); }; img.onerror = () => res(); });
+    e.p = new Promise(res => { img.onload = () => { e.ok = true; res(); render(); if (typeof thumbGfxReady === "function") thumbGfxReady(); }; img.onerror = () => res(); });
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(gfxSvg(key, color, weight));
     gfxCache.set(k, e);
   }
@@ -1297,7 +1298,9 @@ let hoverFont = null; // live preview while browsing the list
 const fontReady = new Map();
 function loadFont(family) {
   if (!document.fonts) return Promise.resolve();
-  if (!fontReady.has(family)) fontReady.set(family, Promise.all(["400", "500", "600", "700"].map(w => document.fonts.load(`${w} 20px "${family}"`).catch(() => {}))));
+  if (!fontReady.has(family)) { // picker fonts come from a stylesheet that loads after the page, so wait for it before asking for the font
+    const css = /^(Playfair Display|Montserrat|IBM Plex Mono|Jost|Cormorant Garamond)$/.test(family) ? Promise.resolve() : (window.__fontCss || Promise.resolve());
+    fontReady.set(family, css.then(() => Promise.all(["400", "500", "600", "700"].map(w => document.fonts.load(`${w} 20px "${family}"`).catch(() => {}))))); }
   return fontReady.get(family);
 }
 
@@ -1578,8 +1581,7 @@ function drawLabel(ctx, c, ink, stock, inner) {
     at(g.id, () => {
       if (ctx.globalAlpha === 0) return [bx, by, bw, bh];
       const rad = Math.min(0.3, bh / 2, bw / 2), path = (x) => { x.beginPath(); if (x.roundRect) x.roundRect(bx, by, bw, bh, rad); else x.rect(bx, by, bw, bh); };
-      const T = ctx.getTransform(), lay = document.createElement("canvas"); lay.width = ctx.canvas.width; lay.height = ctx.canvas.height;
-      const lx = lay.getContext("2d");
+      const T = ctx.getTransform(), lay = barLayer(ctx.canvas.width, ctx.canvas.height), lx = lay.getContext("2d");
       lx.setTransform(T); lx.fillStyle = ink; path(lx); lx.fill();
       const sh = hits, sl = legalOver;
       lx.globalCompositeOperation = "destination-out"; lx.setTransform(T0);
@@ -1593,6 +1595,12 @@ function drawLabel(ctx, c, ink, stock, inner) {
   ctx.restore();
 }
 
+let barLay = null;
+function barLayer(w, h) { // one scratch canvas reused for every bar, instead of a new full-size canvas each draw
+  if (!barLay) barLay = document.createElement("canvas");
+  if (barLay.width !== w || barLay.height !== h) { barLay.width = w; barLay.height = h; }
+  const x = barLay.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.globalCompositeOperation = "source-over"; x.globalAlpha = 1; x.clearRect(0, 0, w, h); return barLay;
+}
 function edge(ctx, scale) { // die-cut outline, preview only
   ctx.save(); ctx.strokeStyle = "#2a9be0"; ctx.setLineDash([16, 10]); ctx.lineWidth = 3; ctx.lineCap = "butt";
   const r = 1.2 * scale, o = 1.5; const w = W * scale - o * 2, h = H * scale - o * 2; // 3 px stroke centred on 1.5 px lands exactly on whole pixels, so it stays crisp
@@ -1649,19 +1657,34 @@ if (typeof qrcode !== "undefined") qrcode.stringToBytes = qrcode.stringToBytesFu
 function qrBuild(url) {
   for (const k of [...gfxCache.keys()]) if (k.startsWith("qr|")) gfxCache.delete(k);
   try {
-    const q = qrcode(0, "L"); q.addData(url, "Byte"); q.make(); const n = q.getModuleCount(), V = (n + 2) * 10, runs = []; let d = "";
-    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { if (!q.isDark(r, c)) continue; let c2 = c; while (c2 + 1 < n && q.isDark(r, c2 + 1)) c2++; runs.push([r, c, c2 - c + 1]); d += `M${(c + 1) * 10} ${(r + 1) * 10}h${(c2 - c + 1) * 10}v10h-${(c2 - c + 1) * 10}z`; c = c2; }
-    GFX.qr = { name: "QR code", hidden: true, vb: [0, 0, V, V], sw: 0, fill: true, qr: true, url, n, runs, body: `<path shape-rendering="crispEdges" d="${d}"/>` };
+    const q = qrcode(0, "L"); q.addData(url, "Byte"); q.make(); const n = q.getModuleCount(), V = n * 10, runs = [], dark = new Uint8Array(n * n); let d = "";
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { if (!q.isDark(r, c)) continue; let c2 = c; while (c2 + 1 < n && q.isDark(r, c2 + 1)) c2++; runs.push([r, c, c2 - c + 1]); dark.fill(1, r * n + c, r * n + c2 + 1); d += `M${c * 10} ${r * 10}h${(c2 - c + 1) * 10}v10h-${(c2 - c + 1) * 10}z`; c = c2; }
+    GFX.qr = { name: "QR code", hidden: true, vb: [0, 0, V, V], sw: 0, fill: true, qr: true, url, n, runs, dark, body: `<path shape-rendering="crispEdges" d="${d}"/>` };
   } catch { delete GFX.qr; }
 }
-const qrDots = (gh, n) => Math.max(n + 2, Math.round(gh * QR_DPM)); // the whole code covers a whole number of printer dots; squares of 2 and 3 dots mix when it does not divide evenly, the way the Niimbot app prints it
+const qrDots = (gh, n) => Math.max(n, Math.round(gh * QR_DPM)); // the whole code covers a whole number of printer dots; squares of 2 and 3 dots mix when it does not divide evenly, the way the Niimbot app prints it
 function qrDraw(ctx, col, gx, gy, gh) {
-  const q = GFX.qr, n = q.n, T = ctx.getTransform(), sc = T.a; if (!sc) return;
-  const D = qrDots(gh, n), N = n + 2, e = (k) => Math.round(k * D / N) / QR_DPM, ax = (T.e + sc * gx) / sc, ay = (T.f + sc * gy) / sc;
-  const ox = gx + Math.round(ax * QR_DPM) / QR_DPM - ax, oy = gy + Math.round(ay * QR_DPM) / QR_DPM - ay; // start on a dot too, so every edge is crisp
-  ctx.fillStyle = col; ctx.beginPath();
-  for (const [r, c, l] of q.runs) ctx.rect(ox + e(c + 1), oy + e(r + 1), e(c + 1 + l) - e(c + 1), e(r + 2) - e(r + 1));
-  ctx.fill();
+  // Drawn straight onto the printer's dot grid, never turned or resampled: a small code only scans if every square lands on whole dots.
+  const q = GFX.qr, n = q.n, T = ctx.getTransform(), sc = Math.hypot(T.a, T.b); if (!sc) return;
+  const D = qrDots(gh, n), pd = sc / QR_DPM, cx = T.a * (gx + gh / 2) + T.c * (gy + gh / 2) + T.e, cy = T.b * (gx + gh / 2) + T.d * (gy + gh / 2) + T.f;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = col; ctx.beginPath();
+  if (PRV) { const m = D * pd / n, x0 = cx - D * pd / 2, y0 = cy - D * pd / 2; for (const [r, c, l] of q.runs) ctx.rect(x0 + c * m, y0 + r * m, l * m, m); ctx.fill(); ctx.restore(); return; }
+  const ox = Math.round(cx / pd - D / 2), oy = Math.round(cy / pd - D / 2), m = D / n, dk = q.dark;
+  // Thermal ribbon spreads each printed dot a little past its edge, which closes the light gaps of a small code (QR only, nothing else on the label).
+  // Each dark square gives up a sliver along any side that faces a light square, so the printed squares come out at their true size.
+  const E = 0.3, isD = (r, c) => r >= 0 && c >= 0 && r < n && c < n && dk[r * n + c] === 1;
+  for (let j = 0; j < D; j++) {
+    const yy = j + 0.5, r = Math.min(n - 1, Math.floor(yy / m)), fy = yy - r * m;
+    let i = 0;
+    while (i < D) {
+      const on = (ii) => { const xx = ii + 0.5, c = Math.min(n - 1, Math.floor(xx / m)), fx = xx - c * m; if (!isD(r, c)) return false;
+        if (fx < E && !isD(r, c - 1)) return false; if (m - fx < E && !isD(r, c + 1)) return false;
+        if (fy < E && !isD(r - 1, c)) return false; if (m - fy < E && !isD(r + 1, c)) return false; return true; };
+      if (!on(i)) { i++; continue; } let i2 = i; while (i2 + 1 < D && on(i2 + 1)) i2++;
+      ctx.rect((ox + i) * pd, (oy + j) * pd, (i2 - i + 1) * pd, pd); i = i2 + 1;
+    }
+  }
+  ctx.fill(); ctx.restore();
 }
 function qrEnsure() {
   const url = (cfg.qrUrl || "").trim();
@@ -1674,7 +1697,7 @@ function qrUI() {
   if (!GFX.qr) { ctl.hidden = false; note.className = "note qr-bad"; note.textContent = "That link is too long to fit in a QR code."; document.getElementById("qrSize").disabled = true; return; }
   document.getElementById("qrSize").disabled = false;
   if (!g) { note.className = "note"; note.textContent = ""; return; }
-  const n = GFX.qr.n, h = +g.h || 10, D = qrDots(h, n), dots = D / (n + 2), mm = dots / QR_DPM, need3 = QR_BAD * (n + 2) / QR_DPM, need4 = QR_OK * (n + 2) / QR_DPM, sl = document.getElementById("qrSize");
+  const n = GFX.qr.n, h = +g.h || 10, D = qrDots(h, n), dots = D / n, mm = dots / QR_DPM, need3 = QR_BAD * n / QR_DPM, need4 = QR_OK * n / QR_DPM, sl = document.getElementById("qrSize");
   if (document.activeElement !== sl) sl.value = String(Math.min(19, Math.max(4, D / QR_DPM)));
   document.getElementById("qrSizeOut").textContent = (D / QR_DPM).toFixed(1) + " mm";
   qrBad = dots < QR_BAD; ctl.classList.toggle("bad", qrBad);
@@ -1683,24 +1706,18 @@ function qrUI() {
   else { note.className = "note"; note.textContent = `Good for the M2: about ${dots.toFixed(1)} dots per square. The size snaps to whole printer dots so edges stay crisp.`; }
   if (document.getElementById("qrField")) document.getElementById("qrField").classList.toggle("bad", qrBad);
 }
-// Columns: one switch in Content for the logo column and the vertical text column, linked both ways to the Layout toggles
-let colMem = null; const colsOn = document.getElementById("colsOn");
-function colsSync() { const on = !!(cfg.showLogo || cfg.showSide); colsOn.checked = on; const f = document.getElementById("colGap"); if (f && f.closest(".field")) f.closest(".field").classList.toggle("dim", !on); }
-const colSet = (id, v) => { const el = document.getElementById(id); el.checked = v; el.dispatchEvent(new Event("input", { bubbles: true })); };
+// Columns: the two divider lines of the Lux preset (a column on each side with a hairline between). Linked both ways to Hairline dividers and Column gap in Layout.
+const colsOn = document.getElementById("colsOn"), COL_W = 5.7; let colMem = null;
+function colsSync() { const on = !!cfg.showRules && (+cfg.padL > 0 || +cfg.padR > 0); colsOn.checked = on; const f = document.getElementById("colGap"); if (f && f.closest(".field")) f.closest(".field").classList.toggle("dim", !on && !cfg.showLogo && !cfg.showSide); }
 colsOn.addEventListener("change", () => {
-  if (!colsOn.checked) { colMem = { logo: !!cfg.showLogo, side: !!cfg.showSide }; colSet("showLogo", false); colSet("showSide", false); }
-  else {
-    const m = colMem && (colMem.logo || colMem.side) ? colMem : { logo: true, side: true }; colSet("showLogo", m.logo); colSet("showSide", m.side);
-    if (m.side && !(cfg.sideText || "").trim()) { cfg.sideText = DEFAULTS.sideText; document.getElementById("sideText").value = cfg.sideText; } // an empty column draws nothing, so it starts with the house text
-    if (m.logo) { cfg.logoFree = false; cfg.logoColW = 0; if (!logoImg) restoreDefaultLogo().then(() => { render(); }).catch(() => {}); }
-    lsSet(LS_CFG, cfg); render();
-  }
-  colsSync();
+  if (colsOn.checked) { const m = colMem || { l: COL_W, r: COL_W }; cfg.padL = m.l; cfg.padR = m.r; cfg.showRules = true; document.getElementById("showRules").checked = true; }
+  else { if (+cfg.padL > 0 || +cfg.padR > 0) colMem = { l: +cfg.padL || 0, r: +cfg.padR || 0 }; cfg.padL = 0; cfg.padR = 0; }
+  lsSet(LS_CFG, cfg); colsSync(); render();
 });
 document.getElementById("qrUrl").addEventListener("input", (ev) => {
   cfg.qrUrl = ev.target.value; const url = cfg.qrUrl.trim(); qrEnsure();
   if (url && GFX.qr && !(cfg.graphics || []).some(g => g.key === "qr")) {
-    const n = GFX.qr.n, need4 = Math.ceil(QR_OK * (n + 2)) / QR_DPM, need3 = QR_BAD * (n + 2) / QR_DPM, hMax = Math.min(17, Math.max(need4, 8)), spot = findSpot(1, hMax, Math.min(hMax, need3));
+    const n = GFX.qr.n, need4 = Math.ceil(QR_OK * n) / QR_DPM, need3 = QR_BAD * n / QR_DPM, hMax = Math.min(17, Math.max(need4, 8)), spot = findSpot(1, hMax, Math.min(hMax, need3));
     const h = Math.round((spot ? spot.h : hMax) * 10) / 10; cfg.graphics = [...(cfg.graphics || []), { id: "gfxqr", key: "qr", h }];
     if (spot) { const o = offFromSpot(spot); setOff("gfxqr", o.x, o.y); }
     sel = "gfxqr"; updatePos();
@@ -1708,7 +1725,7 @@ document.getElementById("qrUrl").addEventListener("input", (ev) => {
   lsSet(LS_CFG, cfg); render();
 });
 document.getElementById("qrSize").addEventListener("input", (e) => {
-  const g = (cfg.graphics || []).find(x => x.key === "qr"); if (!g || !GFX.qr) return; let v = parseFloat(e.target.value); const n = GFX.qr.n, dots = v / (n + 2) * QR_DPM;
+  const g = (cfg.graphics || []).find(x => x.key === "qr"); if (!g || !GFX.qr) return; let v = parseFloat(e.target.value); const n = GFX.qr.n, dots = v / n * QR_DPM;
   v = Math.round(v * QR_DPM) / QR_DPM; // whole printer dots
   cfg.graphics = cfg.graphics.map(q => q === g ? Object.assign({}, q, { h: Math.round(v * 100) / 100 }) : q); delete cfg.fit; lsSet(LS_CFG, cfg); updatePos(); render();
 });
@@ -1740,8 +1757,9 @@ function doRender() {
   drawGizmo();
   syncJson();
 }
-new ResizeObserver(render).observe(pv);
-new ResizeObserver(render).observe(floatPrev);
+// While the preview is being resized (side bar opening, window drag) the canvas just stretches; the full redraw happens once it stops moving
+{ let rz = 0, first = true; const onRz = () => { if (first) { first = false; render(); return; } clearTimeout(rz); rz = setTimeout(render, 140); };
+  new ResizeObserver(onRz).observe(pv); new ResizeObserver(onRz).observe(floatPrev); }
 
 // Move gizmo: select an element on the proof, then drag X, Y or the free-move square
 let sel = null, drag = null, hover = null;
@@ -3142,7 +3160,7 @@ function drawThumb(p, cv) {
   const w = 1280, sc = w / W, saveH = hits, saveL = legalOver, saveLogo = logoImg; // drawn at full size, then scaled down, so small text keeps its spacing
   if (!thumbBig) { thumbBig = document.createElement("canvas"); thumbBig.width = w; thumbBig.height = w / 2; }
   const x = thumbBig.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = view.stock; x.fillRect(0, 0, w, w / 2);
-  const c = presetCfg(p); if (c.showLogo && !logoImg) { if (!thumbLogo) { thumbLogo = new Image(); thumbLogo.onload = () => thumbs.forEach(t => drawThumb(t.p, t.cv)); thumbLogo.src = DEFAULT_LOGO; } if (thumbLogo.complete && thumbLogo.naturalWidth) logoImg = thumbLogo; }
+  const c = presetCfg(p); if (c.showLogo && !logoImg) { if (!thumbLogo) { thumbLogo = new Image(); thumbLogo.onload = () => redrawThumbs(); thumbLogo.src = DEFAULT_LOGO; } if (thumbLogo.complete && thumbLogo.naturalWidth) logoImg = thumbLogo; }
   x.setTransform(sc, 0, 0, sc, 0, 0);
   try { drawLabel(x, c, view.ink, stockPaint(x, w)); } catch {}
   logoImg = saveLogo; hits = saveH; legalOver = saveL;
@@ -3153,16 +3171,27 @@ for (const p of PRESETS) {
   const o = document.createElement("button"); o.type = "button"; o.className = "popt"; o.setAttribute("role", "option"); o.dataset.id = p.id; o.setAttribute("aria-label", `${p.name}, ${p.note}`);
   const cv = document.createElement("canvas"); cv.width = 360; cv.height = 180; const t = document.createElement("span"); t.textContent = p.name;
   o.append(cv, t); presetMenu.append(o); thumbs.push({ p, cv });
-  Object.values(p.cfg.fonts || {}).forEach(f => loadFont(f).then(() => drawThumb(p, cv)));
+  const th = { p, cv, dirty: true }; thumbs[thumbs.length - 1] = th;
+  Object.values(p.cfg.fonts || {}).forEach(f => loadFont(f).then(() => { th.dirty = true; if (!presetMenu.hidden) thumbPump(); }));
 }
-const redrawThumbs = () => thumbs.forEach(t => drawThumb(t.p, t.cv));
+// Thumbnails are only drawn while the Presets window is open: the first few at once, the rest one per frame, so opening it never stalls
+let thumbRaf = 0;
+function thumbPump(sync = 0) {
+  const todo = thumbs.filter(t => t.dirty); let i = 0;
+  for (; i < Math.min(sync, todo.length); i++) { todo[i].dirty = false; drawThumb(todo[i].p, todo[i].cv); }
+  cancelAnimationFrame(thumbRaf); if (i >= todo.length) return;
+  const step = () => { if (presetMenu.hidden) return; const t = thumbs.find(x => x.dirty); if (!t) return; t.dirty = false; drawThumb(t.p, t.cv); thumbRaf = requestAnimationFrame(step); };
+  thumbRaf = requestAnimationFrame(step);
+}
+let thumbGfxT = 0; function thumbGfxReady() { if (presetMenu.hidden) return; clearTimeout(thumbGfxT); thumbGfxT = setTimeout(redrawThumbs, 30); } // a graphic finished loading while the window is open
+const redrawThumbs = () => { thumbs.forEach(t => { t.dirty = true; }); if (!presetMenu.hidden) thumbPump(); };
 const presetWrap = document.getElementById("presetWrap");
 document.getElementById("presetClose").addEventListener("click", () => { menuOpen(false); presetBtn.focus(); });
 function menuOpen(on) {
   presetMenu.hidden = !on; presetWrap.hidden = !on; presetBtn.setAttribute("aria-expanded", on ? "true" : "false");
   if (on) {
     presetMenu.scrollTop = 0;
-    redrawThumbs(); const f = presetMenu.querySelector(".popt"); if (f) f.focus(); }
+    thumbs.forEach(t => { t.dirty = true; }); thumbPump(3); const f = presetMenu.querySelector(".popt"); if (f) f.focus(); }
 }
 presetBtn.addEventListener("click", () => menuOpen(presetMenu.hidden));
 window.addEventListener("resize", () => { if (!presetMenu.hidden) redrawThumbs(); });
@@ -3793,6 +3822,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   const tg = document.createElement("button"); tg.type = "button"; tg.id = "sbToggle"; tg.setAttribute("aria-controls", "sidebar");
   tg.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>';
   head.append(logo, ttl, tg); sb.prepend(head);
+  const bub = document.createElement("button"); bub.type = "button"; bub.id = "sbBubble"; bub.setAttribute("aria-controls", "sidebar"); bub.innerHTML = tg.innerHTML; document.body.appendChild(bub); bub.addEventListener("click", () => tg.click());
   const scrim = document.createElement("div"); scrim.className = "sb-scrim"; sb.parentNode.insertBefore(scrim, sb);
   // icons on every row, tooltip text for the rail
   sb.querySelectorAll("summary").forEach((s) => {
@@ -3801,7 +3831,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   });
   const saved = () => { try { return localStorage.getItem(LS); } catch { return null; } };
   const set = (collapsed, remember = true) => {
-    body.classList.toggle("sb-collapsed", collapsed); tg.setAttribute("aria-expanded", String(!collapsed)); tg.setAttribute("aria-label", collapsed ? "Expand side bar" : "Collapse side bar"); tg.title = collapsed ? "Expand" : "Collapse";
+    body.classList.toggle("sb-collapsed", collapsed); tg.setAttribute("aria-expanded", String(!collapsed)); bub.setAttribute("aria-expanded", String(!collapsed)); bub.setAttribute("aria-label", collapsed ? "Open side bar" : "Close side bar"); tg.setAttribute("aria-label", collapsed ? "Expand side bar" : "Collapse side bar"); tg.title = collapsed ? "Expand" : "Collapse";
     window.dispatchEvent(new CustomEvent("bcs-float", { detail: { forced: mqN.matches && !collapsed } }));
     if (remember) try { localStorage.setItem(LS, collapsed ? "1" : "0"); } catch {}
   };
@@ -3851,7 +3881,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   const kick = () => { if (!tk) tk = requestAnimationFrame(pos); };
   addEventListener("scroll", kick, { passive: true }); addEventListener("resize", kick); new ResizeObserver(kick).observe(mainEl); pos();
   { let q = 0; const tgy = () => { if (q) return; q = requestAnimationFrame(() => { q = 0; if (!mqN.matches || body.classList.contains("sb-collapsed")) return; const r = sb.getBoundingClientRect(); document.documentElement.style.setProperty("--tgy", Math.round(r.top + r.height / 2) + "px"); }); };
-    new ResizeObserver(tgy).observe(sb); addEventListener("scroll", tgy, { passive: true }); addEventListener("resize", tgy); window.addEventListener("bcs-float", () => { tgy(); setTimeout(tgy, 60); }); sb.addEventListener("transitionend", tgy); setInterval(tgy, 400); }
+    new ResizeObserver(tgy).observe(sb); addEventListener("scroll", tgy, { passive: true }); addEventListener("resize", tgy); window.addEventListener("bcs-float", () => { tgy(); setTimeout(tgy, 60); }); sb.addEventListener("transitionend", tgy); }
   const dock = document.getElementById("dock");
   [["gfxSec", "Graphics"], ["libSec", "Library"]].forEach(([id, title]) => {
     const sec = document.getElementById(id), grid = sec && sec.querySelector(":scope > .grid"); if (!sec || !grid || !dock) return;
