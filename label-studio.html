@@ -723,6 +723,25 @@ main>.proof{position:relative;top:auto;margin-inline:auto}
 #hintsSwitch .hknob{top:3px;left:3px;width:16px;height:16px;box-shadow:2px 2px 5px rgba(0,0,0,.55)}
 #hintsSwitch[aria-checked="true"] .hpill{background:linear-gradient(145deg,#2f86bd,#3A9FDB);border-color:rgba(138,213,245,.4)}
 #hintsSwitch[aria-checked="true"] .hknob{transform:translateX(18px)}
+/* r78: steadier panel opening, tidy scrollbar, toggle chips, recent thumbs */
+.controls.sidebar{scrollbar-gutter:stable;padding-right:4px}
+@supports selector(::-webkit-scrollbar){
+  .controls.sidebar{scrollbar-width:auto;scrollbar-color:auto}
+  .controls.sidebar::-webkit-scrollbar{width:12px}
+  .controls.sidebar::-webkit-scrollbar-track{background:transparent;margin:30px 0}
+  .controls.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.24);border-radius:99px;border:3.5px solid transparent;background-clip:padding-box}
+  .controls.sidebar::-webkit-scrollbar-thumb:hover{background:rgba(138,213,245,.55);background-clip:padding-box}
+}
+body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
+.sb-title strong{font-size:17px}
+.controls.sidebar .check{position:relative;padding:7px 2px;margin:0;border-radius:0;background:none;border:0;box-shadow:none;color:var(--text-muted,#8a8f98);font-weight:500;user-select:none;transition:color 220ms var(--ease)}
+.controls.sidebar .check input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.controls.sidebar .check:hover{background:none;transform:none;box-shadow:none;color:var(--cream-50,#fff)}
+.controls.sidebar .check:has(input:checked),.controls.sidebar .check:has(input:checked):hover{background:none;box-shadow:none;border:0;color:#5bc0ee;font-weight:600}
+.controls.sidebar .check:has(input:focus-visible){outline:2px solid rgba(138,213,245,.8);outline-offset:2px;border-radius:6px}
+.lib-th{width:66px;height:33px;flex:none;border-radius:6px;background:#fff;box-shadow:var(--nm-inset);object-fit:contain;border:1px solid rgba(255,255,255,.12)}
+/* r79: panels must never flex-shrink while their height animates */
+.controls.sidebar>*{flex-shrink:0}
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -1518,9 +1537,9 @@ function drawLabel(ctx, c, ink, stock, inner) {
 }
 
 function edge(ctx, scale) { // die-cut outline, preview only
-  ctx.save(); ctx.strokeStyle = "rgba(160,138,123,.9)"; ctx.setLineDash([4, 4]); ctx.lineWidth = 1;
-  const r = 1.2 * scale; const w = W * scale - 1, h = H * scale - 1;
-  ctx.beginPath(); ctx.roundRect ? ctx.roundRect(0.5, 0.5, w, h, r) : ctx.rect(0.5, 0.5, w, h); ctx.stroke(); ctx.restore();
+  ctx.save(); ctx.strokeStyle = "#2a9be0"; ctx.setLineDash([16, 10]); ctx.lineWidth = 3; ctx.lineCap = "butt";
+  const r = 1.2 * scale, o = 1.5; const w = W * scale - o * 2, h = H * scale - o * 2; // 3 px stroke centred on 1.5 px lands exactly on whole pixels, so it stays crisp
+  ctx.beginPath(); ctx.roundRect ? ctx.roundRect(o, o, w, h, r) : ctx.rect(o, o, w, h); ctx.stroke(); ctx.restore();
 }
 
 // 300 dpi, one-colour raster (what the printer gets)
@@ -2166,10 +2185,12 @@ const libEl = document.getElementById("lib");
 function lib() { return lsGet(LS_LIB) || []; }
 const LS_RECENT = "vial-label-studio-recent-v1", recent = () => lsGet(LS_RECENT) || [];
 const PRINTER_KEYS = ["printX", "printY", "printR", "printDensity", "threshold", "showEdge"]; // your printer's setup, not part of a label design
-function addRecent(copies) { // every printed label is remembered; the browser's own storage limit is the only cap, oldest drop first if it runs out
+function autoName(c) { return [c.compound, c.variant, c.strength].map((x) => (x || "").trim()).filter(Boolean).join(" "); }
+function thumbOf(cv) { try { const t = document.createElement("canvas"); t.width = 176; t.height = 88; const x = t.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, 176, 88); x.imageSmoothingQuality = "high"; x.drawImage(cv, 0, 0, 176, 88); return t.toDataURL("image/png"); } catch { return ""; } }
+function addRecent(copies, cv) { // every printed label is remembered; the browser's own storage limit is the only cap, oldest drop first if it runs out
   const c = Object.assign({}, cfg); for (const k of PRINTER_KEYS) delete c[k];
-  const key = JSON.stringify(c), e = { cfg: c, at: Date.now(), n: copies || 1 }; let a = recent();
-  const i = a.findIndex((x) => JSON.stringify(x.cfg) === key); if (i >= 0) { e.n += a[i].n || 1; a.splice(i, 1); }
+  const key = JSON.stringify(c), e = { cfg: c, at: Date.now(), n: copies || 1, name: autoName(c), thumb: cv ? thumbOf(cv) : "" }; let a = recent();
+  const i = a.findIndex((x) => JSON.stringify(x.cfg) === key); if (i >= 0) { e.n += a[i].n || 1; if (!e.thumb) e.thumb = a[i].thumb || ""; a.splice(i, 1); }
   a.unshift(e); while (a.length && !lsSet(LS_RECENT, a)) a.pop();
   drawLib();
 }
@@ -2188,8 +2209,10 @@ function libRows(items, store, emptyText) {
   if (!items.length) { const li = document.createElement("li"); li.className = "empty"; li.textContent = emptyText; libEl.append(li); return; }
   items.forEach((it, i) => {
     const li = document.createElement("li");
-    const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = it.cfg.compound || "Untitled";
-    const sm = document.createElement("small"); sm.textContent = [it.cfg.variant, it.cfg.strength, store === LS_RECENT && it.n > 1 ? `${it.n} printed` : ""].filter(Boolean).join(" · "); nm.append(sm);
+    const nm = document.createElement("div"); nm.className = "nm"; const isRec = store === LS_RECENT;
+    nm.textContent = isRec ? (it.name || autoName(it.cfg) || "Untitled") : (it.cfg.compound || "Untitled");
+    const sm = document.createElement("small"); sm.textContent = (isRec ? [it.n > 1 ? `${it.n} printed` : ""] : [it.cfg.variant, it.cfg.strength]).filter(Boolean).join(" · "); nm.append(sm);
+    if (isRec && it.thumb) { const im = document.createElement("img"); im.className = "lib-th"; im.alt = ""; im.src = it.thumb; li.append(im); }
     const lo = document.createElement("button"); lo.className = "btn small"; lo.type = "button"; lo.textContent = "Load";
     lo.onclick = () => libAsk(it);
     const del = document.createElement("button"); del.className = "btn small"; del.type = "button"; del.textContent = "Remove";
@@ -2409,7 +2432,7 @@ prGo.addEventListener("click", async () => {
     } else {
       await ensureGfx("#000000");
       const n = Math.max(1, Math.min(50, parseInt(prCopies.value, 10) || 1)); prCopies.value = n;
-      await prSend(renderMono("#000000", null, 1), n); addRecent(n);
+      const outCv = renderMono("#000000", null, 1); await prSend(outCv, n); addRecent(n, outCv);
       prShow(n > 1 ? `Printed ${n} labels.` : "Printed."); prSet("again");
     }
   } catch (e) { prFail(e); }
@@ -3403,7 +3426,7 @@ if (document.fonts) {
     const cur = d.offsetHeight; if (d._a) d._a.cancel();
     let end; if (want) { d.open = true; end = d.offsetHeight; } else { d.open = false; end = d.offsetHeight; d.open = true; }
     const kids = [...d.children].filter((c) => c.tagName !== "SUMMARY"); d.style.overflow = "hidden";
-    kids.forEach((k) => { if (k._f) k._f.cancel(); k._f = k.animate(want ? [{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1 }, { opacity: 0 }], { duration: want ? DUR : DUR * .45, delay: want ? 70 : 0, easing: EZ, fill: "backwards" }); });
+    kids.forEach((k) => { if (k._f) k._f.cancel(); k._f = k.animate(want ? [{ opacity: .15 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: .15 }], { duration: DUR, easing: EZ }); });
     const a = d._a = d.animate([{ height: cur + "px" }, { height: end + "px" }], { duration: DUR, easing: EZ });
     a.finished.then(() => { if (d._a !== a) return; d.open = want; d.style.overflow = ""; d._a = null; save(); }, () => {});
     save();
@@ -3628,7 +3651,7 @@ if (document.fonts) {
   // header: logo, title, collapse button
   const head = document.createElement("div"); head.className = "sb-head";
   const brand = document.querySelector(".brand-mini"), logo = document.createElement("img"); logo.className = "sb-logo"; logo.alt = ""; logo.src = brand ? brand.src : "";
-  const ttl = document.createElement("div"); ttl.className = "sb-title"; ttl.innerHTML = "<strong>Label Studio</strong><span>Label settings</span>";
+  const ttl = document.createElement("div"); ttl.className = "sb-title"; ttl.innerHTML = "<strong>Label Settings</strong>";
   const tg = document.createElement("button"); tg.type = "button"; tg.id = "sbToggle"; tg.setAttribute("aria-controls", "sidebar");
   tg.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>';
   head.append(logo, ttl, tg); sb.prepend(head);
@@ -3678,7 +3701,7 @@ if (document.fonts) {
   };
   sb.addEventListener("pointerover", (e) => { if (e.pointerType === "touch") return; const s = e.target.closest("summary"); if (s && sb.contains(s)) place(s); });
   sb.addEventListener("pointerleave", () => pill.classList.remove("on"));
-  const stretch = () => { if (!sb.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return; sb.animate([{ transform: "scale(1,1)" }, { transform: "scale(1.035,1.016)", offset: .3 }, { transform: "scale(.992,.997)", offset: .64 }, { transform: "scale(1,1)" }], { duration: 620, easing: "cubic-bezier(.3,.7,.3,1)" }); };
+  const stretch = () => { if (!sb.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return; sb.animate([{ transform: "scale(1,1)" }, { transform: "scale(1.022,1.01)", offset: .3 }, { transform: "scale(.996,.999)", offset: .64 }, { transform: "scale(1,1)" }], { duration: 620, easing: "cubic-bezier(.3,.7,.3,1)" }); };
   sb.addEventListener("click", (e) => { const s = e.target.closest("summary"); if (!s) return; stretch(); setTimeout(() => { const h = sb.querySelector("summary:hover"); if (h && !matchMedia("(hover:none)").matches) place(h); else pill.classList.remove("on"); }, 420); });
   tg.addEventListener("click", stretch);
   // desktop: the bar starts beside the preview (below the title and tips), then rides along, and never runs over the footer
