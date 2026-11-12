@@ -2491,9 +2491,18 @@ function sizeGfxScroll() { // six graphics show at a time; the rest scroll
   gfxGrid.style.maxHeight = Math.ceil(rows * t.offsetHeight + (rows - 1) * gap + 2) + "px";
 }
 if (window.ResizeObserver) new ResizeObserver(() => sizeGfxScroll()).observe(gfxGrid);
-gfxGrid.addEventListener("wheel", (e) => { // at the very top or bottom the page takes over, so the wheel never gets stuck on this list
+let pgTgt = null, pgRaf = 0; // hands the wheel to the page at the ends of the list; mouse notches glide instead of jumping, trackpad movement passes straight through
+function pgStep() {
+  const cur = window.scrollY, d = pgTgt - cur;
+  if (Math.abs(d) < 0.6) { window.scrollTo({ top: pgTgt, behavior: "instant" }); pgTgt = null; pgRaf = 0; return; }
+  window.scrollTo({ top: cur + d * 0.22, behavior: "instant" }); pgRaf = requestAnimationFrame(pgStep);
+}
+gfxGrid.addEventListener("wheel", (e) => {
   if (e.ctrlKey || !e.deltaY) return; const atTop = gfxGrid.scrollTop <= 0, atEnd = gfxGrid.scrollTop + gfxGrid.clientHeight >= gfxGrid.scrollHeight - 1;
-  if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atEnd)) { e.preventDefault(); window.scrollBy({ top: e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY, left: 0 }); }
+  if (!((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atEnd))) return;
+  e.preventDefault(); const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY, max = document.documentElement.scrollHeight - innerHeight;
+  if (Math.abs(dy) < 40 || matchMedia("(prefers-reduced-motion: reduce)").matches) { pgTgt = null; window.scrollBy({ top: dy, left: 0, behavior: "instant" }); return; }
+  pgTgt = Math.max(0, Math.min(max, (pgTgt == null ? window.scrollY : pgTgt) + dy)); if (!pgRaf) pgRaf = requestAnimationFrame(pgStep);
 }, { passive: false });
 gfxSec.addEventListener("toggle", () => { if (gfxSec.open) requestAnimationFrame(sizeGfxScroll); });
 const gfxFile = document.getElementById("gfxFile");
