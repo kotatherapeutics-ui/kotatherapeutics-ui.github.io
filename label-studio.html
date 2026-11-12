@@ -1609,23 +1609,40 @@ function edge(ctx, scale) { // die-cut outline, preview only
 
 // 300 dpi, one-colour raster (what the printer gets)
 const NIIMBOT_FILL = 1; // 1 = exact label size. Testing a 3% enlargement to offset the Niimbot app's own shrink was switched off again (set to 1.03 to bring it back)
-const MONO_SS = 4, MONO_BIAS = 30; // 1x output is drawn at 4x and shrunk to coverage first, then cut with a slight lean toward ink, so thin strokes in small text survive instead of breaking up
+const MONO_SS = 4, MONO_BIAS = 30; // the label is drawn at 4 sub-dots per printer dot; the bias keeps hairlines that the spread fix below would otherwise lose
+let MONO_QR = null; // while a print bitmap is built, the QR hands over its exact dots here instead of drawing, so it is not thinned twice
 function renderMono(ink = "#000000", stock = null, k = 1, grow = 1, rc = cfg) { // k > 1 draws the same label at k times the pixels (same shape and aspect, finer edges)
-  const EW = EX_W * k, EH = EX_H * k, SS = k === 1 ? MONO_SS : 1, c = document.createElement("canvas"); c.width = EW; c.height = EH;
-  let big = c; if (SS > 1) { big = document.createElement("canvas"); big.width = EW * SS; big.height = EH * SS; }
-  const bx = big.getContext("2d"); bx.setTransform(grow * EW * SS / W, 0, 0, grow * EH * SS / H, EW * SS * (1 - grow) / 2, EH * SS * (1 - grow) / 2);
-  { const sh = hits, sl = legalOver; drawLabel(bx, rc, "#000000", "#ffffff"); hits = sh; legalOver = sl; }
-  bx.setTransform(1, 0, 0, 1, 0, 0);
-  const x = c.getContext("2d");
-  if (SS > 1) { let cur = big, cw = big.width, ch = big.height; while (cw > EW) { const nw = Math.max(EW, cw / 2), nh = Math.max(EH, ch / 2), t2 = document.createElement("canvas"); t2.width = nw; t2.height = nh; const q = t2.getContext("2d"); q.imageSmoothingEnabled = true; q.imageSmoothingQuality = "high"; q.drawImage(cur, 0, 0, nw, nh); cur = t2; cw = nw; ch = nh; } x.drawImage(cur, 0, 0); }
-  const d = x.getImageData(0, 0, EW, EH), p = d.data, t = rc.threshold + (SS > 1 ? MONO_BIAS : 0);
+  const EW = EX_W * k, EH = EX_H * k, SS = k === 1 ? MONO_SS : 1, BW = EW * SS, BH = EH * SS, c = document.createElement("canvas"); c.width = EW; c.height = EH;
+  const big = document.createElement("canvas"); big.width = BW; big.height = BH;
+  const bx = big.getContext("2d", { willReadFrequently: true }); bx.setTransform(grow * BW / W, 0, 0, grow * BH / H, BW * (1 - grow) / 2, BH * (1 - grow) / 2);
+  const qr = MONO_QR = [];
+  try { const sh = hits, sl = legalOver; drawLabel(bx, rc, "#000000", "#ffffff"); hits = sh; legalOver = sl; } finally { MONO_QR = null; }
+  const bd = bx.getImageData(0, 0, BW, BH).data, N = BW * BH, M = new Uint8Array(N);
+  for (let i = 0, q = 0; i < N; i++, q += 4) M[i] = (bd[q] * 0.299 + bd[q + 1] * 0.587 + bd[q + 2] * 0.114) < 128 ? 1 : 0;
+  // Thermal ribbon spreads each printed dot a little past its edge, which thickens small text, fills letter holes and joins fine lines.
+  // Every ink edge is pulled in by a quarter of a dot (one sub-dot) to cancel that, the same correction that made small QR codes scan.
+  const per = SS * k, er = per >= 4 ? 1 : 0, E = er ? new Uint8Array(N) : M;
+  if (er) for (let y = 1; y < BH - 1; y++) { const r = y * BW; for (let x = 1; x < BW - 1; x++) { const i = r + x; E[i] = M[i] & M[i - 1] & M[i + 1] & M[i - BW] & M[i + BW]; } }
+  const t = rc.threshold, tb = t + (SS > 1 ? MONO_BIAS : 0), A = SS * SS, needE = Math.ceil(A * (1 - t / 255) - 1e-9);
+  const base = new Uint8Array(EW * EH), out = new Uint8Array(EW * EH);
+  for (let oy = 0; oy < EH; oy++) for (let ox = 0; ox < EW; ox++) {
+    let lum = 0, ne = 0;
+    for (let sy = 0; sy < SS; sy++) { const r = (oy * SS + sy) * BW + ox * SS; for (let sx = 0; sx < SS; sx++) { const q = (r + sx) * 4; lum += bd[q] * 0.299 + bd[q + 1] * 0.587 + bd[q + 2] * 0.114; ne += E[r + sx]; } }
+    const o = oy * EW + ox; base[o] = lum / A < tb ? 1 : 0; out[o] = ne >= Math.max(1, needE) ? 1 : 0;
+  }
+  if (er) { // strokes too thin to spare a dot (fine text, hairlines) keep their exact original dots; only thicker strokes are pulled in
+    const T = 2, hr = new Uint16Array(EW * EH), vr = new Uint16Array(EW * EH);
+    for (let y = 0; y < EH; y++) { let x = 0; while (x < EW) { const o = y * EW + x; if (!base[o]) { x++; continue; } let x2 = x; while (x2 + 1 < EW && base[o + x2 + 1 - x]) x2++; hr.fill(Math.min(65535, x2 - x + 1), o, o + x2 - x + 1); x = x2 + 1; } }
+    for (let x = 0; x < EW; x++) { let y = 0; while (y < EH) { if (!base[y * EW + x]) { y++; continue; } let y2 = y; while (y2 + 1 < EH && base[(y2 + 1) * EW + x]) y2++; for (let yy = y; yy <= y2; yy++) vr[yy * EW + x] = Math.min(65535, y2 - y + 1); y = y2 + 1; } }
+    const TK = T * k; for (let o = 0; o < out.length; o++) if (base[o] && !out[o] && (hr[o] <= TK || vr[o] <= TK)) out[o] = 1;
+  }
+  for (const [rx, ry, rw, rh] of qr) { const x0 = Math.round(rx / SS), y0 = Math.round(ry / SS), x1 = Math.round((rx + rw) / SS), y1 = Math.round((ry + rh) / SS); for (let y = Math.max(0, y0); y < Math.min(EH, y1); y++) out.fill(1, y * EW + Math.max(0, x0), y * EW + Math.min(EW, x1)); }
+  const x = c.getContext("2d"), d = x.createImageData(EW, EH), p = d.data;
   const hx = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   const I = hx(ink), S = stock ? hx(stock) : null;
-  for (let i = 0; i < p.length; i += 4) {
-    const on = (p[i] * 0.299 + p[i + 1] * 0.587 + p[i + 2] * 0.114) < t;
-    if (on) { p[i] = I[0]; p[i + 1] = I[1]; p[i + 2] = I[2]; p[i + 3] = 255; }
+  for (let o = 0, i = 0; o < out.length; o++, i += 4) {
+    if (out[o]) { p[i] = I[0]; p[i + 1] = I[1]; p[i + 2] = I[2]; p[i + 3] = 255; }
     else if (S) { p[i] = S[0]; p[i + 1] = S[1]; p[i + 2] = S[2]; p[i + 3] = 255; }
-    else { p[i] = p[i + 1] = p[i + 2] = 0; p[i + 3] = 0; }
   }
   x.putImageData(d, 0, 0); return c;
 }
@@ -1681,7 +1698,7 @@ function qrDraw(ctx, col, gx, gy, gh) {
         if (fx < E && !isD(r, c - 1)) return false; if (m - fx < E && !isD(r, c + 1)) return false;
         if (fy < E && !isD(r - 1, c)) return false; if (m - fy < E && !isD(r + 1, c)) return false; return true; };
       if (!on(i)) { i++; continue; } let i2 = i; while (i2 + 1 < D && on(i2 + 1)) i2++;
-      ctx.rect((ox + i) * pd, (oy + j) * pd, (i2 - i + 1) * pd, pd); i = i2 + 1;
+      if (MONO_QR) MONO_QR.push([(ox + i) * pd, (oy + j) * pd, (i2 - i + 1) * pd, pd]); else ctx.rect((ox + i) * pd, (oy + j) * pd, (i2 - i + 1) * pd, pd); i = i2 + 1;
     }
   }
   ctx.fill(); ctx.restore();
@@ -3835,7 +3852,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     window.dispatchEvent(new CustomEvent("bcs-float", { detail: { forced: mqN.matches && !collapsed } }));
     if (remember) try { localStorage.setItem(LS, collapsed ? "1" : "0"); } catch {}
   };
-  const init = saved(); set(init == null ? true : init === "1", false);
+  const init = saved(); set(mqN.matches || init == null ? true : init === "1", false); // phones always open with the panel tucked away
   tg.addEventListener("click", () => set(!body.classList.contains("sb-collapsed")));
   scrim.addEventListener("click", () => set(true));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && mqN.matches && !body.classList.contains("sb-collapsed") && !document.querySelector(".modalwrap:not([hidden])")) set(true); });
