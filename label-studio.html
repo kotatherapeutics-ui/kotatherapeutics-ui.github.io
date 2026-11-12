@@ -683,7 +683,46 @@ input[type=range]::-moz-range-track{height:8px;border-radius:99px;background:#0e
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-6px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,#2a2f3a,#161920);box-shadow:3px 3px 8px rgba(0,0,0,.6),-2px -2px 6px rgba(255,255,255,.06)}
 input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,#2a2f3a,#161920);box-shadow:3px 3px 8px rgba(0,0,0,.6)}
 #hintsSwitch .hpill{box-shadow:var(--nm-inset)}
-main{z-index:3}
+/* r76: hover pill + lift, dock, centred preview, hints fix */
+main{display:block;position:relative;z-index:3}
+main>.proof{position:relative;top:auto;margin-inline:auto}
+.controls.sidebar{transform-origin:0 0}
+@media (min-width:881px){
+  .controls.sidebar{position:fixed;left:max(14px,calc(50vw - 620px));top:var(--sbtop,88px);max-height:var(--sbmax,calc(100dvh - 104px));z-index:35;flex:none}
+  main>.proof{padding-left:98px;padding-right:98px;transition:padding 560ms var(--ease)}
+  body:not(.sb-collapsed) main>.proof{padding-left:calc(var(--sbw) + 46px);padding-right:0}
+}
+.sb-pill{position:absolute;left:0;top:0;z-index:0;pointer-events:none;border-radius:999px;opacity:0;width:0;height:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 22px rgba(0,0,0,.4),0 0 26px rgba(138,213,245,.3);
+  transition:transform 340ms var(--ease),width 340ms var(--ease),height 340ms var(--ease),opacity 220ms var(--ease)}
+.sb-pill.on{opacity:1}.sb-pill.snap{transition:opacity 220ms var(--ease)}
+.controls.sidebar summary:hover{background:transparent}
+.controls.sidebar details[open]>summary:hover{background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.06))}
+.controls.sidebar summary{transition:transform 260ms var(--ease),background 220ms var(--ease),border-color 220ms var(--ease),box-shadow 220ms var(--ease)}
+.controls.sidebar summary:hover{transform:translateY(-1.5px)}
+.controls.sidebar summary:hover .sbi{color:#fff;filter:drop-shadow(0 0 7px rgba(138,213,245,.7))}
+.controls.sidebar :is(.btn,.check,.seg button,.dsg-fit button,.gtile,.sw,#fontBtn,input[type=text],input[type=number],select,textarea){transition:transform 240ms var(--ease),box-shadow 240ms var(--ease),background 240ms var(--ease),border-color 240ms var(--ease)}
+.controls.sidebar :is(.btn,.dsg-fit button,.gtile,.sw,#fontBtn,.seg button):hover{transform:translateY(-2px);box-shadow:5px 7px 14px var(--nm-lo),-3px -3px 10px rgba(255,255,255,.06),0 0 18px rgba(138,213,245,.26),inset 0 1px 0 rgba(255,255,255,.09);border-color:rgba(138,213,245,.35)}
+.controls.sidebar :is(input[type=text],input[type=number],select,textarea):hover{transform:translateY(-1px);box-shadow:var(--nm-inset),0 0 16px rgba(138,213,245,.24);border-color:rgba(138,213,245,.3)}
+.controls.sidebar .check{padding:6px 12px;margin:-6px -12px;border-radius:999px}
+.controls.sidebar .check:hover{background:rgba(255,255,255,.08);transform:translateY(-1px);box-shadow:0 0 16px rgba(138,213,245,.18),inset 0 1px 0 rgba(255,255,255,.12)}
+.controls.sidebar :is(.btn,.dsg-fit button,.gtile):active{transform:translateY(0)}
+#dock{display:grid;margin-top:-14px}
+.dockpanel{display:grid;grid-template-rows:0fr;opacity:0;margin-top:0;pointer-events:none;transition:grid-template-rows 480ms var(--ease),opacity 320ms var(--ease),margin 480ms var(--ease)}
+.dockpanel.on{grid-template-rows:1fr;opacity:1;margin-top:14px;pointer-events:auto}
+.dockpanel>.in{min-height:0;overflow:hidden;border-radius:20px;background:var(--nm-face);box-shadow:var(--nm-raise)}
+.dockbody{display:grid;gap:12px;padding:16px 18px 18px}
+.dockhead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dockhead h3{margin:0;font:600 15px/1.2 var(--f-sans);letter-spacing:.02em}
+.dockbody>.grid{padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.hints{padding:10px 18px 10px 22px!important;border-radius:999px}
+.hints.off{padding:8px 14px 8px 20px!important}
+.hints .hsw{padding:4px 2px 4px 8px;margin-right:0}
+#hintsSwitch .hpill{background:var(--nm-face-in);border:1px solid rgba(255,255,255,.05);box-shadow:var(--nm-inset);height:24px;width:42px}
+#hintsSwitch .hknob{top:3px;left:3px;width:16px;height:16px;box-shadow:2px 2px 5px rgba(0,0,0,.55)}
+#hintsSwitch[aria-checked="true"] .hpill{background:linear-gradient(145deg,#2f86bd,#3A9FDB);border-color:rgba(138,213,245,.4)}
+#hintsSwitch[aria-checked="true"] .hknob{transform:translateX(18px)}
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -862,6 +901,7 @@ main{z-index:3}
       </div>
     </div>
     
+    <div id="dock" aria-label="Graphics and library"></div>
     <div id="status" role="status" aria-live="polite"></div>
 
   </section>
@@ -2599,7 +2639,7 @@ function sizeGfxScroll() { // six graphics show at a time; the rest scroll
   gfxGrid.style.maxHeight = Math.ceil(rows * t.offsetHeight + (rows - 1) * gap + 2) + "px";
 }
 if (window.ResizeObserver) new ResizeObserver(() => sizeGfxScroll()).observe(gfxGrid);
-let pgTgt = null, pgRaf = 0, pgLast = 0; const pgSc = gfxGrid.closest(".controls") || document.scrollingElement; // hands the wheel to the side bar's own scroll at the ends of the list; mouse notches glide instead of jumping, trackpad movement passes straight through
+let pgTgt = null, pgRaf = 0, pgLast = 0; const pgSc = document.scrollingElement; // hands the wheel to the side bar's own scroll at the ends of the list; mouse notches glide instead of jumping, trackpad movement passes straight through
 function pgStop() { if (pgRaf) cancelAnimationFrame(pgRaf); pgRaf = 0; pgTgt = null; }
 function pgStep() {
   pgRaf = 0; if (pgTgt == null) return;
@@ -3351,39 +3391,24 @@ if (document.fonts) {
   const SHRINK = 640, HOLD = 180;              // header: width shrinks 640ms, after the content has started to fade
   let busy = false, saved = {}; try { saved = JSON.parse(localStorage.getItem(LS)) || {}; } catch {}
   const key = (d) => (d.querySelector("summary h2") || {}).textContent || "";
-  const save = () => { const o = {}; panels.forEach((d) => { o[key(d)] = d.open; }); try { localStorage.setItem(LS, JSON.stringify(o)); } catch {} };
-  const glyph = (d) => { const b = d.querySelector(".pmin"); if (!b) return; const open = d.open; b.textContent = open ? "−" : "+"; b.setAttribute("aria-label", (open ? "Minimize " : "Expand ") + key(d) + " panel"); b.title = open ? "Minimize" : "Expand"; b.setAttribute("aria-expanded", String(open)); };
+  const save = () => { const o = {}; panels.forEach((d) => { o[key(d)] = d._want === undefined ? d.open : d._want; }); try { localStorage.setItem(LS, JSON.stringify(o)); } catch {} };
+  const glyph = (d) => { const b = d.querySelector(".pmin"); if (!b) return; const open = d._want === undefined ? d.open : d._want; b.textContent = open ? "−" : "+"; b.setAttribute("aria-label", (open ? "Minimize " : "Expand ") + key(d) + " panel"); b.title = open ? "Minimize" : "Expand"; b.setAttribute("aria-expanded", String(open)); };
   const frame = (fn, ms) => new Promise((res) => { const t0 = performance.now(); (function tick(now) { const t = now - t0; fn(t); if (t < ms) requestAnimationFrame(tick); else res(); })(t0); });
   const below = (d) => { const i = panels.indexOf(d); return panels.slice(i + 1); };
 
-  async function collapse(d) {
-    busy = true; const H1 = d.offsetHeight; d.open = false; const H0 = d.offsetHeight; d.open = true; const delta = H1 - H0;
-    const after = below(d); glyph(d); d.querySelector(".pmin").textContent = "+"; // flips straight away
-    d.classList.add("pm-run", "pm-hide"); d.style.overflow = "hidden"; d.style.height = H1 + "px";
-    const dur = (i) => SHRINK + 70 * i, dly = (i) => HOLD + 40 * i, total = Math.max(HOLD + SHRINK, ...after.map((_, i) => dly(i) + dur(i)));
-    after.forEach((p) => { p.style.willChange = "transform"; });
-    await frame((t) => {
-      const h = H0 + delta * (1 - EASE((t - HOLD) / SHRINK));
-      d.style.height = h + "px";
-      after.forEach((p, i) => { // each panel below is dragged up behind the one above it: later, slower, and never sooner than the layout allows
-        const q = DRAG((t - dly(i)) / dur(i)); p.style.transform = "translateY(" + Math.max(0, (H1 - h) - delta * q).toFixed(2) + "px)";
-      });
-    }, total);
-    d.open = false; d.style.height = d.style.overflow = ""; d.classList.remove("pm-run", "pm-hide");
-    after.forEach((p) => { p.style.transform = p.style.willChange = ""; }); glyph(d); save(); busy = false;
+  const DUR = 360, EZ = "cubic-bezier(.22,1,.36,1)";
+  function slide(d) { // one smooth height glide per panel; never blocks the others, and can be reversed mid way
+    if (reduce && reduce.matches) { d._want = !d.open; d.open = !d.open; glyph(d); save(); return; }
+    const want = !(d._want === undefined ? d.open : d._want); d._want = want; glyph(d);
+    const cur = d.offsetHeight; if (d._a) d._a.cancel();
+    let end; if (want) { d.open = true; end = d.offsetHeight; } else { d.open = false; end = d.offsetHeight; d.open = true; }
+    const kids = [...d.children].filter((c) => c.tagName !== "SUMMARY"); d.style.overflow = "hidden";
+    kids.forEach((k) => { if (k._f) k._f.cancel(); k._f = k.animate(want ? [{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1 }, { opacity: 0 }], { duration: want ? DUR : DUR * .45, delay: want ? 70 : 0, easing: EZ, fill: "backwards" }); });
+    const a = d._a = d.animate([{ height: cur + "px" }, { height: end + "px" }], { duration: DUR, easing: EZ });
+    a.finished.then(() => { if (d._a !== a) return; d.open = want; d.style.overflow = ""; d._a = null; save(); }, () => {});
+    save();
   }
-  async function expand(d) {
-    busy = true; const H0 = d.offsetHeight; d.classList.add("pm-hide"); d.open = true; const H1 = d.offsetHeight; glyph(d);
-    d.classList.add("pm-run"); d.style.overflow = "hidden"; d.style.height = H0 + "px"; void d.offsetHeight;
-    setTimeout(() => { d.classList.add("pm-fadein"); d.classList.remove("pm-hide"); }, 170);
-    await frame((t) => { d.style.height = (H0 + (H1 - H0) * EASE(t / SHRINK)) + "px"; }, SHRINK);
-    d.style.height = d.style.overflow = ""; d.classList.remove("pm-run", "pm-hide", "pm-fadein"); glyph(d); save(); busy = false;
-  }
-  function toggle(d) {
-    if (busy) return;
-    if (reduce && reduce.matches) { d.open = !d.open; glyph(d); save(); return; }
-    d.open ? collapse(d) : expand(d);
-  }
+  function toggle(d) { slide(d); }
   panels.forEach((d) => {
     const sum = d.querySelector("summary"); if (!sum) return;
     let row = sum.querySelector(".sumr");
@@ -3391,10 +3416,11 @@ if (document.fonts) {
     const b = document.createElement("button"); b.type = "button"; b.className = "btn pmin"; row.appendChild(b);
     b.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); toggle(d); });
     sum.addEventListener("click", (e) => { if (e.target.closest("button, input, a, select, textarea")) return; e.preventDefault(); toggle(d); }); // the title bar works like the button
-    d.addEventListener("toggle", () => glyph(d));
+    d.addEventListener("toggle", () => { if (!d._a) glyph(d); });
     if (saved[key(d)] === false) d.open = false;
     glyph(d);
   });
+  const dsg = document.querySelector("#dsgSec > summary"); if (dsg) dsg.addEventListener("click", (e) => { if (e.target.closest("button, input, a, select, textarea")) return; e.preventDefault(); slide(dsg.parentElement); });
 })();
 </script>
 <script>
@@ -3606,7 +3632,7 @@ if (document.fonts) {
   const tg = document.createElement("button"); tg.type = "button"; tg.id = "sbToggle"; tg.setAttribute("aria-controls", "sidebar");
   tg.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>';
   head.append(logo, ttl, tg); sb.prepend(head);
-  const scrim = document.createElement("div"); scrim.className = "sb-scrim"; body.append(scrim);
+  const scrim = document.createElement("div"); scrim.className = "sb-scrim"; sb.parentNode.insertBefore(scrim, sb);
   // icons on every row, tooltip text for the rail
   sb.querySelectorAll("summary").forEach((s) => {
     const h = s.querySelector("h2"), name = h ? h.textContent.trim() : ""; if (!ICONS[name] || s.querySelector(".sbi")) return;
@@ -3618,11 +3644,11 @@ if (document.fonts) {
     window.dispatchEvent(new CustomEvent("bcs-float", { detail: { forced: mqN.matches && !collapsed } }));
     if (remember) try { localStorage.setItem(LS, collapsed ? "1" : "0"); } catch {}
   };
-  const init = saved(); set(init == null ? (mqN.matches || innerWidth < 1100) : init === "1", false);
+  const init = saved(); set(init == null ? true : init === "1", false);
   tg.addEventListener("click", () => set(!body.classList.contains("sb-collapsed")));
   scrim.addEventListener("click", () => set(true));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && mqN.matches && !body.classList.contains("sb-collapsed") && !document.querySelector(".modalwrap:not([hidden])")) set(true); });
-  mqN.addEventListener && mqN.addEventListener("change", () => { if (saved() == null) set(mqN.matches || innerWidth < 1100, false); else set(body.classList.contains("sb-collapsed"), false); });
+  mqN.addEventListener && mqN.addEventListener("change", () => { if (saved() == null) set(true, false); else set(body.classList.contains("sb-collapsed"), false); });
   // on the rail, tapping an icon opens the bar with that panel open
   sb.addEventListener("click", (e) => {
     if (!body.classList.contains("sb-collapsed")) return; const s = e.target.closest("summary"); if (!s) return;
@@ -3641,6 +3667,43 @@ if (document.fonts) {
     if (Math.abs(dx) < 56 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
     if (col && dx > 0) set(false); else if (!col && dx < 0) set(true);
   }, { passive: true });
+  // sliding hover pill, stretch on navigation, graphics + library docked under the design
+  const pill = document.createElement("i"); pill.className = "sb-pill"; pill.setAttribute("aria-hidden", "true"); sb.prepend(pill);
+  const place = (s) => {
+    const r = s.getBoundingClientRect(), b = sb.getBoundingClientRect(), first = !pill.classList.contains("on");
+    if (first) pill.classList.add("snap");
+    pill.style.width = r.width + "px"; pill.style.height = r.height + "px"; pill.style.transform = "translate3d(" + (r.left - b.left - sb.clientLeft).toFixed(1) + "px," + (r.top - b.top - sb.clientTop + sb.scrollTop).toFixed(1) + "px,0)";
+    if (first) { void pill.offsetWidth; pill.classList.remove("snap"); }
+    pill.classList.add("on");
+  };
+  sb.addEventListener("pointerover", (e) => { if (e.pointerType === "touch") return; const s = e.target.closest("summary"); if (s && sb.contains(s)) place(s); });
+  sb.addEventListener("pointerleave", () => pill.classList.remove("on"));
+  const stretch = () => { if (!sb.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return; sb.animate([{ transform: "scale(1,1)" }, { transform: "scale(1.035,1.016)", offset: .3 }, { transform: "scale(.992,.997)", offset: .64 }, { transform: "scale(1,1)" }], { duration: 620, easing: "cubic-bezier(.3,.7,.3,1)" }); };
+  sb.addEventListener("click", (e) => { const s = e.target.closest("summary"); if (!s) return; stretch(); setTimeout(() => { const h = sb.querySelector("summary:hover"); if (h && !matchMedia("(hover:none)").matches) place(h); else pill.classList.remove("on"); }, 420); });
+  tg.addEventListener("click", stretch);
+  // desktop: the bar starts beside the preview (below the title and tips), then rides along, and never runs over the footer
+  const mainEl = document.querySelector("main"), foot = document.querySelector(".site-foot"); let tk = 0;
+  const pos = () => { tk = 0; if (mqN.matches) { sb.style.removeProperty("--sbtop"); sb.style.removeProperty("--sbmax"); return; }
+    const mt = mainEl.getBoundingClientRect().top + 24, ft = foot ? foot.getBoundingClientRect().top : 1e9, lim = Math.min(innerHeight, ft) - 16, MIN = 300;
+    const top = Math.max(88 - Math.max(0, 0), Math.min(mt, lim - MIN)); const t = Math.max(88, mt) > lim - MIN ? Math.max(88 - 0, lim - MIN) : Math.max(88, mt);
+    sb.style.setProperty("--sbtop", t.toFixed(0) + "px"); sb.style.setProperty("--sbmax", Math.max(MIN, lim - t).toFixed(0) + "px"); };
+  const kick = () => { if (!tk) tk = requestAnimationFrame(pos); };
+  addEventListener("scroll", kick, { passive: true }); addEventListener("resize", kick); new ResizeObserver(kick).observe(mainEl); pos();
+  const dock = document.getElementById("dock");
+  [["gfxSec", "Graphics"], ["libSec", "Library"]].forEach(([id, title]) => {
+    const sec = document.getElementById(id), grid = sec && sec.querySelector(":scope > .grid"); if (!sec || !grid || !dock) return;
+    const p = document.createElement("div"); p.className = "dockpanel"; p.id = id + "Dock";
+    const inn = document.createElement("div"); inn.className = "in";
+    const bodyEl = document.createElement("div"); bodyEl.className = "dockbody";
+    const hd = document.createElement("div"); hd.className = "dockhead"; const h3 = document.createElement("h3"); h3.textContent = title; hd.append(h3);
+    const x = document.createElement("button"); x.type = "button"; x.className = "btn small dockx"; x.textContent = "Close"; x.addEventListener("click", () => { sec.open = false; });
+    hd.append(x); bodyEl.append(hd, grid); inn.append(bodyEl); p.append(inn); dock.append(p);
+    const sync = () => { p.classList.toggle("on", sec.open); if (!sec.open) return;
+      ["gfxSec", "libSec"].forEach((o) => { const e = document.getElementById(o); if (e && e !== sec && e.open) e.open = false; }); // only one dock panel at a time
+      if (mqN.matches && !body.classList.contains("sb-collapsed")) set(true);
+      setTimeout(() => { const r = p.getBoundingClientRect(); if (r.top > innerHeight * .6 || r.top < 70) window.scrollTo({ top: scrollY + r.top - 96, behavior: "smooth" }); }, 140); };
+    sec.addEventListener("toggle", sync); p.classList.toggle("on", sec.open);
+  });
 })();
 </script>
 </body>
