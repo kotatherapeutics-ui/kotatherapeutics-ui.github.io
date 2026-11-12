@@ -644,11 +644,6 @@ body:not(.sb-collapsed) #sbToggle svg{transform:rotate(180deg)}
   body{--sbw:min(88vw,392px)}
   body.sb-collapsed{--sbw:58px}
   .controls.sidebar{background:linear-gradient(158deg,rgba(255,255,255,.16),rgba(255,255,255,.05) 42%,rgba(255,255,255,.09)),rgba(16,18,24,.82)}
-  body.sb-collapsed .controls.sidebar{top:auto;bottom:max(18px,env(safe-area-inset-bottom,0px));padding:10px 6px 12px;border-radius:29px}
-  body.sb-collapsed .controls.sidebar details{display:none}
-  body.sb-collapsed .sb-head{padding:0}
-  body.sb-collapsed .sb-logo{width:36px;height:36px}
-  body.sb-collapsed .controls.sidebar summary[data-tip]:hover::before{display:none}
   .sb-scrim{display:block;position:fixed;inset:0;z-index:34;background:rgba(5,6,8,.45);opacity:0;pointer-events:none;transition:opacity 360ms var(--ease)}
   body:not(.sb-collapsed) .sb-scrim{opacity:1;pointer-events:auto}
 }
@@ -762,6 +757,36 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
 .note.qr-warn{color:#e9b44c}
 #qrCtl.bad input[type=range]::-webkit-slider-thumb{background:linear-gradient(145deg,#ff7a70,#d4443c)}
 #qrField.bad input{box-shadow:var(--nm-inset),0 0 0 1.5px rgba(255,107,97,.7)}
+/* r81: phone clean-up (no overlaps), centred preview, QR/hints polish */
+.plate{grid-template-columns:14px minmax(0,1fr) 14px!important;padding:8px 6px 10px 6px!important}
+.plate #preview,.plate .dpx,.plate .dw{grid-column:2!important}
+.plate .dh{grid-column:3!important;width:14px;line-height:14px}
+@media (max-width:760px){
+  .hints{border-radius:22px!important;padding:12px 16px 14px 18px!important}
+  .posbar{padding:14px 14px!important}
+  .posbar .axes{flex-wrap:wrap;row-gap:8px}
+  .posbar .selwrap{flex:1 0 100%}
+  .posbar input[type=number]{width:74px}
+}
+@media (max-width:880px){
+  .controls.sidebar{top:max(84px,var(--fltb,0px),env(safe-area-inset-top,0px))!important;max-height:calc(100dvh - max(84px,var(--fltb,0px)) - 12px)!important}
+  body{padding-bottom:max(0px,env(safe-area-inset-bottom,0px))}
+}
+/* r82: phone side panel = the desktop rail (icons) centred on screen; close bubble on the panel edge; no layout or blur animation */
+@media (max-width:880px){
+  .controls.sidebar{-webkit-backdrop-filter:none;backdrop-filter:none;transition:none!important;background:linear-gradient(158deg,rgba(255,255,255,.1),rgba(255,255,255,.03) 45%,rgba(255,255,255,.06)),rgba(17,19,25,.965);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 14px 34px rgba(0,0,0,.5)}
+  body.sb-collapsed{--sbw:68px}
+  body.sb-collapsed .controls.sidebar{left:10px!important;right:auto!important;top:50dvh!important;bottom:auto!important;translate:0 -50%;width:68px!important;height:auto;max-height:calc(100dvh - 24px)!important;padding:12px 8px 14px!important;border-radius:30px!important;overflow:visible;animation:sbFade 240ms var(--ease)}
+  body.sb-collapsed .controls.sidebar details{display:block}
+  body.sb-collapsed .controls.sidebar summary{padding:7px!important}
+  body:not(.sb-collapsed) .controls.sidebar{animation:sbFade 260ms var(--ease)}
+  @keyframes sbFade{from{opacity:0}}
+  body:not(.sb-collapsed) #sbToggle{position:fixed;left:calc(10px + var(--sbw) - 19px);right:auto;top:var(--tgy,50dvh);margin-top:-19px;width:38px;height:38px;z-index:80;box-shadow:0 6px 18px rgba(0,0,0,.55),0 0 0 3px rgba(17,19,25,.92)}
+  body:not(.sb-collapsed) .sb-head{padding-right:6px}
+  body:not(.sb-collapsed) .nav-wrap{opacity:0;pointer-events:none}
+  body:not(.sb-collapsed) main{z-index:60}
+  #floatBox{z-index:65}
+}
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -981,11 +1006,11 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
         <div class="field" data-rowof="batch" hidden><label for="date">Date</label><input type="text" id="date" data-k="date" placeholder="Blank = write-in line"></div>
         <p class="note full" id="rowNote" data-rowof="batch" hidden style="margin:0">For each row you turn on, type the text to print it on the label, or leave it blank to print a line you can fill in later with a pen or marker.</p>
         <div class="field full"><label for="disclaimer" id="disclaimerLbl">Disclaimer</label><input type="text" id="disclaimer" data-k="disclaimer"></div>
+        <div class="field full" id="disc2Field" hidden><label for="disclaimer2">Disclaimer 2</label><input type="text" id="disclaimer2" data-k="disclaimer2" placeholder="e.g. Not for human consumption"></div>
         <div class="full txtlist" id="txtList"></div>
         <div class="field full"><button type="button" class="btn small" id="addText">+ Add text</button></div>
         <div class="field full" id="qrField"><label for="qrUrl">QR code link</label><input type="text" id="qrUrl" data-k="qrUrl" placeholder="https://example.com" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
-        <div class="field full" id="qrCtl" hidden><label for="qrSize">QR size <output id="qrSizeOut"></output></label><input type="range" id="qrSize" min="5" max="19" step="0.1"><p class="note" id="qrNote" aria-live="polite" style="margin:8px 0 0"></p></div>
-        <div class="field full" id="disc2Field" hidden><label for="disclaimer2">Disclaimer 2</label><input type="text" id="disclaimer2" data-k="disclaimer2" placeholder="e.g. Not for human consumption"></div>
+        <div class="field full" id="qrCtl" hidden><label for="qrSize">QR size <output id="qrSizeOut"></output></label><input type="range" id="qrSize" min="4" max="19" step="0.0847"><p class="note" id="qrNote" aria-live="polite" style="margin:8px 0 0"></p></div>
       </div>
     </details>
 
@@ -1522,15 +1547,15 @@ function drawLabel(ctx, c, ink, stock, inner) {
   // Placed graphics start centred on the label; the move tool offsets them
   for (const g of (c.graphics || [])) {
     const d = GFX[g.key]; if (!d || d.bar) continue;
-    const e = gfxImage(g.key, (PRV && g.key === "qr" && qrBad) ? "#e5382f" : ink, +g.stroke || 1);
-    let gh = +g.h || 8, gy = H / 2 - gh / 2;
+    const isQr = g.key === "qr" && GFX.qr, qrCol = (PRV && qrBad) ? "#e5382f" : ink, e = isQr ? { ok: true } : gfxImage(g.key, ink, +g.stroke || 1);
+    let gh = +g.h || 8; if (isQr) gh = qrDots(gh, GFX.qr.n) / QR_DPM; gy = H / 2 - gh / 2;
     if (g.fit) { // an ornament that sits in the free space between the text above and the disclaimer
       const top = flowEnd + 0.5, avail = (legalTop - 0.5) - top;
       if (avail < 2.4) continue; // no room left, so it steps aside instead of overlapping
       gh = Math.min(gh, avail); gy = top + (avail - gh) / 2;
     }
     const gw = gh * d.vb[2] / d.vb[3], gx = W / 2 - gw / 2;
-    at(g.id, () => { if (e.ok) ctx.drawImage(GFX[g.key] && GFX[g.key].custom ? smoothFor(ctx, e.img, gw, gh) : e.img, gx, gy, gw, gh); return [gx, gy, gw, gh]; });
+    at(g.id, () => { if (isQr) qrDraw(ctx, qrCol, gx, gy, gh); else if (e.ok) ctx.drawImage(GFX[g.key] && GFX[g.key].custom ? smoothFor(ctx, e.img, gw, gh) : e.img, gx, gy, gw, gh); return [gx, gy, gw, gh]; });
   }
   // Custom text lines added by the user; each starts centred on the label and is moved with the offsets
   for (const t of (c.texts || [])) {
@@ -1619,15 +1644,24 @@ function isCut() {
   return false;
 }
 // ---- QR code: a link becomes a graphic that scales like any other; too small for the Niimbot M2 turns it red
-const QR_DPM = 472 / 40, QR_BAD = 3, QR_OK = 4; let qrBad = false, PRV = false;
+const QR_DPM = 472 / 40, QR_BAD = 2, QR_OK = 2.5; let qrBad = false, PRV = false;
 if (typeof qrcode !== "undefined") qrcode.stringToBytes = qrcode.stringToBytesFuncs["UTF-8"];
 function qrBuild(url) {
   for (const k of [...gfxCache.keys()]) if (k.startsWith("qr|")) gfxCache.delete(k);
   try {
-    const q = qrcode(0, "M"); q.addData(url, "Byte"); q.make(); const n = q.getModuleCount(), V = (n + 2) * 10; let d = "";
-    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { if (!q.isDark(r, c)) continue; let c2 = c; while (c2 + 1 < n && q.isDark(r, c2 + 1)) c2++; d += `M${(c + 1) * 10} ${(r + 1) * 10}h${(c2 - c + 1) * 10}v10h-${(c2 - c + 1) * 10}z`; c = c2; }
-    GFX.qr = { name: "QR code", hidden: true, vb: [0, 0, V, V], sw: 0, fill: true, qr: true, url, n, body: `<path shape-rendering="crispEdges" d="${d}"/>` };
+    const q = qrcode(0, "L"); q.addData(url, "Byte"); q.make(); const n = q.getModuleCount(), V = (n + 2) * 10, runs = []; let d = "";
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { if (!q.isDark(r, c)) continue; let c2 = c; while (c2 + 1 < n && q.isDark(r, c2 + 1)) c2++; runs.push([r, c, c2 - c + 1]); d += `M${(c + 1) * 10} ${(r + 1) * 10}h${(c2 - c + 1) * 10}v10h-${(c2 - c + 1) * 10}z`; c = c2; }
+    GFX.qr = { name: "QR code", hidden: true, vb: [0, 0, V, V], sw: 0, fill: true, qr: true, url, n, runs, body: `<path shape-rendering="crispEdges" d="${d}"/>` };
   } catch { delete GFX.qr; }
+}
+const qrDots = (gh, n) => Math.max(n + 2, Math.round(gh * QR_DPM)); // the whole code covers a whole number of printer dots; squares of 2 and 3 dots mix when it does not divide evenly, the way the Niimbot app prints it
+function qrDraw(ctx, col, gx, gy, gh) {
+  const q = GFX.qr, n = q.n, T = ctx.getTransform(), sc = T.a; if (!sc) return;
+  const D = qrDots(gh, n), N = n + 2, e = (k) => Math.round(k * D / N) / QR_DPM, ax = (T.e + sc * gx) / sc, ay = (T.f + sc * gy) / sc;
+  const ox = gx + Math.round(ax * QR_DPM) / QR_DPM - ax, oy = gy + Math.round(ay * QR_DPM) / QR_DPM - ay; // start on a dot too, so every edge is crisp
+  ctx.fillStyle = col; ctx.beginPath();
+  for (const [r, c, l] of q.runs) ctx.rect(ox + e(c + 1), oy + e(r + 1), e(c + 1 + l) - e(c + 1), e(r + 2) - e(r + 1));
+  ctx.fill();
 }
 function qrEnsure() {
   const url = (cfg.qrUrl || "").trim();
@@ -1640,13 +1674,13 @@ function qrUI() {
   if (!GFX.qr) { ctl.hidden = false; note.className = "note qr-bad"; note.textContent = "That link is too long to fit in a QR code."; document.getElementById("qrSize").disabled = true; return; }
   document.getElementById("qrSize").disabled = false;
   if (!g) { note.className = "note"; note.textContent = ""; return; }
-  const n = GFX.qr.n, h = +g.h || 10, mm = h / (n + 2), dots = mm * QR_DPM, need3 = QR_BAD * (n + 2) / QR_DPM, need4 = QR_OK * (n + 2) / QR_DPM, sl = document.getElementById("qrSize");
-  if (document.activeElement !== sl) sl.value = String(Math.min(19, Math.max(5, h)));
-  document.getElementById("qrSizeOut").textContent = h.toFixed(1) + " mm";
+  const n = GFX.qr.n, h = +g.h || 10, D = qrDots(h, n), dots = D / (n + 2), mm = dots / QR_DPM, need3 = QR_BAD * (n + 2) / QR_DPM, need4 = QR_OK * (n + 2) / QR_DPM, sl = document.getElementById("qrSize");
+  if (document.activeElement !== sl) sl.value = String(Math.min(19, Math.max(4, D / QR_DPM)));
+  document.getElementById("qrSizeOut").textContent = (D / QR_DPM).toFixed(1) + " mm";
   qrBad = dots < QR_BAD; ctl.classList.toggle("bad", qrBad);
-  if (qrBad) { note.className = "note qr-bad"; note.textContent = `Too small to print: each square is only ${dots.toFixed(1)} dots wide (${mm.toFixed(2)} mm), and the Niimbot M2 prints 300 dpi, so squares under ${QR_BAD} dots blur together and will not scan. Make it at least ${need3.toFixed(1)} mm, or ${need4.toFixed(1)} mm to be safe${need4 > 19 ? ". This link is long, so a shorter link would help." : "."}`; }
-  else if (dots < QR_OK) { note.className = "note qr-warn"; note.textContent = `Tight: ${dots.toFixed(1)} dots per square. It can scan on a clean print, but ${need4.toFixed(1)} mm or larger is safer.`; }
-  else { note.className = "note"; note.textContent = `Good for the M2: ${dots.toFixed(1)} dots per square (${mm.toFixed(2)} mm).`; }
+  if (qrBad) { note.className = "note qr-bad"; note.textContent = `Too small to print: each square is only about ${dots.toFixed(1)} dots wide (${mm.toFixed(2)} mm), and the Niimbot M2 prints 300 dpi, so squares under ${QR_BAD} dots blur together and will not scan. Make it at least ${need3.toFixed(1)} mm, or ${need4.toFixed(1)} mm to be safe${need4 > 19 ? ". This link is long, so a shorter link would help." : "."}`; }
+  else if (dots < QR_OK) { note.className = "note qr-warn"; note.textContent = `Tight: about ${dots.toFixed(1)} dots per square. It can scan on a clean print, but ${need4.toFixed(1)} mm or larger is safer.`; }
+  else { note.className = "note"; note.textContent = `Good for the M2: about ${dots.toFixed(1)} dots per square. The size snaps to whole printer dots so edges stay crisp.`; }
   if (document.getElementById("qrField")) document.getElementById("qrField").classList.toggle("bad", qrBad);
 }
 // Columns: one switch in Content for the logo column and the vertical text column, linked both ways to the Layout toggles
@@ -1655,13 +1689,18 @@ function colsSync() { const on = !!(cfg.showLogo || cfg.showSide); colsOn.checke
 const colSet = (id, v) => { const el = document.getElementById(id); el.checked = v; el.dispatchEvent(new Event("input", { bubbles: true })); };
 colsOn.addEventListener("change", () => {
   if (!colsOn.checked) { colMem = { logo: !!cfg.showLogo, side: !!cfg.showSide }; colSet("showLogo", false); colSet("showSide", false); }
-  else { const m = colMem && (colMem.logo || colMem.side) ? colMem : { logo: true, side: true }; colSet("showLogo", m.logo); colSet("showSide", m.side); }
+  else {
+    const m = colMem && (colMem.logo || colMem.side) ? colMem : { logo: true, side: true }; colSet("showLogo", m.logo); colSet("showSide", m.side);
+    if (m.side && !(cfg.sideText || "").trim()) { cfg.sideText = DEFAULTS.sideText; document.getElementById("sideText").value = cfg.sideText; } // an empty column draws nothing, so it starts with the house text
+    if (m.logo) { cfg.logoFree = false; cfg.logoColW = 0; if (!logoImg) restoreDefaultLogo().then(() => { render(); }).catch(() => {}); }
+    lsSet(LS_CFG, cfg); render();
+  }
   colsSync();
 });
 document.getElementById("qrUrl").addEventListener("input", (ev) => {
   cfg.qrUrl = ev.target.value; const url = cfg.qrUrl.trim(); qrEnsure();
   if (url && GFX.qr && !(cfg.graphics || []).some(g => g.key === "qr")) {
-    const n = GFX.qr.n, need4 = QR_OK * (n + 2) / QR_DPM, need3 = QR_BAD * (n + 2) / QR_DPM, hMax = Math.min(17, Math.max(need4, 10)), spot = findSpot(1, hMax, Math.min(hMax, need3));
+    const n = GFX.qr.n, need4 = Math.ceil(QR_OK * (n + 2)) / QR_DPM, need3 = QR_BAD * (n + 2) / QR_DPM, hMax = Math.min(17, Math.max(need4, 8)), spot = findSpot(1, hMax, Math.min(hMax, need3));
     const h = Math.round((spot ? spot.h : hMax) * 10) / 10; cfg.graphics = [...(cfg.graphics || []), { id: "gfxqr", key: "qr", h }];
     if (spot) { const o = offFromSpot(spot); setOff("gfxqr", o.x, o.y); }
     sel = "gfxqr"; updatePos();
@@ -1670,7 +1709,7 @@ document.getElementById("qrUrl").addEventListener("input", (ev) => {
 });
 document.getElementById("qrSize").addEventListener("input", (e) => {
   const g = (cfg.graphics || []).find(x => x.key === "qr"); if (!g || !GFX.qr) return; let v = parseFloat(e.target.value); const n = GFX.qr.n, dots = v / (n + 2) * QR_DPM;
-  if (Math.abs(dots - Math.round(dots)) < 0.14 && Math.round(dots) >= 2) v = Math.round(dots) * (n + 2) / QR_DPM; // lands on whole dots, so every square prints the same width
+  v = Math.round(v * QR_DPM) / QR_DPM; // whole printer dots
   cfg.graphics = cfg.graphics.map(q => q === g ? Object.assign({}, q, { h: Math.round(v * 100) / 100 }) : q); delete cfg.fit; lsSet(LS_CFG, cfg); updatePos(); render();
 });
 function doRender() {
@@ -3333,17 +3372,20 @@ if (document.fonts) {
   const clampW = (w) => Math.max(MIN_W, Math.min(maxW(), w));
   const snapX = (anchor, w) => anchor === 'left' ? M : anchor === 'middle' ? Math.round((vw() - w) / 2) : vw() - w - M;
   let x = 0, y = M, anim = 0;
+  const hdr = document.querySelector('.nav-wrap'), TY = () => { if (!(typeof forced !== 'undefined' && forced && mq.matches) || !hdr) return M; const r = hdr.getBoundingClientRect(); return r.bottom > 0 ? Math.max(M, Math.round(r.bottom + 8)) : M; }; // while the panel is open the preview rides just under the header, so the two never overlap
+  const sbGap = () => { document.documentElement.style.setProperty('--fltb', (box.classList.contains('on') && typeof forced !== 'undefined' && forced && mq.matches) ? Math.round(y + st.w / 2 + 12) + 'px' : '0px'); };
   // when a text field is tapped on a phone the keyboard opens and the visual viewport is panned; fixed elements stay with the layout viewport and slide away, so follow the visual viewport
   const vvo = () => { const v = window.visualViewport; return v ? [v.offsetLeft || 0, v.offsetTop || 0] : [0, 0]; };
   const put = () => { const [ox, oy] = vvo(); box.style.transformOrigin = st.anchor === 'left' ? '0 0' : st.anchor === 'middle' ? '50% 0' : '100% 0'; box.style.transform = `translate3d(${x + ox}px,${y + oy}px,0) scale(${box.classList.contains('kb') ? 0.5 : 1})`; };
   if (window.visualViewport) { let q = 0; const f = () => { if (q) return; q = requestAnimationFrame(() => { q = 0; if (box.classList.contains('on')) put(); }); }; visualViewport.addEventListener('scroll', f); visualViewport.addEventListener('resize', f); }
   const setW = (w) => { st.w = clampW(w); box.style.width = st.w + 'px'; };
-  const place = () => { cancelAnimationFrame(anim); setW(st.w); x = snapX(st.anchor, st.w); y = M; put(); };
+  const place = () => { cancelAnimationFrame(anim); setW(st.w); x = snapX(st.anchor, st.w); y = TY(); put(); sbGap(); };
 
   // visibility: shown when the stacked layout is active and the main preview has scrolled out of view
   let seen = 1;
   let forced = false; window.addEventListener('bcs-float', (e) => { forced = !!(e.detail && e.detail.forced); apply(); });
-  const apply = () => { const on = mq.matches && (seen < 0.35 || forced), was = box.classList.contains('on'); box.classList.toggle('on', on); if (on && !was) place(); };
+  const apply = () => { const on = mq.matches && (seen < 0.35 || forced), was = box.classList.contains('on'); box.classList.toggle('on', on); if (on) place(); else sbGap(); };
+  window.addEventListener('scroll', () => { if (box.classList.contains('on') && !dragging && forced) { y = TY(); put(); sbGap(); } }, { passive: true });
   if ('IntersectionObserver' in window) new IntersectionObserver((e) => { seen = e[0].intersectionRatio; apply(); }, { threshold: [0, 0.15, 0.35, 0.6, 1] }).observe(plate);
   (mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply));
   window.addEventListener('resize', () => { if (box.classList.contains('on') && !dragging) place(); });
@@ -3353,7 +3395,7 @@ if (document.fonts) {
   const ghosts = ['left', 'middle', 'right'].map((a) => { const g = document.createElement('div'); g.className = 'floatGhost'; g.dataset.a = a; document.body.appendChild(g); return g; });
   const showGhosts = (on, hot) => ghosts.forEach((g) => {
     g.style.display = on ? 'block' : 'none';
-    if (on) { g.style.width = st.w + 'px'; g.style.height = (st.w / 2) + 'px'; { const [vx0, vy0] = vvo(); g.style.transform = `translate3d(${snapX(g.dataset.a, st.w) + vx0}px,${M + vy0}px,0)`; } g.style.borderColor = g.dataset.a === hot ? 'rgba(235,235,245,.95)' : 'rgba(200,200,210,.45)'; }
+    if (on) { g.style.width = st.w + 'px'; g.style.height = (st.w / 2) + 'px'; { const [vx0, vy0] = vvo(); g.style.transform = `translate3d(${snapX(g.dataset.a, st.w) + vx0}px,${TY() + vy0}px,0)`; } g.style.borderColor = g.dataset.a === hot ? 'rgba(235,235,245,.95)' : 'rgba(200,200,210,.45)'; }
   });
   const nearest = (px) => { let best = 'right', bd = Infinity; for (const a of ['left', 'middle', 'right']) { const d = Math.abs(px - snapX(a, st.w)); if (d < bd) { bd = d; best = a; } } return best; };
 
@@ -3395,7 +3437,7 @@ if (document.fonts) {
     const cap = (v) => Math.max(-4, Math.min(4, v)); vx = cap(vx); vy = cap(vy);
     const projX = x + vx / K_DECAY;          // where the box would have coasted to with friction
     st.anchor = nearest(projX); save(); showGhosts(false);
-    glide(snapX(st.anchor, st.w), M, vx, vy);
+    glide(snapX(st.anchor, st.w), TY(), vx, vy);
   };
   box.addEventListener('pointerup', endDrag); box.addEventListener('pointercancel', endDrag);
 
@@ -3404,7 +3446,7 @@ if (document.fonts) {
   grip.addEventListener('pointerdown', (e) => { cancelAnimationFrame(anim); rs = { id: e.pointerId, x: e.clientX, y: e.clientY, w: st.w }; grip.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation(); });
   grip.addEventListener('pointermove', (e) => {
     if (!rs || e.pointerId !== rs.id) return;
-    setW(rs.w + ((rs.x - e.clientX) + 2 * (e.clientY - rs.y)) / 2); x = snapX(st.anchor, st.w); y = M; put();
+    setW(rs.w + ((rs.x - e.clientX) + 2 * (e.clientY - rs.y)) / 2); x = snapX(st.anchor, st.w); y = TY(); put(); sbGap();
   });
   const endRs = (e) => { if (!rs || e.pointerId !== rs.id) return; try { grip.releasePointerCapture(rs.id); } catch {} rs = null; save(); };
   grip.addEventListener('pointerup', endRs); grip.addEventListener('pointercancel', endRs);
@@ -3515,16 +3557,16 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   const frame = (fn, ms) => new Promise((res) => { const t0 = performance.now(); (function tick(now) { const t = now - t0; fn(t); if (t < ms) requestAnimationFrame(tick); else res(); })(t0); });
   const below = (d) => { const i = panels.indexOf(d); return panels.slice(i + 1); };
 
-  const DUR = 360, EZ = "cubic-bezier(.22,1,.36,1)";
+  const DUR = 520, EZ = "cubic-bezier(.22,1,.36,1)";
   function slide(d) { // one smooth height glide per panel; never blocks the others, and can be reversed mid way
     if (reduce && reduce.matches) { d._want = !d.open; d.open = !d.open; glyph(d); save(); return; }
     const want = !(d._want === undefined ? d.open : d._want); d._want = want; glyph(d);
     const cur = d.offsetHeight; if (d._a) d._a.cancel();
     let end; if (want) { d.open = true; end = d.offsetHeight; } else { d.open = false; end = d.offsetHeight; d.open = true; }
-    const kids = [...d.children].filter((c) => c.tagName !== "SUMMARY"); d.style.overflow = "hidden";
+    const kids = [...d.children].filter((c) => c.tagName !== "SUMMARY"); d.style.overflow = "hidden"; d.style.contain = "layout paint"; // inner layout is done once, so each frame only moves the edge
     kids.forEach((k) => { if (k._f) k._f.cancel(); k._f = k.animate(want ? [{ opacity: .15 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: .15 }], { duration: DUR, easing: EZ }); });
     const a = d._a = d.animate([{ height: cur + "px" }, { height: end + "px" }], { duration: DUR, easing: EZ });
-    a.finished.then(() => { if (d._a !== a) return; d.open = want; d.style.overflow = ""; d._a = null; save(); }, () => {});
+    a.finished.then(() => { if (d._a !== a) return; d.open = want; d.style.overflow = ""; d.style.contain = ""; d._a = null; save(); }, () => {});
     save();
   }
   function toggle(d) { slide(d); }
@@ -3797,7 +3839,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   };
   sb.addEventListener("pointerover", (e) => { if (e.pointerType === "touch") return; const s = e.target.closest("summary"); if (s && sb.contains(s)) place(s); });
   sb.addEventListener("pointerleave", () => pill.classList.remove("on"));
-  const stretch = () => { if (!sb.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return; sb.animate([{ transform: "scale(1,1)" }, { transform: "scale(1.022,1.01)", offset: .3 }, { transform: "scale(.996,.999)", offset: .64 }, { transform: "scale(1,1)" }], { duration: 620, easing: "cubic-bezier(.3,.7,.3,1)" }); };
+  const stretch = () => { if (mqN.matches || !sb.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return; sb.animate([{ transform: "scale(1,1)" }, { transform: "scale(1.022,1.01)", offset: .3 }, { transform: "scale(.996,.999)", offset: .64 }, { transform: "scale(1,1)" }], { duration: 620, easing: "cubic-bezier(.3,.7,.3,1)" }); };
   sb.addEventListener("click", (e) => { const s = e.target.closest("summary"); if (!s) return; stretch(); setTimeout(() => { const h = sb.querySelector("summary:hover"); if (h && !matchMedia("(hover:none)").matches) place(h); else pill.classList.remove("on"); }, 420); });
   tg.addEventListener("click", stretch);
   // desktop: the bar starts beside the preview (below the title and tips), then rides along, and never runs over the footer
@@ -3808,6 +3850,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     sb.style.setProperty("--sbtop", t.toFixed(0) + "px"); sb.style.setProperty("--sbmax", Math.max(MIN, lim - t).toFixed(0) + "px"); };
   const kick = () => { if (!tk) tk = requestAnimationFrame(pos); };
   addEventListener("scroll", kick, { passive: true }); addEventListener("resize", kick); new ResizeObserver(kick).observe(mainEl); pos();
+  { let q = 0; const tgy = () => { if (q) return; q = requestAnimationFrame(() => { q = 0; if (!mqN.matches || body.classList.contains("sb-collapsed")) return; const r = sb.getBoundingClientRect(); document.documentElement.style.setProperty("--tgy", Math.round(r.top + r.height / 2) + "px"); }); };
+    new ResizeObserver(tgy).observe(sb); addEventListener("scroll", tgy, { passive: true }); addEventListener("resize", tgy); window.addEventListener("bcs-float", () => { tgy(); setTimeout(tgy, 60); }); sb.addEventListener("transitionend", tgy); setInterval(tgy, 400); }
   const dock = document.getElementById("dock");
   [["gfxSec", "Graphics"], ["libSec", "Library"]].forEach(([id, title]) => {
     const sec = document.getElementById(id), grid = sec && sec.querySelector(":scope > .grid"); if (!sec || !grid || !dock) return;
