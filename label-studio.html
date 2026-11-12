@@ -2491,18 +2491,22 @@ function sizeGfxScroll() { // six graphics show at a time; the rest scroll
   gfxGrid.style.maxHeight = Math.ceil(rows * t.offsetHeight + (rows - 1) * gap + 2) + "px";
 }
 if (window.ResizeObserver) new ResizeObserver(() => sizeGfxScroll()).observe(gfxGrid);
-let pgTgt = null, pgRaf = 0; // hands the wheel to the page at the ends of the list; mouse notches glide instead of jumping, trackpad movement passes straight through
+let pgTgt = null, pgRaf = 0, pgLast = 0; // hands the wheel to the page at the ends of the list; mouse notches glide instead of jumping, trackpad movement passes straight through
+function pgStop() { if (pgRaf) cancelAnimationFrame(pgRaf); pgRaf = 0; pgTgt = null; }
 function pgStep() {
-  const cur = window.scrollY, d = pgTgt - cur;
-  if (Math.abs(d) < 0.6) { window.scrollTo({ top: pgTgt, behavior: "instant" }); pgTgt = null; pgRaf = 0; return; }
-  window.scrollTo({ top: cur + d * 0.22, behavior: "instant" }); pgRaf = requestAnimationFrame(pgStep);
+  pgRaf = 0; if (pgTgt == null) return;
+  const cur = window.scrollY; if (Math.abs(cur - pgLast) > 2) { pgTgt = null; return; } // something else moved the page (a normal scroll, a key, the scrollbar): let go at once
+  const d = pgTgt - cur;
+  if (Math.abs(d) < 0.6) { window.scrollTo({ top: pgTgt, behavior: "instant" }); pgTgt = null; return; }
+  const nx = cur + d * 0.22; window.scrollTo({ top: nx, behavior: "instant" }); pgLast = window.scrollY; pgRaf = requestAnimationFrame(pgStep);
 }
+["wheel", "touchstart", "keydown", "pointerdown"].forEach(t => document.addEventListener(t, () => pgStop(), { capture: true, passive: true })); // any other input cancels a glide in progress, so nothing fights the person's hand
 gfxGrid.addEventListener("wheel", (e) => {
   if (e.ctrlKey || !e.deltaY) return; const atTop = gfxGrid.scrollTop <= 0, atEnd = gfxGrid.scrollTop + gfxGrid.clientHeight >= gfxGrid.scrollHeight - 1;
   if (!((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atEnd))) return;
   e.preventDefault(); const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY, max = document.documentElement.scrollHeight - innerHeight;
-  if (Math.abs(dy) < 40 || matchMedia("(prefers-reduced-motion: reduce)").matches) { pgTgt = null; window.scrollBy({ top: dy, left: 0, behavior: "instant" }); return; }
-  pgTgt = Math.max(0, Math.min(max, (pgTgt == null ? window.scrollY : pgTgt) + dy)); if (!pgRaf) pgRaf = requestAnimationFrame(pgStep);
+  if (Math.abs(dy) < 40 || matchMedia("(prefers-reduced-motion: reduce)").matches) { window.scrollBy({ top: dy, left: 0, behavior: "instant" }); return; }
+  const from = pgTgt == null ? window.scrollY : pgTgt; pgTgt = Math.max(0, Math.min(max, from + dy)); pgLast = window.scrollY; if (!pgRaf) pgRaf = requestAnimationFrame(pgStep);
 }, { passive: false });
 gfxSec.addEventListener("toggle", () => { if (gfxSec.open) requestAnimationFrame(sizeGfxScroll); });
 const gfxFile = document.getElementById("gfxFile");
