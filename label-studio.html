@@ -828,6 +828,62 @@ html.ios #quickBtn{display:none!important}
 .mine-input{flex:1;min-width:0;font:inherit;text-transform:none;letter-spacing:0;padding:4px 6px;border-radius:6px;border:1px solid #5bc0ee;background:var(--sunken,#111);color:var(--ink)}
 .pr-chip{display:inline-flex;align-items:center;gap:6px;margin-left:10px;font:600 10.5px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:#7fd99a}
 .pr-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:#4cd07d;box-shadow:0 0 8px rgba(76,208,125,.8)}
+
+/* r89: Load defaults is plain text, the selected category is liquid glass, themed colour menus, tip pointer */
+.controls.sidebar .sumr .ldef,.controls.sidebar .sumr .ldef:hover,.controls.sidebar .sumr .ldef:active{background:none!important;border:0!important;box-shadow:none!important;border-radius:6px;padding:5px 3px;transform:none!important}
+.sumr .ldef{position:relative;font:600 10px/1 var(--f-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;transition:color 200ms var(--ease),text-shadow 240ms var(--ease)}
+.sumr .ldef::after{content:"";position:absolute;left:3px;right:3px;bottom:1px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform 260ms var(--ease)}
+.sumr .ldef:hover{color:var(--cream-50,#fdfbf5);text-shadow:0 0 12px rgba(138,213,245,.55)}
+.sumr .ldef:hover::after{transform:scaleX(1)}
+.sumr .ldef:active{opacity:.7}
+.sumr .ldef.done{color:#8fe0ae;text-shadow:0 0 12px rgba(143,224,174,.5);animation:ldefPop 420ms var(--ease)}
+.sumr .ldef.done::after{transform:scaleX(0)}
+@keyframes ldefPop{0%{transform:scale(.9);opacity:.4}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+.controls.sidebar .grid.rflash{border-radius:18px;animation:resetFlash 950ms var(--ease)}
+@keyframes resetFlash{0%{background:rgba(138,213,245,.2);box-shadow:0 0 0 1px rgba(138,213,245,.45)}100%{background:rgba(138,213,245,0);box-shadow:0 0 0 1px rgba(138,213,245,0)}}
+@media (min-width:881px){
+  .controls.sidebar details.spot[open]>summary{background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.025) 60%,rgba(255,255,255,.07));-webkit-backdrop-filter:blur(2px) saturate(1.7) brightness(1.1);backdrop-filter:blur(2px) saturate(1.7) brightness(1.1);border-color:rgba(255,255,255,.3);box-shadow:inset 0 1.5px 1px rgba(255,255,255,.6),inset 0 -1.5px 1px rgba(255,255,255,.2),inset 1px 0 1px rgba(255,255,255,.22),inset -1px 0 1px rgba(255,255,255,.22),inset 0 0 20px rgba(255,255,255,.08),0 10px 22px rgba(0,0,0,.32)}
+  .sb-lens{display:none}
+  html.lg .controls.sidebar details.spot[open]>summary .sb-lens{display:block;position:absolute;inset:0;border-radius:inherit;pointer-events:none;-webkit-backdrop-filter:url(#bcsLiquid);backdrop-filter:url(#bcsLiquid)} /* a glass lens over the pill: its icon and title bend at the rim */
+  body.sb-collapsed .sb-lens{display:none!important}
+  body.sb-collapsed .controls.sidebar details.spot[open]>summary{-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+.cp{cursor:pointer}
+.cpick{cursor:pointer;border-radius:999px;padding:3px 8px 3px 3px;margin:-3px -8px -3px -3px;outline:none;transition:background 220ms var(--ease),box-shadow 220ms var(--ease)}
+.cp .cpick select{pointer-events:none}
+.cpick .dot{transition:transform 260ms var(--ease),box-shadow 260ms var(--ease),border-color 220ms var(--ease)}
+.cpick .cchev{transition:transform 260ms var(--ease)}
+.cpick[aria-expanded="true"] .cchev{transform:rotate(180deg)}
+.cpick[aria-expanded="true"]{background:rgba(255,255,255,.06)}
+@media (hover:hover){.cpick:hover .dot{transform:scale(1.1);box-shadow:0 0 14px rgba(138,213,245,.4)}}
+.cpick:focus-visible{box-shadow:var(--focus-ring)}
+.cpick.pop .dot{animation:dotPop 460ms var(--ease)}
+@keyframes dotPop{0%{transform:scale(.7)}55%{transform:scale(1.25);box-shadow:0 0 18px rgba(138,213,245,.6)}100%{transform:scale(1)}}
+.ddm{position:fixed;z-index:97;min-width:178px;max-height:min(360px,62dvh);overflow:auto;overscroll-behavior:contain;padding:7px;display:flex;flex-direction:column;gap:3px;border-radius:20px;background:var(--nm-face);border:1px solid rgba(255,255,255,.08);box-shadow:var(--nm-raise),0 26px 56px rgba(0,0,0,.6);scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;opacity:0;transform:translateY(-8px) scale(.96);transform-origin:var(--ox,0) var(--oy,0);transition:opacity 180ms var(--ease),transform 240ms var(--ease)}
+.ddm.on{opacity:1;transform:none}
+.ddm.out{opacity:0;transform:translateY(-6px) scale(.97);transition-duration:140ms}
+.ddm button{display:flex;align-items:center;gap:11px;padding:9px 12px;border:1px solid transparent;border-radius:13px;background:transparent;color:var(--cream-100,#ece8df);font:500 13px/1.1 var(--f-sans);text-align:left;cursor:pointer;outline:none;opacity:0;transform:translateY(-4px);transition:transform 240ms var(--ease),box-shadow 240ms var(--ease),background 240ms var(--ease),border-color 240ms var(--ease),opacity 220ms var(--ease)}
+.ddm.on button{opacity:1;transform:none;transition-delay:calc(var(--i) * 14ms),0s,0s,0s,calc(var(--i) * 14ms)}
+.ddm button .dot{width:20px;height:20px;border-width:1.5px}
+.ddm button[aria-selected="true"]{background:var(--nm-face-in);box-shadow:var(--nm-inset);border-color:rgba(255,255,255,.04)}
+.ddm button[aria-selected="true"]::after{content:"";margin-left:auto;width:5px;height:9px;border:solid #8fd9f5;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ddm button:focus-visible{border-color:rgba(138,213,245,.5)}
+@media (hover:hover){.ddm.on button:hover{transform:translateY(-2px);transition-delay:0s;background:var(--nm-face);box-shadow:5px 7px 14px var(--nm-lo),-3px -3px 10px rgba(255,255,255,.06),0 0 18px rgba(138,213,245,.26),inset 0 1px 0 rgba(255,255,255,.09);border-color:rgba(138,213,245,.35)}.ddm.on button[aria-selected="true"]:hover{background:var(--nm-face-in);box-shadow:var(--nm-inset),0 0 16px rgba(138,213,245,.24)}}
+.coachTip.out{animation:coachOut 240ms var(--ease) both}
+@keyframes coachOut{to{opacity:0;transform:translate(-6px,-50%)}}
+@media (min-width:881px){
+  .coachTip.dk{position:fixed;z-index:91;max-width:230px;transform:none;padding:11px 14px;border-radius:14px;background:#2f86bd;color:#fff;font:600 13px/1.35 var(--f-sans);box-shadow:0 12px 30px rgba(0,0,0,.45);cursor:pointer;animation:coachInD 420ms var(--ease) both}
+  .coachTip.dk::before{content:"";position:absolute;left:-7px;top:20px;border:7px solid transparent;border-left:0;border-right-color:#2f86bd}
+  .coachTip.dk small{display:block;font-weight:500;opacity:.85;margin-top:3px;font-size:11.5px}
+  .coachTip.dk.out{animation:coachOutD 240ms var(--ease) both}
+  @keyframes coachInD{from{opacity:0;transform:translateX(-8px)}}
+  @keyframes coachOutD{to{opacity:0;transform:translateX(-6px)}}
+}
+@media (max-width:880px){
+  #sbBubble.coach{animation:coachBounce 1.7s ease-in-out infinite}
+  @keyframes coachBounce{0%,100%{transform:translateX(0);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),5px 0 16px rgba(0,0,0,.45),0 0 0 0 rgba(91,192,238,.55)}18%{transform:translateX(10px)}34%{transform:translateX(0)}48%{transform:translateX(6px)}62%{transform:translateX(0)}70%{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),5px 0 16px rgba(0,0,0,.45),0 0 0 10px rgba(91,192,238,0)}}
+}
+@media (prefers-reduced-motion:reduce){#sbBubble.coach{animation:none}.cpick.pop .dot,.sumr .ldef.done{animation:none}}
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -3250,6 +3306,9 @@ document.querySelectorAll(".ldef").forEach((btn) => btn.addEventListener("click"
   }
   sel = null; jsonDirty = false; lsSet(LS_CFG, cfg); fillControls(); updatePos(); render();
   say(`${PANEL_NAME[which]} is back to ${pr ? "the " + pr.name + " preset's" : "its"} defaults.`);
+  // feedback: the button confirms with a tick, and the panel's settings flash once
+  if (!btn._o) btn._o = btn.textContent; btn.textContent = "\u2713 Defaults loaded"; btn.classList.add("done"); clearTimeout(btn._t); btn._t = setTimeout(() => { btn.textContent = btn._o; btn.classList.remove("done"); }, 1700);
+  det.querySelectorAll(":scope > .grid").forEach((g) => { g.classList.remove("rflash"); void g.offsetWidth; g.classList.add("rflash"); });
 }));
 
 // Clear all, behind a confirmation window
@@ -3807,9 +3866,9 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     let end; if (want) { d.open = true; end = d.offsetHeight; } else { d.open = false; end = d.offsetHeight; d.open = true; }
     const kids = [...d.children].filter((c) => c.tagName !== "SUMMARY"); d.style.overflow = "hidden"; d.style.contain = "layout paint"; // inner layout is done once, so each frame only moves the edge
     const DUR = durFor(end - cur);
-    kids.forEach((k) => { if (k._f) k._f.cancel(); k._f = k.animate(want ? [{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1 }, { opacity: 0 }], want ? { duration: DUR, delay: 60, easing: EZ, fill: "backwards" } : { duration: DUR * 0.6, easing: "ease-out" }); });
+    kids.forEach((k) => { if (k._f) k._f.cancel(); k._f = k.animate(want ? [{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-5px)" }], want ? { duration: DUR, delay: 60, easing: EZ, fill: "backwards" } : { duration: Math.round(DUR * 0.4), easing: "cubic-bezier(.4,0,.7,1)", fill: "forwards" }); }); // closing: the contents are gone by 40% of the glide, so nothing is visible near its end
     const a = d._a = d.animate([{ height: cur + "px" }, { height: end + "px" }], { duration: DUR, easing: EZ });
-    a.finished.then(() => { if (d._a !== a) return; d.open = want; d.style.overflow = ""; d.style.contain = ""; d._a = null; save(); }, () => {});
+    a.finished.then(() => { if (d._a !== a) return; d.open = want; d.style.overflow = ""; d.style.contain = ""; d._a = null; if (!want) kids.forEach((k) => { if (k._f) { k._f.cancel(); k._f = null; } }); save(); }, () => {});
     save();
   }
   function toggle(d) { slide(d); }
@@ -4054,14 +4113,22 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   tg.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>';
   head.append(logo, ttl, tg); sb.prepend(head);
   const bub = document.createElement("button"); bub.type = "button"; bub.id = "sbBubble"; bub.setAttribute("aria-controls", "sidebar"); bub.innerHTML = tg.innerHTML; document.body.appendChild(bub); bub.addEventListener("click", () => tg.click());
-  // First visit on a phone: point at the bubble until the panel has been opened once
-  { let seen = false; try { seen = localStorage.getItem("bcs-coach-v1") === "1"; } catch {}
-    if (!seen && mqN.matches) {
-      const tip = document.createElement("div"); tip.className = "coachTip"; tip.setAttribute("role", "status"); tip.innerHTML = "Tap here to edit your label<small>Text, layout, graphics and more are in this panel.</small>";
-      const done = () => { bub.classList.remove("coach"); tip.remove(); try { localStorage.setItem("bcs-coach-v1", "1"); } catch {} };
-      setTimeout(() => { if (!body.classList.contains("sb-collapsed")) return done(); bub.classList.add("coach"); document.body.appendChild(tip); tip.addEventListener("click", () => tg.click()); }, 900);
-      new MutationObserver(() => { if (!body.classList.contains("sb-collapsed")) done(); }).observe(body, { attributes: true, attributeFilter: ["class"] });
-    } }
+  // Idle for 15 seconds with no changes: a small pointer to the side panel (every device); on phones the pull tab also bounces toward the middle
+  { const IDLE = 15000, MAXS = 3; let timer = 0, shown = 0, up = false, edited = false, tip = null, hideT = 0;
+    const txt = () => body.classList.contains("sb-collapsed") ? ["Open the side panel to edit your label", "Text, layout, graphics and more are in there."] : ["Everything you can change is in this panel", "Open a section to edit text, layout and graphics."];
+    const place = () => { if (!tip || mqN.matches) return; const r = sb.getBoundingClientRect(); tip.style.left = Math.round(r.right + 16) + "px"; tip.style.top = Math.round(Math.max(96, r.top + 40)) + "px"; };
+    const hide = () => { if (!up) return; up = false; bub.classList.remove("coach"); const t = tip; tip = null; if (t) { t.classList.add("out"); clearTimeout(hideT); hideT = setTimeout(() => t.remove(), 240); } };
+    const show = () => { timer = 0;
+      const t = txt(), collapsed = body.classList.contains("sb-collapsed");
+      if (document.hidden || shown >= MAXS || document.querySelector(".modalwrap:not([hidden])") || (mqN.matches && !collapsed) || (!mqN.matches && !collapsed && edited)) return arm();
+      shown++; up = true; tip = document.createElement("div"); tip.className = "coachTip" + (mqN.matches ? "" : " dk"); tip.setAttribute("role", "status"); tip.innerHTML = t[0] + "<small>" + t[1] + "</small>";
+      tip.addEventListener("click", () => { if (body.classList.contains("sb-collapsed")) tg.click(); hide(); arm(); });
+      document.body.appendChild(tip); place(); if (mqN.matches) bub.classList.add("coach"); };
+    const arm = () => { clearTimeout(timer); timer = setTimeout(show, IDLE); };
+    const act = (e) => { if (e && e.isTrusted === false) return; if (e && (e.type === "input" || e.type === "change")) edited = true; if (up) hide(); arm(); };
+    ["pointerdown", "keydown", "input", "change", "touchstart"].forEach((n) => addEventListener(n, act, { capture: true, passive: true }));
+    new MutationObserver(() => { if (up) hide(); }).observe(body, { attributes: true, attributeFilter: ["class"] });
+    addEventListener("resize", place); addEventListener("scroll", place, { passive: true }); arm(); }
   const scrim = document.createElement("div"); scrim.className = "sb-scrim"; sb.parentNode.insertBefore(scrim, sb);
   // icons on every row, tooltip text for the rail
   sb.querySelectorAll("summary").forEach((s) => {
@@ -4098,6 +4165,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     if (col && dx > 0) set(false); else if (!col && dx < 0) set(true);
   }, { passive: true });
   // sliding hover pill, stretch on navigation, graphics + library docked under the design
+  sb.querySelectorAll(":scope > details.spot > summary").forEach((m) => { if (!m.querySelector(".sb-lens")) { const l = document.createElement("i"); l.className = "sb-lens"; l.setAttribute("aria-hidden", "true"); m.appendChild(l); } });
   const pill = document.createElement("i"); pill.className = "sb-pill"; pill.setAttribute("aria-hidden", "true"); sb.prepend(pill);
   const place = (s) => {
     const r = s.getBoundingClientRect(), b = sb.getBoundingClientRect(), first = !pill.classList.contains("on");
@@ -4136,6 +4204,43 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
       setTimeout(() => { const r = p.getBoundingClientRect(); if (r.top > innerHeight * .6 || r.top < 70) window.scrollTo({ top: scrollY + r.top - 96, behavior: "smooth" }); }, 140); };
     sec.addEventListener("toggle", sync); p.classList.toggle("on", sec.open);
   });
+})();
+</script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="bcsLiquid" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="368" height="52" color-interpolation-filters="sRGB"><feImage href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27368%27%20height=%2752%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27a%27%20x1=%270%27%20x2=%271%27%20y1=%270%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23ff8080%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23ff8080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27b%27%20x1=%271%27%20x2=%270%27%20y1=%270%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23008080%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23008080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27c%27%20x1=%270%27%20x2=%270%27%20y1=%270%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%2380ff80%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%2380ff80%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27d%27%20x1=%270%27%20x2=%270%27%20y1=%271%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23800080%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23800080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27368%27%20height=%2752%27%20fill=%27%23808080%27/%3E%3Crect%20width=%2734%27%20height=%2752%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20x=%27334%27%20width=%2734%27%20height=%2752%27%20fill=%27url%28%23b%29%27/%3E%3Crect%20width=%27368%27%20height=%279%27%20fill=%27url%28%23c%29%27/%3E%3Crect%20y=%2743%27%20width=%27368%27%20height=%279%27%20fill=%27url%28%23d%29%27/%3E%3C/svg%3E" x="0" y="0" width="368" height="52" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="13" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+<script>
+(() => { // r89: themed colour menus for Ribbon and Label, plus the liquid glass switch for Chromium
+  try { if (/Chrome\//.test(navigator.userAgent) && !/Edg\/|OPR\//.test(navigator.userAgent) || /Edg\//.test(navigator.userAgent)) document.documentElement.classList.add("lg"); } catch {}
+  const swatch = (o) => o.dataset.tex && window.TEX_URLS ? "center / cover url(" + window.TEX_URLS[o.dataset.tex] + ")" : (o.dataset.bg || o.value);
+  let cur = null;
+  const closeAll = (instant) => { if (!cur) return; const c = cur; cur = null; c.pick.setAttribute("aria-expanded", "false"); c.menu.classList.remove("on"); if (instant) c.menu.remove(); else { c.menu.classList.add("out"); setTimeout(() => c.menu.remove(), 160); } };
+  document.querySelectorAll(".cp").forEach((lab) => {
+    const pick = lab.querySelector(".cpick"), sel = lab.querySelector("select"); if (!pick || !sel) return;
+    sel.tabIndex = -1; sel.setAttribute("aria-hidden", "true"); pick.tabIndex = 0; pick.setAttribute("role", "button"); pick.setAttribute("aria-haspopup", "listbox"); pick.setAttribute("aria-expanded", "false"); pick.setAttribute("aria-label", (sel.getAttribute("aria-label") || "Colour") + ", " + sel.selectedOptions[0].textContent);
+    const open = () => {
+      closeAll(true);
+      const menu = document.createElement("div"); menu.className = "ddm"; menu.setAttribute("role", "listbox"); menu.setAttribute("aria-label", sel.getAttribute("aria-label") || "Colour");
+      [...sel.options].forEach((o, i) => { const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "option"); b.tabIndex = -1; b.style.setProperty("--i", i); b.setAttribute("aria-selected", String(o.selected)); b.dataset.v = o.value;
+        const d = document.createElement("span"); d.className = "dot"; d.style.background = swatch(o); const t = document.createElement("span"); t.textContent = o.textContent; b.append(d, t); menu.appendChild(b); });
+      document.body.appendChild(menu);
+      const r = pick.getBoundingClientRect(), mw = menu.offsetWidth, mh = menu.offsetHeight; let x = r.left - 6, y = r.bottom + 8, oy = "0";
+      if (x + mw > innerWidth - 8) x = Math.max(8, r.right + 6 - mw); if (y + mh > innerHeight - 8 && r.top - mh - 8 > 8) { y = r.top - mh - 8; oy = "100%"; }
+      menu.style.left = x + "px"; menu.style.top = Math.max(8, y) + "px"; menu.style.setProperty("--oy", oy); menu.style.setProperty("--ox", (r.left - x + 14) + "px");
+      pick.setAttribute("aria-expanded", "true"); cur = { menu, pick, sel };
+      requestAnimationFrame(() => menu.classList.add("on"));
+      const items = [...menu.children], foc = menu.querySelector('[aria-selected="true"]') || items[0]; setTimeout(() => foc.focus({ preventScroll: true }), 30); foc.scrollIntoView({ block: "nearest" });
+      menu.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; choose(b.dataset.v); });
+      menu.addEventListener("keydown", (e) => { const i = items.indexOf(document.activeElement);
+        if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length].focus(); } else if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+        else if (e.key === "Home") { e.preventDefault(); items[0].focus(); } else if (e.key === "End") { e.preventDefault(); items[items.length - 1].focus(); }
+        else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeAll(); pick.focus(); } else if (e.key === "Tab") closeAll(); });
+    };
+    const choose = (v) => { const changed = sel.value !== v; sel.value = v; closeAll(); pick.focus({ preventScroll: true });
+      if (changed) { sel.dispatchEvent(new Event("change", { bubbles: true })); pick.setAttribute("aria-label", (sel.getAttribute("aria-label") || "Colour") + ", " + sel.selectedOptions[0].textContent); pick.classList.remove("pop"); void pick.offsetWidth; pick.classList.add("pop"); } };
+    lab.addEventListener("click", (e) => { e.preventDefault(); cur && cur.pick === pick ? closeAll() : open(); });
+    pick.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") { e.preventDefault(); open(); } });
+  });
+  document.addEventListener("pointerdown", (e) => { if (cur && !cur.menu.contains(e.target) && !cur.pick.contains(e.target)) closeAll(); }, true);
+  addEventListener("resize", () => closeAll(true)); document.addEventListener("scroll", (e) => { if (cur && !(e.target.nodeType === 1 && cur.menu.contains(e.target))) closeAll(true); }, true);
 })();
 </script>
 </body>
