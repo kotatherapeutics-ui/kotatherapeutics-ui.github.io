@@ -333,7 +333,7 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .popt{display:flex;flex-direction:column;gap:6px;padding:6px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--raised);color:var(--ink);cursor:pointer;font:500 11px/1.2 var(--f-sans);letter-spacing:.1em;text-transform:uppercase;text-align:left}
 .popt:hover,.popt:focus-visible{border-color:var(--border-accent);outline:none;box-shadow:var(--focus-ring)}
 .popt canvas{width:100%;aspect-ratio:var(--lab-ar,2/1);display:block;border-radius:2px}
-.sumr .ldef{white-space:nowrap}
+.ldef{white-space:nowrap}
 @media (max-width:520px){.sumr>span{display:none}}
 .modalwrap{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
 .modal{background:var(--ink-800,#15171b);color:var(--ink);border:1px solid var(--line-2);border-radius:14px;padding:22px 22px 18px;max-width:460px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.6)}
@@ -593,7 +593,7 @@ main>.proof{flex:1 1 0;min-width:0;order:1}
   border:1px solid rgba(255,255,255,.17);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05),0 26px 64px rgba(0,0,0,.5);
   transition:width 520ms var(--ease),flex-basis 520ms var(--ease),padding 400ms var(--ease)}
 .sb-head{display:flex;align-items:center;gap:12px;padding:4px 6px 12px;min-height:58px;position:relative}
-.sb-logo{width:38px;height:38px;border-radius:50%;flex:none;object-fit:contain;padding:6px;background:radial-gradient(circle at 32% 28%,#1c2330,#0c0f15);box-shadow:var(--nm-raise-sm)}
+.sb-logo{width:38px;height:38px;border-radius:50%;flex:none;object-fit:contain;padding:3px;background:none;box-shadow:none}
 .sb-title{display:grid;line-height:1.15;min-width:0;white-space:nowrap}
 .sb-title strong{font:600 15px/1.2 var(--f-sans);letter-spacing:.01em}
 .sb-title span{font:500 11px/1.3 var(--f-sans);color:var(--text-muted)}
@@ -830,19 +830,19 @@ html.ios #quickBtn{display:none!important}
 .pr-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:#4cd07d;box-shadow:0 0 8px rgba(76,208,125,.8)}
 
 /* r89: Load defaults is plain text, the selected category is liquid glass, themed colour menus, tip pointer */
-.controls.sidebar .sumr .ldef,.controls.sidebar .sumr .ldef:hover,.controls.sidebar .sumr .ldef:active{background:none!important;border:0!important;box-shadow:none!important;border-radius:6px;padding:5px 3px;transform:none!important}
-.sumr .ldef{position:relative;font:600 10px/1 var(--f-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;transition:color 200ms var(--ease),text-shadow 240ms var(--ease)}
-.sumr .ldef::after{content:"";position:absolute;left:3px;right:3px;bottom:1px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform 260ms var(--ease)}
-.sumr .ldef:hover{color:var(--cream-50,#fdfbf5);text-shadow:0 0 12px rgba(138,213,245,.55)}
-.sumr .ldef:hover::after{transform:scaleX(1)}
-.sumr .ldef:active{opacity:.7}
-.sumr .ldef.done{color:#8fe0ae;text-shadow:0 0 12px rgba(143,224,174,.5);animation:ldefPop 420ms var(--ease)}
-.sumr .ldef.done::after{transform:scaleX(0)}
+.controls.sidebar .ldef,.controls.sidebar .ldef:hover,.controls.sidebar .ldef:active{background:none!important;border:0!important;box-shadow:none!important;border-radius:6px;padding:5px 3px;transform:none!important}
+.ldef{position:relative;font:600 10px/1 var(--f-sans);letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);cursor:pointer;transition:color 200ms var(--ease),text-shadow 240ms var(--ease)}
+.ldef::after{content:"";position:absolute;left:3px;right:3px;bottom:1px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform 260ms var(--ease)}
+.ldef:hover{color:var(--cream-50,#fdfbf5);text-shadow:0 0 12px rgba(138,213,245,.55)}
+.ldef:hover::after{transform:scaleX(1)}
+.ldef:active{opacity:.7}
+.ldef.done{color:#8fe0ae;text-shadow:0 0 12px rgba(143,224,174,.5);animation:ldefPop 420ms var(--ease)}
+.ldef.done::after{transform:scaleX(0)}
 @keyframes ldefPop{0%{transform:scale(.9);opacity:.4}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
 .controls.sidebar .grid.rflash{border-radius:18px;animation:resetFlash 950ms var(--ease)}
 @keyframes resetFlash{0%{background:rgba(138,213,245,.2);box-shadow:0 0 0 1px rgba(138,213,245,.45)}100%{background:rgba(138,213,245,0);box-shadow:0 0 0 1px rgba(138,213,245,0)}}
 @media (min-width:881px){
-  .controls.sidebar details.spot[open]>summary{background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.025) 60%,rgba(255,255,255,.07));-webkit-backdrop-filter:blur(2px) saturate(1.7) brightness(1.1);backdrop-filter:blur(2px) saturate(1.7) brightness(1.1);border-color:rgba(255,255,255,.3);box-shadow:inset 0 1.5px 1px rgba(255,255,255,.6),inset 0 -1.5px 1px rgba(255,255,255,.2),inset 1px 0 1px rgba(255,255,255,.22),inset -1px 0 1px rgba(255,255,255,.22),inset 0 0 20px rgba(255,255,255,.08),0 10px 22px rgba(0,0,0,.32)}
+  .controls.sidebar details.spot[open]>summary{background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.025) 60%,rgba(255,255,255,.07)),rgba(28,32,42,.5);-webkit-backdrop-filter:blur(12px) saturate(1.7) brightness(1.1);backdrop-filter:blur(12px) saturate(1.7) brightness(1.1);border-color:rgba(255,255,255,.3);box-shadow:inset 0 1.5px 1px rgba(255,255,255,.6),inset 0 -1.5px 1px rgba(255,255,255,.2),inset 1px 0 1px rgba(255,255,255,.22),inset -1px 0 1px rgba(255,255,255,.22),inset 0 0 20px rgba(255,255,255,.08),0 10px 22px rgba(0,0,0,.32)}
   .sb-lens{display:none}
   html.lg .controls.sidebar details.spot[open]>summary .sb-lens{display:block;position:absolute;inset:0;border-radius:inherit;pointer-events:none;-webkit-backdrop-filter:url(#bcsLiquid);backdrop-filter:url(#bcsLiquid)} /* a glass lens over the pill: its icon and title bend at the rim */
   body.sb-collapsed .sb-lens{display:none!important}
@@ -883,7 +883,66 @@ html.ios #quickBtn{display:none!important}
   #sbBubble.coach{animation:coachBounce 1.7s ease-in-out infinite}
   @keyframes coachBounce{0%,100%{transform:translateX(0);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),5px 0 16px rgba(0,0,0,.45),0 0 0 0 rgba(91,192,238,.55)}18%{transform:translateX(10px)}34%{transform:translateX(0)}48%{transform:translateX(6px)}62%{transform:translateX(0)}70%{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),5px 0 16px rgba(0,0,0,.45),0 0 0 10px rgba(91,192,238,0)}}
 }
-@media (prefers-reduced-motion:reduce){#sbBubble.coach{animation:none}.cpick.pop .dot,.sumr .ldef.done{animation:none}}
+@media (prefers-reduced-motion:reduce){#sbBubble.coach{animation:none}.cpick.pop .dot,.ldef.done{animation:none}}
+
+/* r90 */
+html{background:#101218;overflow-x:hidden;overscroll-behavior-x:none}
+.ldef{display:block}
+.controls.sidebar .grid>.ldef{grid-column:1/-1;justify-self:end;margin:-2px 0 0;position:relative}
+.controls.sidebar .grid>.ldef::before{content:"";position:absolute;left:-400px;right:-400px;top:-9px;height:0}
+@media (min-width:881px){
+  #sbToggle{display:none!important}
+  #sbBubble{display:grid;place-items:center;position:fixed;z-index:60;left:var(--sbr,0px);top:var(--sbty,50dvh);margin-top:-32px;width:20px;height:64px;padding:0;border:0;border-radius:0 32px 32px 0;cursor:pointer;color:var(--cream-50,#fdfbf5);background:linear-gradient(158deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 55%),rgba(17,19,25,.97);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset -1px 0 0 rgba(255,255,255,.08),5px 0 16px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity 220ms var(--ease),width 220ms var(--ease),box-shadow 220ms var(--ease)}
+  #sbBubble.ready{opacity:1;pointer-events:auto}
+  #sbBubble svg{width:12px;height:12px;transition:transform 240ms var(--ease)}
+  body:not(.sb-collapsed) #sbBubble svg{transform:rotate(180deg)}
+  #sbBubble:hover,#sbBubble:focus-visible{width:25px;outline:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset -1px 0 0 rgba(255,255,255,.12),5px 0 16px rgba(0,0,0,.45),0 0 18px rgba(138,213,245,.4)}
+  body:not(.sb-collapsed) .controls.sidebar{padding-top:0}
+  body:not(.sb-collapsed) .sb-head{padding-top:18px}
+  body:not(.sb-collapsed) .controls.sidebar details.spot[open]>summary{position:sticky;top:2px;z-index:4}
+  .coachTip.dk{margin-left:12px}
+  .site-foot .foot-mark{display:none}
+  .site-foot .foot-right{display:contents}
+  .site-foot #exportBtn2{grid-column:2;grid-row:1;justify-self:center;padding:13px 34px;font-size:13px;letter-spacing:.16em;border-radius:14px;box-shadow:0 10px 26px rgba(43,140,204,.35)}
+  .site-foot .totop{grid-column:3;grid-row:1;justify-self:end}
+}
+@media (max-width:880px){
+  html,body{max-width:100%;overflow-x:clip}
+  html{touch-action:pan-y pinch-zoom}
+  body{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+  .nav-wrap{padding-top:max(8px,calc(env(safe-area-inset-top,0px) + 4px))}
+  .controls.sidebar{left:max(10px,calc(env(safe-area-inset-left,0px) + 6px))!important;top:max(84px,var(--fltb,0px),calc(env(safe-area-inset-top,0px) + 84px))!important;max-height:calc(100dvh - max(84px,var(--fltb,0px),calc(env(safe-area-inset-top,0px) + 84px)) - 12px - env(safe-area-inset-bottom,0px))!important}
+  body:not(.sb-collapsed) #sbBubble{left:calc(max(10px,calc(env(safe-area-inset-left,0px) + 6px)) + var(--sbw) - 1px)}
+  /* pull tab: a long body that runs off the screen edge, so the bounce never shows a gap */
+  body.sb-collapsed #sbBubble{left:calc(-26px + env(safe-area-inset-left,0px));width:46px;padding-left:26px}
+  body.sb-collapsed #sbBubble.coach{animation:coachBounce 1.7s ease-in-out infinite}
+  .xmenu{top:calc(70px + env(safe-area-inset-top,0px))}
+  .pmenu{top:calc(70px + env(safe-area-inset-top,0px))}
+  .modalwrap{padding:max(18px,calc(env(safe-area-inset-top,0px) + 10px)) max(18px,env(safe-area-inset-right,0px)) max(18px,calc(env(safe-area-inset-bottom,0px) + 10px)) max(18px,env(safe-area-inset-left,0px))}
+  #exportWrap .xmenu{max-height:calc(100dvh - 36px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+  .site-foot{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+  /* one row: preview mode on the left, ribbon and label on the right */
+  .toolbar{flex-wrap:wrap;gap:8px 10px;justify-content:space-between}
+  .toolbar .seg button{padding:9px 11px;font-size:10px;letter-spacing:.06em}
+  .colorpick{flex-wrap:nowrap;gap:8px 12px;margin-left:0}
+  .colorpick .tlabel{font-size:9px;letter-spacing:.1em}
+  .cp{gap:6px}
+  .cpick .dot{width:22px;height:22px}
+  .colorpick{padding-right:9px}
+  .proof>.hints{margin:12px 0 0!important}
+  #status:empty{height:0!important;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden}
+  .site-foot{margin-top:16px;padding-top:20px}
+  .foot-inner{gap:14px}
+  .site-foot .foot-right{margin:2px 0 4px}
+}
+@media (max-width:360px){.toolbar .seg button{padding:9px 8px;letter-spacing:.03em}.colorpick{gap:6px 8px}.colorpick .tlabel{letter-spacing:.06em}}
+
+/* r91: sticky title is water glass (bends what scrolls under it); expand tab matches the glass panel */
+@media (min-width:881px){
+  html.lg body:not(.sb-collapsed) .controls.sidebar details.spot[open]>summary{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.03) 60%,rgba(255,255,255,.08)),rgba(24,28,38,.28);-webkit-backdrop-filter:url(#bcsLiquid) saturate(1.5) brightness(1.08);backdrop-filter:url(#bcsLiquid) saturate(1.5) brightness(1.08)}
+  #sbBubble{background:linear-gradient(158deg,rgba(255,255,255,.15),rgba(255,255,255,.045) 42%,rgba(255,255,255,.08)),rgba(22,25,32,.38);-webkit-backdrop-filter:blur(16px) saturate(155%);backdrop-filter:blur(16px) saturate(155%);border:1px solid rgba(255,255,255,.17);border-left:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05),6px 8px 22px rgba(0,0,0,.4)}
+  #sbBubble:hover,#sbBubble:focus-visible{box-shadow:inset 0 1px 0 rgba(255,255,255,.36),inset 0 -1px 0 rgba(255,255,255,.08),6px 8px 22px rgba(0,0,0,.4),0 0 18px rgba(138,213,245,.38)}
+}
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -2014,7 +2073,7 @@ function drawGizmo() {
     if (drag.snap.y === "t") { pctx.moveTo(0, 1); pctx.lineTo(g.cw, 1); } if (drag.snap.y === "b") { pctx.moveTo(0, g.cw / 2 - 1); pctx.lineTo(g.cw, g.cw / 2 - 1); }
     pctx.stroke();
   }
-  if (ids.length === 1 && isGfx(sel)) { // resize handles, graphics only
+  if (ids.length === 1 && resizable(sel)) { // resize handles: graphics and custom text
     for (const [cx2, cy2, key] of cornerPts(b, k)) {
       const hot = (drag ? drag.mode : hover) === key, hs = hot ? 11 : 9;
       pctx.save(); pctx.shadowColor = "rgba(0,0,0,.75)"; pctx.shadowBlur = 7; pctx.shadowOffsetY = 2;
@@ -2061,6 +2120,7 @@ function drawGizmo() {
   pctx.restore();
 }
 function isGfx(id) { return !!id && (cfg.graphics || []).some(g => g.id === id); }
+function resizable(id) { return isGfx(id) || !!(id && (cfg.texts || []).some(t => t.id === id)); }
 function cornerPts(b, k) { // [x, y, mode] in css px; mode "r<sx>,<sy>" names the dragged corner
   const l = b.x * k - 2.5, r = (b.x + b.w) * k + 2.5, t = b.y * k - 2.5, btm = (b.y + b.h) * k + 2.5;
   return [[l, t, "r-1,-1"], [r, t, "r1,-1"], [l, btm, "r-1,1"], [r, btm, "r1,1"]];
@@ -2068,7 +2128,7 @@ function cornerPts(b, k) { // [x, y, mode] in css px; mode "r<sx>,<sy>" names th
 function gizmoHit(px, py) {
   const g = gizmoGeom(); if (!g) return null;
   if (canSpin() && Math.hypot(px - g.rx, py - g.ry) <= 12) return "spin";
-  if (selIds().length === 1 && isGfx(sel)) for (const [hx, hy, key] of cornerPts(g.b, g.k)) if (Math.abs(px - hx) <= 9 && Math.abs(py - hy) <= 9) return key;
+  if (selIds().length === 1 && resizable(sel)) for (const [hx, hy, key] of cornerPts(g.b, g.k)) if (Math.abs(px - hx) <= 9 && Math.abs(py - hy) <= 9) return key;
   const dx = (px - g.cx) * g.dx, dy = (g.cy - py) * g.dy;
   if (Math.abs(px - g.cx) <= G.sq / 2 + 2 && Math.abs(py - g.cy) <= G.sq / 2 + 2) return "xy";
   if (dx > G.sq / 2 && dx <= G.len + G.head + 4 && Math.abs(py - g.cy) <= G.tol) return "x";
@@ -2201,7 +2261,7 @@ pv.addEventListener("pointerdown", (e) => {
     const [csx, csy] = mode.slice(1).split(",").map(Number), b = hits.find(h => h.id === sel);
     const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
     // the opposite corner stays put while this one is dragged; bx/by is where the element sits with no offset
-    drag.rs = { csx, csy, fx: cx - csx * b.w / 2, fy: cy - csy * b.h / 2, aspect: b.w / b.h, bx: cx - o.x, by: cy + o.y, odd: rotOf(sel) % 2 === 1, dh0: b.h, ang: !!angOf(sel), gh0: +((cfg.graphics || []).find(q => q.id === sel) || {}).h || 8, gw0: +((cfg.graphics || []).find(q => q.id === sel) || {}).w || 20 };
+    drag.rs = { txt: !!customText(sel), s0: +(customText(sel) || {}).size || 2, csx, csy, fx: cx - csx * b.w / 2, fy: cy - csy * b.h / 2, aspect: b.w / b.h, bx: cx - o.x, by: cy + o.y, odd: rotOf(sel) % 2 === 1, dh0: b.h, ang: !!angOf(sel), gh0: +((cfg.graphics || []).find(q => q.id === sel) || {}).h || 8, gw0: +((cfg.graphics || []).find(q => q.id === sel) || {}).w || 20 };
   }
   try { pv.setPointerCapture(e.pointerId); } catch {}
   pv.focus({ preventScroll: true }); e.preventDefault(); updatePos(); render();
@@ -2220,6 +2280,16 @@ pv.addEventListener("pointermove", (e) => {
     updatePos(); render(); return;
   }
   if (drag && drag.mode === "xy" && performance.now() < selLockUntil) { drag.sx = px; drag.sy = py; return; } // locked: hold still, and start from here once it unlocks
+  if (drag && drag.rs && drag.rs.txt) { // custom text: the dragged corner scales the font size, the opposite corner stays put
+    const r = drag.rs, mx = px / k, my = py / k;
+    let dh = Math.max(((mx - r.fx) * r.csx) / r.aspect, (my - r.fy) * r.csy);
+    { let dd = dh - r.dh0; const dz = RESIZE_DEAD / k; dd = Math.abs(dd) < dz ? 0 : dd - Math.sign(dd) * dz; dh = r.dh0 + dd * 0.5; }
+    let ns = r.s0 * Math.max(0.05, dh / r.dh0); ns = e.shiftKey ? Math.round(ns * 2) / 2 : Math.round(ns * 10) / 10; ns = Math.min(12, Math.max(0.8, ns));
+    cfg.texts = (cfg.texts || []).map(t => t.id === sel ? Object.assign({}, t, { size: ns }) : t); render();
+    const b = hits.find(h => h.id === sel);
+    if (b) { const ncx = r.fx + r.csx * b.w / 2, ncy = r.fy + r.csy * b.h / 2, o = getOff(sel); setOff(sel, o.x + (ncx - (b.x + b.w / 2)), o.y - (ncy - (b.y + b.h / 2))); render(); }
+    updatePos(); return;
+  }
   if (drag && drag.rs) {
     const r = drag.rs, mx = px / k, my = py / k, gb = (cfg.graphics || []).find(g => g.id === sel), isBar = !!gb && gb.key === "bar";
     let dh = Math.max(((mx - r.fx) * r.csx) / r.aspect, (my - r.fy) * r.csy); // displayed height (after any rotation)
@@ -2985,6 +3055,7 @@ function drawGfxLib() {
     add.onclick = () => {
       const n = 1 + Math.max(0, ...(cfg.graphics || []).map(g => parseInt(String(g.id).replace(/\D/g, "")) || 0));
       const id = "gfx" + n, asp = d.vb[2] / d.vb[3], h0 = Math.min(8, Math.max(2, (W * 0.6) / asp));
+      for (const m of ["off", "rot", "ang"]) if (cfg[m] && id in cfg[m]) { cfg[m] = Object.assign({}, cfg[m]); delete cfg[m][id]; } // a new graphic always starts upright and unmoved
       let spot = null, g;
       if (d.cat === "border") { g = { id, key, h: 18.4, stroke: 1 }; cfg.graphics = [...(cfg.graphics || []), g]; sel = id; lsSet(LS_CFG, cfg); updatePos(); render(); say(`${d.name} added, centred with a small gap from the label edge. Click its edge to select it.`); return; }
       if (d.bar) { for (const [bw, bh] of [[30, 3.6], [24, 3], [18, 2.4], [12, 1.8]]) { spot = findSpot(bw / bh, bh, bh - 0.001); if (spot) { g = { id, key, w: bw, h: bh }; break; } } if (!g) g = { id, key, w: 30, h: 3.6 }; }
@@ -3276,7 +3347,7 @@ document.getElementById("gfxRemove").addEventListener("click", () => {
   if (!sel) return; const nm = nameOf(sel);
   if ((cfg.graphics || []).some(g => g.id === sel && g.key === "qr")) { cfg.qrUrl = ""; document.getElementById("qrUrl").value = ""; }
   cfg.graphics = (cfg.graphics || []).filter(g => g.id !== sel);
-  cfg.off = Object.assign({}, cfg.off); delete cfg.off[sel];
+  for (const m of ["off", "rot", "ang"]) { cfg[m] = Object.assign({}, cfg[m]); delete cfg[m][sel]; } // nothing of the old graphic may be inherited by a new one with the same id
   sel = null; lsSet(LS_CFG, cfg); updatePos(); render(); say(`${nm} removed from the label.`);
 });
 
@@ -3858,22 +3929,28 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   const frame = (fn, ms) => new Promise((res) => { const t0 = performance.now(); (function tick(now) { const t = now - t0; fn(t); if (t < ms) requestAnimationFrame(tick); else res(); })(t0); });
   const below = (d) => { const i = panels.indexOf(d); return panels.slice(i + 1); };
 
-  const EZ = "cubic-bezier(.45,0,.2,1)", durFor = (px) => Math.round(Math.min(640, Math.max(380, 300 + Math.abs(px) * 0.45))); // gentle in and out; taller panels take a little longer so the speed feels even
+  const CLIPOK = !!(window.CSS && CSS.supports && CSS.supports("overflow", "clip")), EZ = "cubic-bezier(.45,0,.2,1)", durFor = (px) => Math.round(Math.min(640, Math.max(380, 300 + Math.abs(px) * 0.45))); // gentle in and out; taller panels take a little longer so the speed feels even
   function slide(d) { // one smooth height glide per panel; never blocks the others, and can be reversed mid way
     if (reduce && reduce.matches) { d._want = !d.open; d.open = !d.open; glyph(d); save(); return; }
     const want = !(d._want === undefined ? d.open : d._want); d._want = want; glyph(d);
-    const cur = d.offsetHeight; if (d._a) d._a.cancel();
+    const scr = d.closest(".controls.sidebar"), st = scr ? scr.scrollTop : 0, cur = d.offsetHeight; if (d._a) d._a.cancel();
     let end; if (want) { d.open = true; end = d.offsetHeight; } else { d.open = false; end = d.offsetHeight; d.open = true; }
-    const kids = [...d.children].filter((c) => c.tagName !== "SUMMARY"); d.style.overflow = "hidden"; d.style.contain = "layout paint"; // inner layout is done once, so each frame only moves the edge
+    if (scr) scr.scrollTop = st; // measuring must not leave the bar scrolled somewhere else
+    const kids = [...d.children].filter((c) => c.tagName !== "SUMMARY"); d.style.overflow = CLIPOK ? "clip" : "hidden"; d.style.contain = CLIPOK ? "layout" : "layout paint"; // clip keeps a stuck title stuck while the panel shrinks under it // inner layout is done once, so each frame only moves the edge
     const DUR = durFor(end - cur);
     kids.forEach((k) => { if (k._f) k._f.cancel(); k._f = k.animate(want ? [{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-5px)" }], want ? { duration: DUR, delay: 60, easing: EZ, fill: "backwards" } : { duration: Math.round(DUR * 0.4), easing: "cubic-bezier(.4,0,.7,1)", fill: "forwards" }); }); // closing: the contents are gone by 40% of the glide, so nothing is visible near its end
     const a = d._a = d.animate([{ height: cur + "px" }, { height: end + "px" }], { duration: DUR, easing: EZ });
+    if (!want && scr) { // closing a panel whose title is stuck: glide the bar up with it, so its title ends at the top instead of the bar jumping to other panels
+      const sr = scr.getBoundingClientRect(), delta = d.getBoundingClientRect().top - (sr.top + scr.clientTop + 2), to = Math.max(0, st + delta);
+      if (delta < -1 && to < st) { cancelAnimationFrame(scr._sa); const ez = bez(0.45, 0, 0.2, 1), t0 = performance.now(); (function tk(now) { const t = Math.min(1, (now - t0) / DUR); scr.scrollTop = st + (to - st) * ez(t); if (t < 1 && d._a === a) scr._sa = requestAnimationFrame(tk); })(t0); }
+    }
     a.finished.then(() => { if (d._a !== a) return; d.open = want; d.style.overflow = ""; d.style.contain = ""; d._a = null; if (!want) kids.forEach((k) => { if (k._f) { k._f.cancel(); k._f = null; } }); save(); }, () => {});
     save();
   }
   function toggle(d) { slide(d); }
   // Switch-style settings (the text-only toggles) always sit together at the bottom of their panel, under the hairline
   panels.forEach((d) => { const g = d.querySelector(":scope > .grid"); if (!g) return; const t = [...g.children].filter((c) => c.classList.contains("check")); t.forEach((c) => g.appendChild(c)); });
+  document.querySelectorAll(".ldef").forEach((b) => { const d = b.closest("details"), g = d && d.querySelector(":scope > .grid"); if (g) g.appendChild(b); }); // Load defaults lives at the bottom of its own panel
   panels.forEach((d) => {
     const sum = d.querySelector("summary"); if (!sum) return;
     let row = sum.querySelector(".sumr");
@@ -3898,7 +3975,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     "Click any text or graphic on the preview to select it, then drag it to move it.",
     "Use the X and Y boxes under the preview to nudge a selected item by exact amounts.",
     "Drag the round knob at the top right of a selected item to rotate it.",
-    "Drag a graphic\u2019s corner handle to make it bigger or smaller.",
+    "Drag the corner handle of a graphic or your own text to make it bigger or smaller.",
     "Made a mistake? Press Ctrl+Z (Cmd+Z on a Mac). The last 5 changes are remembered.",
     "Add extra lines of text with the Add text button in the Content panel.",
     "Upload a whole-label design, or your own graphics, under My Media.",
@@ -4114,9 +4191,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   head.append(logo, ttl, tg); sb.prepend(head);
   const bub = document.createElement("button"); bub.type = "button"; bub.id = "sbBubble"; bub.setAttribute("aria-controls", "sidebar"); bub.innerHTML = tg.innerHTML; document.body.appendChild(bub); bub.addEventListener("click", () => tg.click());
   // Idle for 15 seconds with no changes: a small pointer to the side panel (every device); on phones the pull tab also bounces toward the middle
-  { const IDLE = 15000, MAXS = 3; let timer = 0, shown = 0, up = false, edited = false, tip = null, hideT = 0;
+  { const IDLE = mqN.matches ? 8000 : 15000, MAXS = 3; // phones wait 8 seconds, larger screens 15
+     let timer = 0, shown = 0, up = false, edited = false, tip = null, hideT = 0;
     const txt = () => body.classList.contains("sb-collapsed") ? ["Open the side panel to edit your label", "Text, layout, graphics and more are in there."] : ["Everything you can change is in this panel", "Open a section to edit text, layout and graphics."];
-    const place = () => { if (!tip || mqN.matches) return; const r = sb.getBoundingClientRect(); tip.style.left = Math.round(r.right + 16) + "px"; tip.style.top = Math.round(Math.max(96, r.top + 40)) + "px"; };
+    const place = () => { if (!tip || mqN.matches) return; const r = sb.getBoundingClientRect(); tip.style.left = Math.round(r.right + 22) + "px"; tip.style.top = Math.round(Math.max(96, r.top + 40)) + "px"; };
     const hide = () => { if (!up) return; up = false; bub.classList.remove("coach"); const t = tip; tip = null; if (t) { t.classList.add("out"); clearTimeout(hideT); hideT = setTimeout(() => t.remove(), 240); } };
     const show = () => { timer = 0;
       const t = txt(), collapsed = body.classList.contains("sb-collapsed");
@@ -4189,6 +4267,17 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   addEventListener("scroll", kick, { passive: true }); addEventListener("resize", kick); new ResizeObserver(kick).observe(mainEl); pos();
   { let q = 0; const tgy = () => { if (q) return; q = requestAnimationFrame(() => { q = 0; if (!mqN.matches || body.classList.contains("sb-collapsed")) return; const r = sb.getBoundingClientRect(); document.documentElement.style.setProperty("--tgy", Math.round(r.top + r.height / 2) + "px"); }); };
     new ResizeObserver(tgy).observe(sb); addEventListener("scroll", tgy, { passive: true }); addEventListener("resize", tgy); window.addEventListener("bcs-float", () => { tgy(); setTimeout(tgy, 60); }); sb.addEventListener("transitionend", tgy); }
+  { let q = 0; const bp = () => { q = 0; const R = document.documentElement.style; if (mqN.matches) { bub.classList.remove("ready"); return; }
+      const r = sb.getBoundingClientRect(), top = Math.max(r.top, 92), bot = Math.min(r.bottom, innerHeight - 14);
+      if (bot - top < 90) { bub.classList.remove("ready"); return; }
+      R.setProperty("--sbr", Math.round(r.right - 1) + "px"); R.setProperty("--sbty", Math.round((top + bot) / 2) + "px"); bub.classList.add("ready"); };
+    const kb = () => { if (!q) q = requestAnimationFrame(bp); };
+    new ResizeObserver(kb).observe(sb); addEventListener("scroll", kb, { passive: true }); addEventListener("resize", kb); sb.addEventListener("transitionend", kb); window.addEventListener("bcs-float", kb); mqN.addEventListener && mqN.addEventListener("change", kb); kb(); setTimeout(kb, 400); } // desktop: the tab rides the panel's right edge
+  { const im = new Image(); im.onload = () => { try { const c = document.createElement("canvas"); c.width = c.height = 128; const x = c.getContext("2d"); x.drawImage(im, 0, 0, 128, 128); const d = x.getImageData(0, 0, 128, 128), a = d.data;
+        for (let i = 0; i < a.length; i += 4) { const m = Math.max(a[i], a[i + 1], a[i + 2]); a[i + 3] = Math.min(255, Math.round(m * 1.12 * a[i + 3] / 255)); a[i] = 253; a[i + 1] = 251; a[i + 2] = 245; }
+        x.putImageData(d, 0, 0); logo.src = c.toDataURL("image/png"); } catch {} }; if (logo.src) im.src = logo.src; } // the header logo without its black square
+  { const hints = document.getElementById("hints"), tb = document.querySelector(".toolbar"), mainEl2 = document.querySelector("main");
+    if (hints && tb && mainEl2) { const mv = () => { if (mqN.matches) { if (tb.nextElementSibling !== hints) tb.after(hints); } else if (hints.nextElementSibling !== mainEl2) mainEl2.parentNode.insertBefore(hints, mainEl2); }; mv(); mqN.addEventListener && mqN.addEventListener("change", mv); } } // phones: tips sit under the preview controls
   const dock = document.getElementById("dock");
   [["gfxSec", "Graphics"], ["libSec", "Library"]].forEach(([id, title]) => {
     const sec = document.getElementById(id), grid = sec && sec.querySelector(":scope > .grid"); if (!sec || !grid || !dock) return;
@@ -4206,7 +4295,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   });
 })();
 </script>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="bcsLiquid" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="368" height="52" color-interpolation-filters="sRGB"><feImage href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27368%27%20height=%2752%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27a%27%20x1=%270%27%20x2=%271%27%20y1=%270%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23ff8080%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23ff8080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27b%27%20x1=%271%27%20x2=%270%27%20y1=%270%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23008080%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23008080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27c%27%20x1=%270%27%20x2=%270%27%20y1=%270%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%2380ff80%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%2380ff80%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27d%27%20x1=%270%27%20x2=%270%27%20y1=%271%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23800080%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23800080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27368%27%20height=%2752%27%20fill=%27%23808080%27/%3E%3Crect%20width=%2734%27%20height=%2752%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20x=%27334%27%20width=%2734%27%20height=%2752%27%20fill=%27url%28%23b%29%27/%3E%3Crect%20width=%27368%27%20height=%279%27%20fill=%27url%28%23c%29%27/%3E%3Crect%20y=%2743%27%20width=%27368%27%20height=%279%27%20fill=%27url%28%23d%29%27/%3E%3C/svg%3E" x="0" y="0" width="368" height="52" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="13" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="bcsLiquid" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="368" height="52" color-interpolation-filters="sRGB"><feImage href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27368%27%20height=%2752%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27a%27%20x1=%270%27%20x2=%271%27%20y1=%270%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23ff8080%27/%3E%3Cstop%20offset=%27.45%27%20stop-color=%27%23ff8080%27%20stop-opacity=%27.35%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23ff8080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27b%27%20x1=%271%27%20x2=%270%27%20y1=%270%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23008080%27/%3E%3Cstop%20offset=%27.45%27%20stop-color=%27%23008080%27%20stop-opacity=%27.35%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23008080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27c%27%20x1=%270%27%20x2=%270%27%20y1=%270%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%2380ff80%27/%3E%3Cstop%20offset=%27.45%27%20stop-color=%27%2380ff80%27%20stop-opacity=%27.35%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%2380ff80%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27d%27%20x1=%270%27%20x2=%270%27%20y1=%271%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23800080%27/%3E%3Cstop%20offset=%27.45%27%20stop-color=%27%23800080%27%20stop-opacity=%27.35%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23800080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27368%27%20height=%2752%27%20fill=%27%23808080%27/%3E%3Crect%20width=%2770%27%20height=%2752%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20x=%27298%27%20width=%2770%27%20height=%2752%27%20fill=%27url%28%23b%29%27/%3E%3Crect%20width=%27368%27%20height=%2717%27%20fill=%27url%28%23c%29%27/%3E%3Crect%20y=%2735%27%20width=%27368%27%20height=%2717%27%20fill=%27url%28%23d%29%27/%3E%3C/svg%3E" x="0" y="0" width="368" height="52" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="24" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
 <script>
 (() => { // r89: themed colour menus for Ribbon and Label, plus the liquid glass switch for Chromium
   try { if (/Chrome\//.test(navigator.userAgent) && !/Edg\/|OPR\//.test(navigator.userAgent) || /Edg\//.test(navigator.userAgent)) document.documentElement.classList.add("lg"); } catch {}
