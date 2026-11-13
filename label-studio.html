@@ -1011,7 +1011,7 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
         <div class="full txtlist" id="txtList"></div>
         <div class="field full"><button type="button" class="btn small" id="addText">+ Add text</button></div>
         <div class="field full" id="qrField"><label for="qrUrl">QR code link</label><input type="text" id="qrUrl" data-k="qrUrl" placeholder="https://example.com" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false"></div>
-        <div class="field full" id="qrCtl" hidden><label for="qrSize">QR size <output id="qrSizeOut"></output></label><input type="range" id="qrSize" min="4" max="19" step="0.0847"><p class="note" id="qrNote" aria-live="polite" style="margin:8px 0 0"></p></div>
+        <div class="field full" id="qrCtl" hidden><label for="qrSize">QR size <output id="qrSizeOut"></output></label><input type="range" id="qrSize" min="4" max="19" step="0.0847"><p class="note" id="qrNote" aria-live="polite" style="margin:8px 0 0"></p><label class="check" style="margin-top:10px"><input type="checkbox" id="qrShorten" data-k="qrShorten"> Shorten link for a cleaner code</label><p class="note" id="qrShortNote" aria-live="polite" style="margin:6px 0 0"></p></div>
       </div>
     </details>
 
@@ -1140,7 +1140,7 @@ const DEFAULTS = {
   logoH: 9, colGap: 1.4, threshold: 128,
   sideText: "TheBioChem Society", sideSize: 2.4, sideWeight: "600", sideTrack: 0.2,
   printX: 0, printY: 0, printR: 0, printDensity: 3,
-  showLogo: true, showSide: true, showRules: true, showEdge: true, qrUrl: "",
+  showLogo: true, showSide: true, showRules: true, showEdge: true, qrUrl: "", qrShorten: true,
   off: {}, graphics: [], texts: [], fonts: {}, rot: {}, ang: {}, padL: 0, padR: 0, legalCenter: true, textAlign: "left", logoFree: false, logoColW: 0, styles: {}, defaultsVersion: 6
 };
 function norm(c) {
@@ -1174,7 +1174,7 @@ if (storedCfg) {
   if (storedCfg.defaultsVersion < 6 && +storedCfg.printX === -0.4) storedCfg.printX = 0; // the old built-in -0.4 mm shift is gone; a value you chose yourself is kept
   storedCfg.defaultsVersion = DEFAULTS.defaultsVersion;
 }
-const BLANK_CFG = { qrUrl: "", compound: "", variant: "", strength: "", disclaimer: "", sideText: "", showSide: false, showLogo: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true };
+const BLANK_CFG = { qrUrl: "", qrShorten: true, compound: "", variant: "", strength: "", disclaimer: "", sideText: "", showSide: false, showLogo: false, showRules: false, showRecon: false, showBatchRow: false, textAlign: "center", legalCenter: true };
 let cfg = norm(storedCfg ? Object.assign({}, DEFAULTS, storedCfg) : Object.assign({}, DEFAULTS, BLANK_CFG, { preset: "blank" })); // a first visit opens on the Blank preset; a saved label is never replaced
 lsSet(LS_CFG, cfg);
 let view = { mode: "smooth", ink: "#111111", stock: "#ffffff", tex: null };
@@ -1703,12 +1703,50 @@ function qrDraw(ctx, col, gx, gy, gh) {
   }
   ctx.fill(); ctx.restore();
 }
+// ---- Link shortening (is.gd). The typed link is kept; the QR encodes the short one only when it is ready and makes a smaller code.
+const QR_SHORT_LS = "bcs-qr-short-v1"; let qrShortMap = (() => { try { return JSON.parse(localStorage.getItem(QR_SHORT_LS)) || {}; } catch { return {}; } })();
+let qrShortState = { url: "", busy: false, msg: "" }, qrShortT = 0, qrShortWait = 0, qrJsonp = 0;
+const qrNorm = (u) => { u = (u || "").trim(); if (!u) return ""; if (!/^[a-z][a-z0-9+.-]*:/i.test(u) && /^[^\s\/]+\.[a-z]{2,}(\/|$|\?|#)/i.test(u)) u = "https://" + u; return u; };
+const qrCanShort = (u) => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) && x.hostname.includes(".") && !/^(is|v)\.gd$/i.test(x.hostname) && u.length > 22; } catch { return false; } };
+function qrModules(text) { try { const q = qrcode(0, "L"); q.addData(text, "Byte"); q.make(); return q.getModuleCount(); } catch { return 999; } }
+function qrEncoded() { // what actually goes into the code
+  const u = qrNorm(cfg.qrUrl), sh = cfg.qrShorten !== false && qrShortMap[u];
+  return sh && qrModules(sh) < qrModules(u) ? sh : (cfg.qrUrl || "").trim();
+}
+function qrShortenNow() {
+  const u = qrNorm(cfg.qrUrl); clearTimeout(qrShortT);
+  if (cfg.qrShorten === false || !qrCanShort(u) || qrShortMap[u] || qrShortState.busy || Date.now() < qrShortWait) { qrShortUI(); return; }
+  qrShortState = { url: u, busy: true, msg: "" }; qrShortUI();
+  const cb = "__bcsShort" + (++qrJsonp), sc = document.createElement("script"); let done = false;
+  const fin = (short, msg) => { if (done) return; done = true; delete window[cb]; sc.remove(); clearTimeout(to); qrShortState = { url: u, busy: false, msg: msg || "" };
+    if (short) { qrShortMap[u] = short; try { localStorage.setItem(QR_SHORT_LS, JSON.stringify(qrShortMap)); } catch {} }
+    render(); };
+  const to = setTimeout(() => fin(null, "The shortener did not answer, so the full link is used."), 8000);
+  window[cb] = (r) => { if (r && r.shorturl && /^https:\/\/(is|v)\.gd\/\w+$/.test(r.shorturl)) fin(r.shorturl.replace(/^http:/, "https:"));
+    else { if (r && +r.errorcode === 3) qrShortWait = Date.now() + 65000; fin(null, r && +r.errorcode === 1 ? "The shortener could not take this link, so the full link is used." : "Could not shorten right now, so the full link is used."); } };
+  sc.onerror = () => fin(null, "Could not reach the shortener, so the full link is used.");
+  sc.src = "https://is.gd/create.php?format=json&callback=" + cb + "&url=" + encodeURIComponent(u); document.head.appendChild(sc);
+}
+function qrShortUI() {
+  const el = document.getElementById("qrShortNote"), cb = document.getElementById("qrShorten"); if (!el) return; cb.checked = cfg.qrShorten !== false;
+  const u = qrNorm(cfg.qrUrl), sh = qrShortMap[u], enc = qrEncoded();
+  if (!u || cfg.qrShorten === false) { el.textContent = ""; return; }
+  if (qrShortState.busy && qrShortState.url === u) { el.textContent = "Shortening the link..."; return; }
+  if (sh && enc === sh) { el.textContent = `Code holds ${sh.replace(/^https:\/\//, "")}, which opens your link. Fewer squares (${qrModules(sh)} across instead of ${qrModules(u)}), so each one prints bigger.`; return; }
+  if (sh) { el.textContent = "Your link is already about as short as a short link, so it is used as is."; return; }
+  if (!qrCanShort(u)) { el.textContent = u.length <= 22 ? "Link is already short." : "Only web links (http or https) can be shortened."; return; }
+  el.textContent = qrShortState.url === u ? qrShortState.msg : "";
+}
+document.getElementById("qrUrl").addEventListener("input", () => { clearTimeout(qrShortT); qrShortT = setTimeout(qrShortenNow, 1400); });
+document.getElementById("qrUrl").addEventListener("change", qrShortenNow);
+document.getElementById("qrShorten").addEventListener("change", () => { setTimeout(() => { qrShortenNow(); render(); }, 0); });
 function qrEnsure() {
-  const url = (cfg.qrUrl || "").trim();
+  const url = qrEncoded();
   if (!url) { if (GFX.qr) { delete GFX.qr; for (const k of [...gfxCache.keys()]) if (k.startsWith("qr|")) gfxCache.delete(k); } if ((cfg.graphics || []).some(g => g.key === "qr")) { const ids = cfg.graphics.filter(g => g.key === "qr").map(g => g.id); cfg.graphics = cfg.graphics.filter(g => g.key !== "qr"); ids.forEach(i => { delete cfg.off[i]; if (sel === i) sel = null; }); lsSet(LS_CFG, cfg); } return; }
   if (!GFX.qr || GFX.qr.url !== url) qrBuild(url);
 }
 function qrUI() {
+  qrShortUI();
   const ctl = document.getElementById("qrCtl"), note = document.getElementById("qrNote"), g = (cfg.graphics || []).find(x => x.key === "qr"), url = (cfg.qrUrl || "").trim();
   qrBad = false; ctl.hidden = !url; if (!url) return;
   if (!GFX.qr) { ctl.hidden = false; note.className = "note qr-bad"; note.textContent = "That link is too long to fit in a QR code."; document.getElementById("qrSize").disabled = true; return; }
@@ -2241,7 +2279,8 @@ const REL = {
   logo: ["showLogo", "logoH", "colGap"],
   side: ["showSide", "sideText", "sideSize", "sideWeight", "sideTrack", "colGap"],
   ruleL: ["showRules", "colGap"],
-  ruleR: ["showRules", "colGap"]
+  ruleR: ["showRules", "colGap"],
+  gfxqr: ["qrUrl", "qrShorten"]
 };
 const hasTxt = (k) => String(cfg[k] == null ? "" : cfg[k]).trim().length > 0;
 const DEP = {
