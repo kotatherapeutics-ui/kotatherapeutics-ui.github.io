@@ -943,6 +943,17 @@ html{background:#101218;overflow-x:hidden;overscroll-behavior-x:none}
   #sbBubble{background:linear-gradient(158deg,rgba(255,255,255,.15),rgba(255,255,255,.045) 42%,rgba(255,255,255,.08)),rgba(22,25,32,.38);-webkit-backdrop-filter:blur(16px) saturate(155%);backdrop-filter:blur(16px) saturate(155%);border:1px solid rgba(255,255,255,.17);border-left:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(255,255,255,.05),6px 8px 22px rgba(0,0,0,.4)}
   #sbBubble:hover,#sbBubble:focus-visible{box-shadow:inset 0 1px 0 rgba(255,255,255,.36),inset 0 -1px 0 rgba(255,255,255,.08),6px 8px 22px rgba(0,0,0,.4),0 0 18px rgba(138,213,245,.38)}
 }
+
+/* r92: luxury water glass title, tab flows out of the panel, rail tooltip above the tab */
+@media (min-width:881px){
+  .sb-lens{display:none!important}
+  html.lg body:not(.sb-collapsed) .controls.sidebar details.spot[open]>summary{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.02) 46%,rgba(255,255,255,.05)),rgba(210,230,255,.04);-webkit-backdrop-filter:url(#bcsLiquid) saturate(1.35) brightness(1.06) contrast(1.04);backdrop-filter:url(#bcsLiquid) saturate(1.35) brightness(1.06) contrast(1.04);border:1px solid rgba(255,255,255,.26);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.75),inset 0 -1px 0 rgba(255,255,255,.22),inset 1.5px 0 1px -1px rgba(255,255,255,.5),inset -1.5px 0 1px -1px rgba(255,255,255,.5),inset 0 0 16px rgba(255,255,255,.07),0 1px 0 rgba(255,255,255,.04),0 12px 26px rgba(0,0,0,.38)}
+  body.sb-collapsed .controls.sidebar:hover{z-index:62}
+  /* r92: the tab is one drawn shape; concave joins flow out of the panel edge and an opaque fill hides the panel's own edge line behind it */
+  #sbBubble{left:calc(var(--sbr,0px) - 1px)!important;margin-top:-42px!important;width:35px!important;height:84px!important;padding:0 0 0 10px!important;border:0!important;border-radius:0!important;background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='35' height='84' viewBox='0 0 35 84'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23262a31'/><stop offset='1' stop-color='%23292d35'/></linearGradient></defs><g transform='translate(.5 0)'><path d='M0 0A10 10 0 0 0 10 10L12 10A22 22 0 0 1 34 32L34 52A22 22 0 0 1 12 74L10 74A10 10 0 0 0 0 84L0 0Z' fill='url(%23g)'/><path d='M0 0A10 10 0 0 0 10 10L12 10A22 22 0 0 1 34 32L34 52A22 22 0 0 1 12 74L10 74A10 10 0 0 0 0 84' fill='none' stroke='rgba(255,255,255,.2)' stroke-width='1'/></g></svg>") 0 0/35px 84px no-repeat!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;filter:drop-shadow(7px 8px 10px rgba(0,0,0,.28));transition:filter 200ms var(--ease),opacity 200ms var(--ease)}
+  #sbBubble:hover,#sbBubble:focus-visible{width:35px!important;box-shadow:none!important;filter:brightness(1.18) drop-shadow(0 0 7px rgba(138,213,245,.45)) drop-shadow(7px 8px 10px rgba(0,0,0,.28))}
+  #sbBubble::before,#sbBubble::after{content:none!important}
+}
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -1185,6 +1196,10 @@ html{background:#101218;overflow-x:hidden;overscroll-behavior-x:none}
         <div class="field"><label for="nameWeight">Compound weight</label>
           <select id="nameWeight" data-k="nameWeight"><option value="500">Medium</option><option value="600">Semibold</option><option value="700">Bold</option></select></div>
         <div class="field"><label for="strengthTrack">Strength spacing <output data-o="strengthTrack"></output></label><input type="range" id="strengthTrack" data-k="strengthTrack" min="0" max="0.4" step="0.01"></div>
+        <div class="field"><label for="sideSize">Vertical text size <output data-o="sideSize"></output></label><input type="range" id="sideSize" data-k="sideSize" min="1" max="5" step="0.1"></div>
+        <div class="field"><label for="sideWeight">Vertical text weight</label>
+          <select id="sideWeight" data-k="sideWeight"><option value="400">Regular</option><option value="500">Medium</option><option value="600">Semibold</option><option value="700">Bold</option></select></div>
+        <div class="field"><label for="sideTrack">Vertical text spacing <output data-o="sideTrack"></output></label><input type="range" id="sideTrack" data-k="sideTrack" min="0" max="0.6" step="0.01"></div>
       </div>
     </details>
 
@@ -1197,10 +1212,6 @@ html{background:#101218;overflow-x:hidden;overscroll-behavior-x:none}
         <div class="field"><label for="bottomPad">Disclaimer lift <output data-o="bottomPad"></output></label><input type="range" id="bottomPad" data-k="bottomPad" min="0" max="3" step="0.1"></div>
         <div class="field"><label for="logoH">Logo height <output data-o="logoH"></output></label><input type="range" id="logoH" data-k="logoH" min="4" max="18" step="0.1"></div>
         <div class="field"><label for="colGap">Column gap <output data-o="colGap"></output></label><input type="range" id="colGap" data-k="colGap" min="0.6" max="3" step="0.1"></div>
-        <div class="field"><label for="sideSize">Vertical text size <output data-o="sideSize"></output></label><input type="range" id="sideSize" data-k="sideSize" min="1" max="5" step="0.1"></div>
-        <div class="field"><label for="sideWeight">Vertical text weight</label>
-          <select id="sideWeight" data-k="sideWeight"><option value="400">Regular</option><option value="500">Medium</option><option value="600">Semibold</option><option value="700">Bold</option></select></div>
-        <div class="field"><label for="sideTrack">Vertical text spacing <output data-o="sideTrack"></output></label><input type="range" id="sideTrack" data-k="sideTrack" min="0" max="0.6" step="0.01"></div>
         <div class="field"><label for="textAlign">Text alignment</label><select id="textAlign" data-k="textAlign"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></div>
         <div class="field"><label for="threshold">Ink threshold <output data-o="threshold"></output></label><input type="range" id="threshold" data-k="threshold" min="40" max="220" step="1"></div>
         <div hidden id="calStore"><input type="range" id="printX" data-k="printX" min="-3" max="3" step="0.01"><input type="range" id="printY" data-k="printY" min="-3" max="3" step="0.01"><input type="range" id="printR" data-k="printR" min="-5" max="5" step="0.01"><input type="range" id="printDensity" data-k="printDensity" min="1" max="5" step="1"></div>
@@ -2120,7 +2131,7 @@ function drawGizmo() {
   pctx.restore();
 }
 function isGfx(id) { return !!id && (cfg.graphics || []).some(g => g.id === id); }
-function resizable(id) { return isGfx(id) || !!(id && (cfg.texts || []).some(t => t.id === id)); }
+function resizable(id) { return isGfx(id) || !!(id && (cfg.texts || []).some(t => t.id === id)) || (id === "side" && hits.some(h => h.id === "side")); } // graphics, custom text and the vertical text
 function cornerPts(b, k) { // [x, y, mode] in css px; mode "r<sx>,<sy>" names the dragged corner
   const l = b.x * k - 2.5, r = (b.x + b.w) * k + 2.5, t = b.y * k - 2.5, btm = (b.y + b.h) * k + 2.5;
   return [[l, t, "r-1,-1"], [r, t, "r1,-1"], [l, btm, "r-1,1"], [r, btm, "r1,1"]];
@@ -2261,7 +2272,7 @@ pv.addEventListener("pointerdown", (e) => {
     const [csx, csy] = mode.slice(1).split(",").map(Number), b = hits.find(h => h.id === sel);
     const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
     // the opposite corner stays put while this one is dragged; bx/by is where the element sits with no offset
-    drag.rs = { txt: !!customText(sel), s0: +(customText(sel) || {}).size || 2, csx, csy, fx: cx - csx * b.w / 2, fy: cy - csy * b.h / 2, aspect: b.w / b.h, bx: cx - o.x, by: cy + o.y, odd: rotOf(sel) % 2 === 1, dh0: b.h, ang: !!angOf(sel), gh0: +((cfg.graphics || []).find(q => q.id === sel) || {}).h || 8, gw0: +((cfg.graphics || []).find(q => q.id === sel) || {}).w || 20 };
+    drag.rs = { txt: !!customText(sel) || sel === "side", s0: sel === "side" ? (+cfg.sideSize || 2.4) : (+(customText(sel) || {}).size || 2), csx, csy, fx: cx - csx * b.w / 2, fy: cy - csy * b.h / 2, aspect: b.w / b.h, bx: cx - o.x, by: cy + o.y, odd: rotOf(sel) % 2 === 1, dh0: b.h, ang: !!angOf(sel), gh0: +((cfg.graphics || []).find(q => q.id === sel) || {}).h || 8, gw0: +((cfg.graphics || []).find(q => q.id === sel) || {}).w || 20 };
   }
   try { pv.setPointerCapture(e.pointerId); } catch {}
   pv.focus({ preventScroll: true }); e.preventDefault(); updatePos(); render();
@@ -2284,8 +2295,9 @@ pv.addEventListener("pointermove", (e) => {
     const r = drag.rs, mx = px / k, my = py / k;
     let dh = Math.max(((mx - r.fx) * r.csx) / r.aspect, (my - r.fy) * r.csy);
     { let dd = dh - r.dh0; const dz = RESIZE_DEAD / k; dd = Math.abs(dd) < dz ? 0 : dd - Math.sign(dd) * dz; dh = r.dh0 + dd * 0.5; }
-    let ns = r.s0 * Math.max(0.05, dh / r.dh0); ns = e.shiftKey ? Math.round(ns * 2) / 2 : Math.round(ns * 10) / 10; ns = Math.min(12, Math.max(0.8, ns));
-    cfg.texts = (cfg.texts || []).map(t => t.id === sel ? Object.assign({}, t, { size: ns }) : t); render();
+    const isSide = sel === "side"; let ns = r.s0 * Math.max(0.05, dh / r.dh0); ns = e.shiftKey ? Math.round(ns * 2) / 2 : Math.round(ns * 10) / 10; ns = isSide ? Math.min(5, Math.max(1, ns)) : Math.min(12, Math.max(0.8, ns));
+    if (isSide) { cfg.sideSize = ns; const sl = document.getElementById("sideSize"); if (sl) sl.value = ns; updateOutputs(); } else cfg.texts = (cfg.texts || []).map(t => t.id === sel ? Object.assign({}, t, { size: ns }) : t);
+    render();
     const b = hits.find(h => h.id === sel);
     if (b) { const ncx = r.fx + r.csx * b.w / 2, ncy = r.fy + r.csy * b.h / 2, o = getOff(sel); setOff(sel, o.x + (ncx - (b.x + b.w / 2)), o.y - (ncy - (b.y + b.h / 2))); render(); }
     updatePos(); return;
@@ -4295,7 +4307,10 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   });
 })();
 </script>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="bcsLiquid" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="368" height="52" color-interpolation-filters="sRGB"><feImage href="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27368%27%20height=%2752%27%3E%3Cdefs%3E%3ClinearGradient%20id=%27a%27%20x1=%270%27%20x2=%271%27%20y1=%270%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23ff8080%27/%3E%3Cstop%20offset=%27.45%27%20stop-color=%27%23ff8080%27%20stop-opacity=%27.35%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23ff8080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27b%27%20x1=%271%27%20x2=%270%27%20y1=%270%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23008080%27/%3E%3Cstop%20offset=%27.45%27%20stop-color=%27%23008080%27%20stop-opacity=%27.35%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23008080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27c%27%20x1=%270%27%20x2=%270%27%20y1=%270%27%20y2=%271%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%2380ff80%27/%3E%3Cstop%20offset=%27.45%27%20stop-color=%27%2380ff80%27%20stop-opacity=%27.35%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%2380ff80%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3ClinearGradient%20id=%27d%27%20x1=%270%27%20x2=%270%27%20y1=%271%27%20y2=%270%27%3E%3Cstop%20offset=%270%27%20stop-color=%27%23800080%27/%3E%3Cstop%20offset=%27.45%27%20stop-color=%27%23800080%27%20stop-opacity=%27.35%27/%3E%3Cstop%20offset=%271%27%20stop-color=%27%23800080%27%20stop-opacity=%270%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%27368%27%20height=%2752%27%20fill=%27%23808080%27/%3E%3Crect%20width=%2770%27%20height=%2752%27%20fill=%27url%28%23a%29%27/%3E%3Crect%20x=%27298%27%20width=%2770%27%20height=%2752%27%20fill=%27url%28%23b%29%27/%3E%3Crect%20width=%27368%27%20height=%2717%27%20fill=%27url%28%23c%29%27/%3E%3Crect%20y=%2735%27%20width=%27368%27%20height=%2717%27%20fill=%27url%28%23d%29%27/%3E%3C/svg%3E" x="0" y="0" width="368" height="52" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="24" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="bcsLiquid" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="368" height="52" color-interpolation-filters="sRGB">
+<feImage id="lgMap" href="" x="0" y="0" width="368" height="52" preserveAspectRatio="none" result="map"/>
+<feDisplacementMap in="SourceGraphic" in2="map" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+</filter></defs></svg>
 <script>
 (() => { // r89: themed colour menus for Ribbon and Label, plus the liquid glass switch for Chromium
   try { if (/Chrome\//.test(navigator.userAgent) && !/Edg\/|OPR\//.test(navigator.userAgent) || /Edg\//.test(navigator.userAgent)) document.documentElement.classList.add("lg"); } catch {}
@@ -4330,6 +4345,19 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   });
   document.addEventListener("pointerdown", (e) => { if (cur && !cur.menu.contains(e.target) && !cur.pick.contains(e.target)) closeAll(); }, true);
   addEventListener("resize", () => closeAll(true)); document.addEventListener("scroll", (e) => { if (cur && !(e.target.nodeType === 1 && cur.menu.contains(e.target))) closeAll(true); }, true);
+})();
+</script>
+<script>
+(() => { // water glass: a displacement map shaped like a convex pill bezel (content bends only near the rim, smoothly, no folds)
+  const el = document.getElementById("lgMap"); if (!el) return;
+  const W = 368, H = 52, R = H / 2, B = 11, DIR = -1, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d"), im = x.createImageData(W, H), d = im.data;
+  for (let y = 0; y < H; y++) for (let u = 0; u < W; u++) {
+    const px = u + 0.5, py = y + 0.5, cx = Math.min(Math.max(px, R), W - R), dx = px - cx, dy = py - R, hyp = Math.hypot(dx, dy), dist = R - hyp, t = Math.max(0, Math.min(1, dist / B));
+    const mag = dist < 0 ? 0 : Math.pow(0.5 * (1 + Math.cos(Math.PI * t)), 1.6), nx = hyp ? dx / hyp : 0, ny = hyp ? dy / hyp : 0, i = (y * W + u) * 4;
+    d[i] = Math.round(128 + 127 * DIR * nx * mag); d[i + 1] = Math.round(128 + 127 * DIR * ny * mag); d[i + 2] = 128; d[i + 3] = 255;
+  }
+  x.putImageData(im, 0, 0); el.setAttribute("href", c.toDataURL("image/png"));
 })();
 </script>
 </body>
