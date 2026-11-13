@@ -49,7 +49,7 @@
 (function (root) {
   "use strict";
 
-  const VERSION = "2.6.0";   // shown in the demo/console; bump on each release (or dev change)
+  const VERSION = "2.7.0";   // shown in the demo/console; bump on each release (or dev change)
   const SVC_UUID = "e7810a71-73ae-499d-8c15-faa9aef0c3f2";
   const CHAR_UUID = "bef8d6c9-9c21-4c9e-b632-bd58c1009f9f";
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -90,6 +90,12 @@
   // Connection reused across prints (module singleton).
   let device = null;
   let characteristic = null;
+  // USB (Web Serial) link, used instead of BLE when set. Same V4 frames; the transport and its
+  // settings (115200 baud, 10 ms between writes, 0x03-prefixed connect) follow niimbluelib's
+  // NiimbotSerialClient (MIT, github.com/MultiMote/niimbluelib).
+  let serialPort = null, serialWriter = null, serialReader = null, serialRx = new Uint8Array(0);
+  const SERIAL_GAP_MS = 10;
+  const linkUp = () => !!serialWriter || !!(characteristic && device && device.gatt && device.gatt.connected);
   // Waiters registered by sendWait()/getPrintStatus(), in registration order. Each
   // entry is { cmd, resolve } — `cmd === null` means "any opcode" (the handshake's
   // PrinterInfo reads use that, since the response code varies by sub-command). A
@@ -128,12 +134,29 @@
 
   function onNotify(event) {
     const v = event.target.value; // DataView
-    if (v.byteLength < 7) return;
-    if (v.getUint8(0) !== 0x55 || v.getUint8(1) !== 0x55) return;
-    const cmd = v.getUint8(2);
-    const len = v.getUint8(3);
+    onFrame(new Uint8Array(v.buffer, v.byteOffset, v.byteLength));
+  }
+  // USB delivers a byte stream, not one notification per frame: cut it into
+  // [55 55 cmd len ...data crc AA AA] frames, resyncing on the next header if bytes are garbled.
+  function onSerialBytes(chunk) {
+    const b = new Uint8Array(serialRx.length + chunk.length); b.set(serialRx); b.set(chunk, serialRx.length);
+    let i = 0;
+    while (b.length - i >= 7) {
+      if (b[i] !== 0x55 || b[i + 1] !== 0x55) { i++; continue; }
+      const total = b[i + 3] + 7;
+      if (b.length - i < total) break;
+      if (b[i + total - 2] !== 0xaa || b[i + total - 1] !== 0xaa) { i++; continue; }
+      onFrame(b.subarray(i, i + total)); i += total;
+    }
+    serialRx = b.slice(i);
+  }
+  function onFrame(v) {
+    if (v.length < 7) return;
+    if (v[0] !== 0x55 || v[1] !== 0x55) return;
+    const cmd = v[2];
+    const len = v[3];
     const data = [];
-    for (let i = 0; i < len && 4 + i < v.byteLength; i++) data.push(v.getUint8(4 + i));
+    for (let i = 0; i < len && 4 + i < v.length; i++) data.push(v[4 + i]);
     logRx(cmd, data);
     const idx = pendingQueue.findIndex((w) => w.cmd === cmd || w.cmd === null);
     if (idx >= 0) {
@@ -234,6 +257,7 @@
     }
   }
   async function writeRaw(bytes) {
+    if (serialWriter) { await sleep(SERIAL_GAP_MS); await serialWriter.write(bytes); return; }
     const mode = effectiveWriteMode();
     if (mode === "acked") { await characteristic.writeValueWithResponse(bytes); return; }
     // writeValueWithoutResponse pode estourar o buffer BLE em rajada — retry curto.
@@ -434,7 +458,7 @@
     const meta = (modelId != null && MODEL_IDS[modelId]) || null;
     printerInfo = {
       modelId, protocolVersion,
-      deviceName: (device && device.name) || null,   // advertised BLE name (for filtering)
+      deviceName: serialWriter ? "USB" : (device && device.name) || null,   // advertised BLE name (for filtering)
       label: meta ? meta.label : (modelId != null ? `unknown (id ${modelId})` : "unknown"),
       task: meta ? meta.task : null,
       dpi: meta ? meta.dpi : null,
@@ -457,7 +481,7 @@
   }
 
   async function connect(model) {
-    if (characteristic && device && device.gatt.connected) return;
+    if (linkUp()) return;
     logMsg(`Niimbot ${VERSION} — connecting (task=${(model && model.task) || "?"})`);
     // `!navigator.bluetooth` has two different causes and they need different advice.
     // `isSecureContext` is what the browser itself gates the API on, so it is the
@@ -491,6 +515,12 @@
       ? { filters: prefixes.map((p) => ({ namePrefix: p })), optionalServices: [SVC_UUID] }
       : { acceptAllDevices: true, optionalServices: [SVC_UUID] };
     device = await navigator.bluetooth.requestDevice(req);
+    await setupBle(model);
+  }
+
+  // Everything after a device is chosen: GATT, notifications, handshake, model detection.
+  // Shared by connect() (picker) and autoConnect() (a printer this site was allowed before).
+  async function setupBle(model) {
     logMsg(`device name: "${device.name || "?"}"`);
     const server = await device.gatt.connect();
     const svc = await server.getPrimaryService(SVC_UUID);
@@ -537,11 +567,69 @@
     if (task === "b1") await b1Handshake();
   }
 
+  // ── USB (Web Serial) ─────────────────────────────────────────────────────────
+  async function closeSerial() {
+    const p = serialPort; serialPort = null;
+    try { if (serialReader) { await serialReader.cancel(); serialReader.releaseLock(); } } catch (e) { /* gone */ }
+    try { if (serialWriter) serialWriter.releaseLock(); } catch (e) { /* gone */ }
+    serialReader = null; serialWriter = null; serialRx = new Uint8Array(0);
+    try { if (p) await p.close(); } catch (e) { /* gone */ }
+  }
+  async function setupSerial(port, model) {
+    await port.open({ baudRate: 115200 });
+    if (!port.readable || !port.writable) { try { await port.close(); } catch (e) {} throw new Error("USB port opened but is not readable/writable."); }
+    serialPort = port; serialWriter = port.writable.getWriter(); serialReader = port.readable.getReader();
+    port.addEventListener("disconnect", () => { if (serialPort === port) { logMsg("printer disconnected (USB cable removed)"); closeSerial(); printerInfo = null; } });
+    (async () => { const r = serialReader; try { for (;;) { const { value, done } = await r.read(); if (value) onSerialBytes(value); if (done) break; } } catch (e) { /* closed */ } })();
+    writeMode = "fast"; _bundleAllowed = false;
+    await writeRaw(new Uint8Array([0x03, 0x55, 0x55, 0xc1, 0x01, 0x01, 0xc1, 0xaa, 0xaa]));
+    await sleep(200);
+    await detectPrinter();
+    if (!printerInfo || printerInfo.modelId == null) { await closeSerial(); throw new Error("A USB device answered but it is not a Niimbot printer."); }
+    const meta = MODEL_IDS[printerInfo.modelId]; const task = (meta && meta.task) || (model && model.task);
+    logAlways(`connected over USB: ${printerInfo.label} (task=${task || "?"})`);
+    if (task === "b1") await b1Handshake();
+  }
+  // Ask for a USB printer (needs a click: the browser shows its port picker once; after that the
+  // site may reopen it on its own, which is what autoConnect uses).
+  async function connectUsb(model) {
+    if (!navigator.serial) throw new Error("This browser has no USB serial support. Use Chrome or Edge on a computer.");
+    if (linkUp()) await disconnect();
+    await setupSerial(await navigator.serial.requestPort(), model);
+  }
+  const withTimeout = (p, ms, what) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error(what + " timed out")), ms))]);
+  // ONE quiet attempt, no pickers: a USB printer this site was allowed before, then a Bluetooth
+  // printer this site was allowed before (navigator.bluetooth.getDevices; in Chrome this still
+  // sits behind a flag, so usually only USB applies). Resolves the printer info, or null.
+  async function autoConnect(model) {
+    if (linkUp()) return printerInfo;
+    try {
+      if (navigator.serial && navigator.serial.getPorts) {
+        for (const port of await navigator.serial.getPorts()) {
+          try { await withTimeout(setupSerial(port, model), 4000, "USB"); return printerInfo; }
+          catch (e) { logMsg(`USB auto-connect skipped: ${e.message}`); await closeSerial(); }
+        }
+      }
+    } catch (e) { /* no serial permission */ }
+    try {
+      if (navigator.bluetooth && navigator.bluetooth.getDevices) {
+        const prefixes = (model && model.name_prefixes) || [];
+        const devs = (await navigator.bluetooth.getDevices()).filter((d) => !prefixes.length || prefixes.some((p) => (d.name || "").startsWith(p)));
+        for (const d of devs) {
+          try { device = d; await withTimeout(setupBle(model), 6000, "Bluetooth"); return printerInfo; }
+          catch (e) { logMsg(`Bluetooth auto-connect skipped: ${e.message}`); try { if (d.gatt && d.gatt.connected) d.gatt.disconnect(); } catch (x) {} device = null; characteristic = null; }
+        }
+      }
+    } catch (e) { /* not allowed */ }
+    return null;
+  }
+
   // Drop the BLE connection so a different printer can be paired/identified. Clears
   // all connection state (incl. the detected printerInfo); the next print reconnects.
   async function disconnect() {
     try { if (device && device.gatt && device.gatt.connected) device.gatt.disconnect(); }
     catch (e) { /* already gone */ }
+    await closeSerial();
     characteristic = null; device = null; pendingQueue = []; lastUnsolicited = null; printerInfo = null;
     logMsg("disconnected");
   }
@@ -752,6 +840,7 @@
     // null means the gattserverdisconnected event fired (the browser saw a drop), and
     // gatt.connected false means the link is down WITHOUT that event having run. A
     // session that ends unexpectedly is diagnosable only if these are told apart.
+    if (!serialWriter) { // USB has no GATT; these checks are for the Bluetooth link
     if (!device) {
       throw new Error("Not connected — no device (disconnect() was called, or connect() never ran). Call Niimbot.connect(model) or Niimbot.identify(model) first.");
     }
@@ -760,6 +849,7 @@
     }
     if (!(device.gatt && device.gatt.connected)) {
       throw new Error("Not connected — device.gatt.connected is false while the characteristic is still held, so the link went down without the disconnect event running. Reconnect with Niimbot.connect(model).");
+    }
     }
     const o = opts || {};
     const hbTimeout = o.timeoutMs != null ? o.timeoutMs : 1000;
@@ -1354,7 +1444,11 @@
     get FORCE_PACING() { return writeOverride === "paced"; },
     set FORCE_PACING(v) { setWriteOverride(v ? "paced" : null); },
     get printer() { return printerInfo; },   // { modelId, protocolVersion, label, task, dpi } after connect
-    isSupported: () => !!navigator.bluetooth,
+    isSupported: () => !!navigator.bluetooth || !!navigator.serial,
+    hasUsb: () => !!navigator.serial,
+    connectUsb, autoConnect,
+    get connected() { return linkUp(); },
+    get transport() { return serialWriter ? "usb" : (linkUp() ? "bluetooth" : null); },
     // NOT PUBLISHED API — reaches the notification dispatcher (pendingQueue,
     // registerWait/clearWait, onNotify) directly for test/dispatch.test.js. Every real
     // caller today (sendWait, getPrintStatus) awaits one waiter before registering the
@@ -1381,7 +1475,7 @@
     // commands that print, feed, write RFID and update firmware, and an unknown opcode
     // may be one of them. Nothing in the driver calls this.
     probe: async (cmd, data, timeoutMs) => {
-      if (!characteristic) throw new Error("Not connected — probe needs an open connection.");
+      if (!linkUp()) throw new Error("Not connected — probe needs an open connection.");
       return await sendWait(cmd, data || [], null, timeoutMs != null ? timeoutMs : 400);
     },
     // Connect and identify the printer (model id + protocol) without printing — the

@@ -28,6 +28,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap">
+<script>(function(){var u=navigator.userAgent||"",ios=/iPad|iPhone|iPod/.test(u)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1),saf=/^((?!chrome|chromium|android|crios|fxios|edg|opr).)*safari/i.test(u);window.__IS_IOS=ios;window.__IS_SAFARI=saf;document.documentElement.classList.toggle("ios",ios);})();</script>
 <script>window.__fontCss = new Promise((ok) => { window.__fontCssOk = ok; setTimeout(ok, 6000); });</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=EB+Garamond:wght@400;500;600;700&family=DM+Serif+Display&family=Bodoni+Moda:wght@400;500;600;700&family=Pacifico&family=Yellowtail&family=Fredoka:wght@400;500;600;700&family=Chewy&family=Inter:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&family=Josefin+Sans:wght@400;500;600;700&family=Raleway:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" media="print" onload="this.media='all';window.__fontCssOk()" onerror="window.__fontCssOk()">
 <style>html{box-sizing:border-box}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
@@ -70,7 +71,7 @@ main{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(0,
 .proof{position:sticky;top:max(12px,env(safe-area-inset-top,0px));align-self:start;display:flex;flex-direction:column;gap:14px;min-width:0}
 @media (max-width:880px){.proof{position:static}}
 .plate{background:var(--sunken);border:1px solid var(--line);border-radius:8px;padding:8px 6px 10px 10px;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto;gap:6px 4px;align-items:center}
-#preview{grid-column:1;grid-row:2;width:100%;aspect-ratio:2/1;display:block;border-radius:4px;touch-action:none;outline:none}
+#preview{grid-column:1;grid-row:2;width:100%;aspect-ratio:var(--lab-ar,2/1);display:block;border-radius:4px;touch-action:none;outline:none}
 .plate .dpx{grid-column:1;grid-row:1;justify-self:center}
 .plate .dw{grid-column:1;grid-row:3;justify-self:start}
 .plate .dh{grid-column:2;grid-row:2;justify-self:center;writing-mode:vertical-rl;transform:rotate(180deg)}
@@ -331,7 +332,7 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .pmenu[hidden]{display:none}
 .popt{display:flex;flex-direction:column;gap:6px;padding:6px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--raised);color:var(--ink);cursor:pointer;font:500 11px/1.2 var(--f-sans);letter-spacing:.1em;text-transform:uppercase;text-align:left}
 .popt:hover,.popt:focus-visible{border-color:var(--border-accent);outline:none;box-shadow:var(--focus-ring)}
-.popt canvas{width:100%;aspect-ratio:2/1;display:block;border-radius:2px}
+.popt canvas{width:100%;aspect-ratio:var(--lab-ar,2/1);display:block;border-radius:2px}
 .sumr .ldef{white-space:nowrap}
 @media (max-width:520px){.sumr>span{display:none}}
 .modalwrap{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
@@ -343,7 +344,7 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 #floatBox{position:fixed;left:0;top:0;z-index:40;width:190px;display:none;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;will-change:transform}
 #floatBox.on{display:block}
 #floatBox.drag{cursor:grabbing}
-#floatPrev{display:block;width:100%;aspect-ratio:2/1;border-radius:4px;border:1px solid var(--line-2);background:var(--sunken);box-shadow:0 6px 22px rgba(0,0,0,.45);opacity:.95}
+#floatPrev{display:block;width:100%;aspect-ratio:var(--lab-ar,2/1);border-radius:4px;border:1px solid var(--line-2);background:var(--sunken);box-shadow:0 6px 22px rgba(0,0,0,.45);opacity:.95}
 #floatBox.drag #floatPrev{box-shadow:0 12px 34px rgba(0,0,0,.6)}
 #floatResize{position:absolute;left:0;bottom:0;width:30px;height:30px;padding:0;border:0;background:transparent;color:var(--cream-100,#fff);cursor:nesw-resize;touch-action:none;display:grid;place-items:end start}
 #floatResize svg{width:16px;height:16px;margin:0 0 5px 5px;padding:2px;box-sizing:content-box;border-radius:4px;background:rgba(10,10,12,.72);border:1px solid rgba(255,255,255,.28)}
@@ -445,7 +446,7 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .cal-ctl button{width:38px;height:34px;flex:none;border:1px solid var(--line-2);border-radius:4px;background:transparent;color:var(--ink);font:500 15px/1 var(--f-sans);cursor:pointer}
 .cal-ctl button:hover,.cal-ctl button:focus-visible{border-color:var(--accent);outline:none}
 .cal-ctl input{flex:1;min-width:0;width:100%;height:34px;text-align:center}
-.cal-prev{display:block;width:100%;height:auto;aspect-ratio:2/1;margin:0 0 12px;border-radius:8px;background:#0b0c0e}
+.cal-prev{display:block;width:100%;height:auto;aspect-ratio:var(--lab-ar,2/1);margin:0 0 12px;border-radius:8px;background:#0b0c0e}
 #prWrap.cal-open #prGo,#prWrap.cal-open #prClose{display:none}
 #prWrap.cal-open #calDone{display:inline-flex}
 #calDone[hidden]{display:none}
@@ -462,7 +463,7 @@ nav::before,.liquid::before { content:""; position:absolute; left:var(--mx,50%);
 .col-in{overflow:hidden;min-height:0}
 #prWrap.instant *{transition:none!important}
 @media (prefers-reduced-motion:reduce){.col,.col.open{transition:none}}
-.pr-prev{display:block;width:100%;height:auto;aspect-ratio:2/1;margin:0 0 14px;border-radius:8px;background:#fff;border:1px solid var(--line-2)}
+.pr-prev{display:block;width:100%;height:auto;aspect-ratio:var(--lab-ar,2/1);margin:0 0 14px;border-radius:8px;background:#fff;border:1px solid var(--line-2)}
 .pr-prev[hidden]{display:none}
 .fly{position:fixed;z-index:300;pointer-events:none;border-radius:8px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .fly canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -788,6 +789,45 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
 }
 /* r85: cheaper glass. Same look at a smaller blur radius, without the extra saturate pass */
 @media (min-width:881px){.controls.sidebar{-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}}
+/* r88: label size switch in the header */
+.spec-btn{display:inline-flex;align-items:center;gap:8px;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:5px 10px 5px 12px;cursor:pointer;transition:border-color 200ms var(--ease),background 200ms var(--ease),color 200ms var(--ease)}
+.spec-btn .pen{width:13px;height:13px;color:#5bc0ee;flex:none}
+.spec-btn:hover,.spec-btn:focus-visible{border-color:rgba(91,192,238,.6);background:rgba(91,192,238,.08);color:#fff}
+/* r88: iOS has no website Bluetooth, so Quick print is hidden there */
+html.ios #quickBtn{display:none!important}
+/* r88: phones. Export takes the DOSE mark's place in the footer; hints become one compact row; first-visit pointer to the side panel */
+@media (max-width:880px){
+  .site-foot .foot-mark{display:none}
+  .site-foot .foot-right{order:-1;display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;margin:6px 0 10px}
+  .site-foot #exportBtn2{padding:13px 34px;font-size:13px;letter-spacing:.16em;border-radius:14px;box-shadow:0 10px 26px rgba(43,140,204,.35)}
+  .hints,.hints.off{display:flex!important;align-items:center;gap:10px;padding:7px 8px 7px 14px!important;border-radius:16px!important;min-height:0;margin-bottom:12px}
+  .hints .hview{flex:1;min-width:0;order:0;min-height:47px!important;height:47px;align-items:center!important}
+  .hints .htrack,.hints .htrack *{font-size:12px!important;line-height:1.3!important}
+  .hints .htrack{overflow:hidden;max-height:47px}
+  .hints .htrack span{display:-webkit-box!important;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:normal}
+  .hints .hsw{order:1;flex:none;margin:0!important;gap:6px}
+  .hints .hswl{font-size:9.5px;letter-spacing:.14em}
+  .hints .hpill{transform:scale(.82);transform-origin:right center}
+  .hints.off .hview{display:none}
+  .hints.off{justify-content:flex-end;padding:4px 6px!important;background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+  #sbBubble.coach{animation:coachPulse 1.6s ease-in-out infinite}
+  @keyframes coachPulse{0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),5px 0 16px rgba(0,0,0,.45),0 0 0 0 rgba(91,192,238,.55)}50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.22),5px 0 16px rgba(0,0,0,.45),0 0 0 10px rgba(91,192,238,0)}}
+  .coachTip{position:fixed;z-index:91;left:30px;top:50dvh;transform:translateY(-50%);max-width:210px;padding:11px 14px;border-radius:14px;background:#2f86bd;color:#fff;font:600 13px/1.35 var(--f-sans);box-shadow:0 12px 30px rgba(0,0,0,.45);animation:coachIn 420ms var(--ease) both}
+  .coachTip::before{content:"";position:absolute;left:-7px;top:50%;margin-top:-7px;border:7px solid transparent;border-left:0;border-right-color:#2f86bd}
+  .coachTip small{display:block;font-weight:500;opacity:.85;margin-top:3px;font-size:11.5px}
+  @keyframes coachIn{from{opacity:0;transform:translate(-8px,-50%)}}
+}
+/* r88: My uploads in the Presets window */
+.mine-head{grid-column:1/-1;font:600 10.5px/1 var(--f-mono);letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted,#9aa3ad);padding:4px 2px 0}
+.popt.mine .mine-row{display:flex;align-items:center;gap:6px;min-width:0}
+.popt.mine .mine-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mine-act{flex:none;display:grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:8px;border:1px solid var(--line-2);background:transparent;color:inherit;font:600 14px/1 var(--f-sans);cursor:pointer}
+.mine-act svg{width:13px;height:13px}
+.mine-act:hover{border-color:#5bc0ee;color:#5bc0ee}
+.mine-act.confirm{font-size:10.5px;letter-spacing:.06em;color:#ff6b61;border-color:rgba(255,107,97,.6)}
+.mine-input{flex:1;min-width:0;font:inherit;text-transform:none;letter-spacing:0;padding:4px 6px;border-radius:6px;border:1px solid #5bc0ee;background:var(--sunken,#111);color:var(--ink)}
+.pr-chip{display:inline-flex;align-items:center;gap:6px;margin-left:10px;font:600 10.5px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:#7fd99a}
+.pr-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:#4cd07d;box-shadow:0 0 8px rgba(76,208,125,.8)}
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -899,7 +939,7 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
       <div class="cal-foot"><button type="button" class="btn" id="calReset">Reset to 0</button><button type="button" class="btn" id="calTest">Reprint test label</button></div>
     </div></div></div>
     </div>
-    <div class="actions"><button type="button" class="btn" id="prClose">Close</button><button type="button" class="btn primary" id="prGo">Connect printer</button><button type="button" class="btn primary" id="calDone" hidden>Done</button></div>
+    <div class="actions"><button type="button" class="btn" id="prUsb" hidden>Use USB cable</button><button type="button" class="btn" id="prClose">Close</button><button type="button" class="btn primary" id="prGo">Connect printer</button><button type="button" class="btn primary" id="calDone" hidden>Done</button></div>
   </div>
 </div>
 <header>
@@ -907,7 +947,7 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
     <h1>Label Studio</h1>
   </div>
   <div class="hdr-right">
-    <div class="spec">Niimbot M2 · 40 × 20 mm · 300 dpi</div>
+    <button type="button" class="spec spec-btn" id="sizeBtn" title="Change label size" aria-label="Label size: 40 by 20 millimetres. Tap to switch to 50 by 20."><span id="sizeTxt">Niimbot M2 · 40 × 20 mm · 300 dpi</span><svg class="pen" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></button>
     <button type="button" class="btn small" id="clearAll">Clear all</button>
   </div>
 </header>
@@ -1064,7 +1104,7 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
           <summary><h2>My design</h2><span id="dsgStat">Upload artwork</span></summary>
           <div class="subbody">
             <input type="file" id="dsgFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
-            <p class="note" id="dsgNote">Upload artwork for the whole label (PNG, JPG, WebP or SVG). The tool reads the size stored in the file and can fit it to the 40 x 20 mm label. It prints in black and white, and is kept on this device.</p>
+            <p class="note" id="dsgNote">Upload artwork for the whole label (PNG, JPG, WebP or SVG). The tool reads the size stored in the file and can fit it to the label. It prints in black and white, and is kept on this device.</p>
             <div class="dsg-actions"><button type="button" class="btn" id="dsgPick">Upload design</button></div>
             <div id="dsgInfo" hidden>
               <div class="dsg-card"><canvas id="dsgThumb" width="200" height="100" aria-hidden="true"></canvas><dl class="dsg-meta" id="dsgMeta"></dl></div>
@@ -1127,8 +1167,12 @@ body.sb-collapsed .controls.sidebar{scrollbar-gutter:auto;padding-right:8px}
 
 <script>
 (() => {
-const W = 40, H = 20, DPI = 300, PXMM = DPI / 25.4;
-const EX_W = Math.round(W * PXMM), EX_H = Math.round(H * PXMM); // 472 x 236
+// Label size. The M2 takes 40 x 20 or 50 x 20 mm rolls; everything below reads W/H/EX_W/EX_H at draw time, so switching is one call (setLabelSize).
+const LABEL_SIZES = { "40x20": { w: 40, h: 20 }, "50x20": { w: 50, h: 20 } };
+let LABEL_ID = (() => { try { const v = localStorage.getItem("bcs-label-size"); return LABEL_SIZES[v] ? v : "40x20"; } catch { return "40x20"; } })();
+let W = LABEL_SIZES[LABEL_ID].w, H = LABEL_SIZES[LABEL_ID].h; const DPI = 300, PXMM = DPI / 25.4;
+let EX_W = Math.round(W * PXMM), EX_H = Math.round(H * PXMM); // 472 x 236 for 40 x 20, 591 x 236 for 50 x 20
+document.documentElement.style.setProperty("--lab-ar", W + " / " + H);
 let HIST = null; // undo history, set up once the page has loaded
 const DEFAULTS = {
   compound: "Adamax", variant: "1032 Da", variantSize: 1.7, strength: "10 mg", batch: "", date: "",
@@ -1187,7 +1231,7 @@ for (const k in window.TEX_URLS) { const im = new Image(); im.onload = () => { h
 function stockPaint(ctx, pxW) { // flat colour, or the hologram texture sized to the label
   const ti = view.tex && texImgs[view.tex]; if (!ti || !ti.complete || !ti.naturalWidth) return view.stock;
   const ck = view.tex + pxW; let c = holoCache.get(ck);
-  if (!c) { c = document.createElement("canvas"); c.width = pxW; c.height = Math.ceil(pxW / 2); const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(ti, 0, 0, pxW, c.height); holoCache.set(ck, c); if (holoCache.size > 8) holoCache.delete(holoCache.keys().next().value); }
+  if (!c) { c = document.createElement("canvas"); c.width = pxW; c.height = Math.ceil(pxW * H / W); const x = c.getContext("2d"); x.imageSmoothingQuality = "high"; x.drawImage(ti, 0, 0, pxW, c.height); holoCache.set(ck, c); if (holoCache.size > 8) holoCache.delete(holoCache.keys().next().value); }
   const p = ctx.createPattern(c, "repeat"); p.setTransform(new DOMMatrix().scale(W / pxW)); return p;
 }
 
@@ -1244,6 +1288,32 @@ GFX.frame = {name:"Rounded frame", vb:[0, 0, 384.0, 184.0], sw:7, cat:"border", 
 GFX.doubleframe = {name:"Double frame", vb:[0, 0, 384.0, 184.0], sw:3.6, cat:"border", body:"<rect x=\"1.8\" y=\"1.8\" width=\"380.4\" height=\"180.4\" rx=\"3\"/><rect x=\"18\" y=\"18\" width=\"348\" height=\"148\" rx=\"2.5\"/>"};
 GFX.starsframe = {name:"Stars frame", vb:[0, 0, 384.0, 184.0], sw:2.8, cat:"border", body:"<path d=\"M137 2.2H2.2V181.8H137 M247 2.2H381.8V181.8H247\"/><path d=\"M137 10.2H10.2V173.8H137 M247 10.2H373.8V173.8H247\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M192 -3.3L194.2 3.1L201 3.3L195.6 7.4L197.6 13.9L192 10L186.4 13.9L188.4 7.4L183 3.3L189.8 3.1Z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M168 0.4L169.4 4.3L173.5 4.4L170.2 6.9L171.4 10.9L168 8.5L164.6 10.9L165.8 6.9L162.5 4.4L166.6 4.3Z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M216 0.4L217.4 4.3L221.5 4.4L218.2 6.9L219.4 10.9L216 8.5L212.6 10.9L213.8 6.9L210.5 4.4L214.6 4.3Z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M150 1.8L151 4.8L154.2 4.8L151.7 6.7L152.6 9.8L150 8L147.4 9.8L148.3 6.7L145.8 4.8L149 4.8Z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M234 1.8L235 4.8L238.2 4.8L235.7 6.7L236.6 9.8L234 8L231.4 9.8L232.3 6.7L229.8 4.8L233 4.8Z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M192 168.3L194.2 174.7L201 174.9L195.6 179L197.6 185.5L192 181.6L186.4 185.5L188.4 179L183 174.9L189.8 174.7Z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M168 172L169.4 175.9L173.5 176L170.2 178.5L171.4 182.5L168 180.1L164.6 182.5L165.8 178.5L162.5 176L166.6 175.9Z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M216 172L217.4 175.9L221.5 176L218.2 178.5L219.4 182.5L216 180.1L212.6 182.5L213.8 178.5L210.5 176L214.6 175.9Z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M150 173.4L151 176.4L154.2 176.4L151.7 178.3L152.6 181.4L150 179.6L147.4 181.4L148.3 178.3L145.8 176.4L149 176.4Z\"/><path fill=\"currentColor\" stroke=\"none\" d=\"M234 173.4L235 176.4L238.2 176.4L235.7 178.3L236.6 181.4L234 179.6L231.4 181.4L232.3 178.3L229.8 176.4L233 176.4Z\"/>"};
 GFX.barbed = {name:"Barbed wire", vb:[0, 0, 384.0, 184.0], sw:2.4, cat:"border", body:"<path d=\"M34 13.6Q35 13 36.5 12.2Q38 11.4 39.5 10.7Q41 9.9 42.5 9.3Q44 8.7 45.5 8.3Q47 7.9 48.5 7.8Q50 7.6 51.5 7.7Q53 7.8 54.5 8.1Q56 8.4 57.5 8.9Q59 9.5 60.5 10.2Q62 10.8 63.5 11.6Q65 12.4 66.5 13.2Q68 14 69.5 14.8Q71 15.6 72.5 16.2Q74 16.9 75.5 17.4Q77 17.8 78.5 18.1Q80 18.3 81.5 18.3Q83 18.3 84.5 18.1Q86 17.9 87.5 17.4Q89 17 90.5 16.3Q92 15.7 93.5 14.9Q95 14.2 96.5 13.3Q98 12.5 99.5 11.7Q101 10.9 102.5 10.2Q104 9.5 105.5 9Q107 8.5 108.5 8.1Q110 7.8 111.5 7.7Q113 7.6 114.5 7.8Q116 7.9 117.5 8.3Q119 8.7 120.5 9.2Q122 9.8 123.5 10.6Q125 11.3 126.5 12.1Q128 12.9 129.5 13.7Q131 14.5 132.5 15.2Q134 16 135.5 16.6Q137 17.2 138.5 17.6Q140 18 141.5 18.2Q143 18.4 144.5 18.3Q146 18.3 147.5 18Q149 17.7 150.5 17.1Q152 16.6 153.5 15.9Q155 15.3 156.5 14.5Q158 13.7 159.5 12.9Q161 12.1 162.5 11.3Q164 10.5 165.5 9.9Q167 9.2 168.5 8.7Q170 8.2 171.5 8Q173 7.7 174.5 7.7Q176 7.6 177.5 7.9Q179 8.1 180.5 8.5Q182 9 183.5 9.6Q185 10.2 186.5 11Q188 11.7 189.5 12.5Q191 13.4 192.5 14.2Q194 14.9 195.5 15.7Q197 16.4 198.5 16.9Q200 17.5 201.5 17.8Q203 18.2 204.5 18.3Q206 18.4 207.5 18.3Q209 18.1 210.5 17.8Q212 17.4 213.5 16.8Q215 16.3 216.5 15.5Q218 14.8 219.5 14Q221 13.2 222.5 12.4Q224 11.6 225.5 10.9Q227 10.1 228.5 9.5Q230 8.9 231.5 8.5Q233 8 234.5 7.8Q236 7.6 237.5 7.7Q239 7.7 240.5 8Q242 8.3 243.5 8.8Q245 9.3 246.5 10Q248 10.6 249.5 11.4Q251 12.2 252.5 13Q254 13.8 255.5 14.6Q257 15.4 258.5 16.1Q260 16.7 261.5 17.2Q263 17.7 264.5 18Q266 18.3 267.5 18.3Q269 18.4 270.5 18.2Q272 18 273.5 17.5Q275 17.1 276.5 16.5Q278 15.9 279.5 15.1Q281 14.4 282.5 13.6Q284 12.8 285.5 12Q287 11.2 288.5 10.4Q290 9.7 291.5 9.2Q293 8.6 294.5 8.2Q296 7.9 297.5 7.7Q299 7.6 300.5 7.7Q302 7.8 303.5 8.2Q305 8.5 306.5 9.1Q308 9.6 309.5 10.4Q311 11.1 312.5 11.9Q314 12.7 315.5 13.5Q317 14.3 318.5 15Q320 15.8 321.5 16.4Q323 17 324.5 17.5Q326 17.9 327.5 18.1Q329 18.4 330.5 18.3Q332 18.3 333.5 18Q335 17.8 336.5 17.3Q338 16.8 339.5 16.1Q341 15.5 342.5 14.7Q344 13.9 345.5 13.1Q347 12.3 348.6 11.5Q350.2 10.7 352 10.3Q353.8 9.8 355.7 9.8Q357.6 9.7 359.4 10.2Q361.3 10.6 362.9 11.6Q364.6 12.5 365.9 13.8Q367.2 15.2 368.2 16.8Q369.1 18.4 369.6 20.2Q370.1 22 370.2 23.8Q370.3 25.6 370 27.4Q369.8 29.1 369.3 30.6Q368.8 32.2 368.2 33.6Q367.6 35 367 36.5Q366.5 38 366.1 39.5Q365.8 41 365.7 42.5Q365.6 44 365.7 45.5Q365.9 47 366.3 48.5Q366.6 50 367.2 51.5Q367.8 53 368.5 54.5Q369.2 56 370 57.5Q370.8 59 371.7 60.5Q372.5 62 373.2 63.5Q374 65 374.6 66.5Q375.2 68 375.6 69.5Q376 71 376.2 72.5Q376.4 74 376.3 75.5Q376.3 77 376 78.5Q375.7 80 375.2 81.5Q374.7 83 374 84.5Q373.3 86 372.5 87.5Q371.7 89 370.9 90.5Q370.1 92 369.3 93.5Q368.6 95 367.9 96.5Q367.2 98 366.7 99.5Q366.2 101 366 102.5Q365.7 104 365.7 105.5Q365.6 107 365.8 108.5Q366.1 110 366.5 111.5Q366.9 113 367.6 114.5Q368.2 116 368.9 117.5Q369.7 119 370.5 120.5Q371.3 122 372.1 123.5Q372.9 125 373.6 126.5Q374.3 128 374.9 129.5Q375.5 131 375.8 132.5Q376.2 134 376.3 135.5Q376.4 137 376.3 138.5Q376.1 140 375.8 141.5Q375.4 143 374.9 144.5Q374.3 146 373.6 147.5Q372.9 149 371.9 150.6Q371 152.1 369.9 153.3Q368.8 154.6 367.6 155.6Q366.5 156.6 365.3 157.5Q364.2 158.3 363.2 159Q362.1 159.8 361.2 160.5Q360.3 161.2 359.4 162Q358.6 162.7 357.7 163.6Q356.8 164.5 355.9 165.5Q354.9 166.5 353.8 167.5Q352.7 168.5 351.3 169.5Q350 170.4 348.5 171.3Q347 172.1 345.5 172.8Q344 173.6 342.5 174.3Q341 174.9 339.5 175.4Q338 175.8 336.5 176.1Q335 176.3 333.5 176.3Q332 176.3 330.5 176.1Q329 175.9 327.5 175.4Q326 174.9 324.5 174.3Q323 173.6 321.5 172.9Q320 172.1 318.5 171.3Q317 170.5 315.5 169.7Q314 168.9 312.5 168.2Q311 167.5 309.5 167Q308 166.4 306.5 166.1Q305 165.8 303.5 165.7Q302 165.6 300.5 165.8Q299 165.9 297.5 166.3Q296 166.7 294.5 167.3Q293 167.9 291.5 168.6Q290 169.3 288.5 170.1Q287 170.9 285.5 171.7Q284 172.5 282.5 173.3Q281 174 279.5 174.6Q278 175.2 276.5 175.6Q275 176 273.5 176.2Q272 176.4 270.5 176.3Q269 176.3 267.5 175.9Q266 175.6 264.5 175.1Q263 174.6 261.5 173.9Q260 173.2 258.5 172.4Q257 171.7 255.5 170.8Q254 170 252.5 169.3Q251 168.5 249.5 167.8Q248 167.2 246.5 166.7Q245 166.2 243.5 165.9Q242 165.7 240.5 165.7Q239 165.6 237.5 165.9Q236 166.1 234.5 166.5Q233 167 231.5 167.6Q230 168.3 228.5 169Q227 169.8 225.5 170.6Q224 171.4 222.5 172.2Q221 173 219.5 173.7Q218 174.4 216.5 174.9Q215 175.5 213.5 175.8Q212 176.2 210.5 176.3Q209 176.4 207.5 176.3Q206 176.1 204.5 175.7Q203 175.4 201.5 174.8Q200 174.2 198.5 173.5Q197 172.8 195.5 172Q194 171.2 192.5 170.4Q191 169.6 189.5 168.8Q188 168.1 186.5 167.5Q185 166.9 183.5 166.4Q182 166 180.5 165.8Q179 165.6 177.5 165.7Q176 165.7 174.5 166Q173 166.3 171.5 166.8Q170 167.3 168.5 168Q167 168.7 165.5 169.4Q164 170.2 162.5 171Q161 171.9 159.5 172.6Q158 173.4 156.5 174.1Q155 174.7 153.5 175.2Q152 175.7 150.5 176Q149 176.3 147.5 176.3Q146 176.4 144.5 176.2Q143 176 141.5 175.5Q140 175.1 138.5 174.5Q137 173.8 135.5 173.1Q134 172.3 132.5 171.5Q131 170.7 129.5 169.9Q128 169.1 126.5 168.4Q125 167.7 123.5 167.1Q122 166.6 120.5 166.2Q119 165.8 117.5 165.7Q116 165.6 114.5 165.7Q113 165.8 111.5 166.2Q110 166.6 108.5 167.1Q107 167.7 105.5 168.4Q104 169.1 102.5 169.9Q101 170.7 99.5 171.5Q98 172.3 96.5 173.1Q95 173.8 93.5 174.4Q92 175.1 90.5 175.5Q89 175.9 87.5 176.2Q86 176.4 84.5 176.3Q83 176.3 81.5 176Q80 175.7 78.5 175.3Q77 174.8 75.5 174.1Q74 173.4 72.5 172.7Q71 171.9 69.5 171.1Q68 170.3 66.5 169.5Q65 168.7 63.5 168Q62 167.3 60.5 166.8Q59 166.3 57.5 166Q56 165.7 54.5 165.7Q53 165.6 51.5 165.8Q50 166 48.5 166.4Q47 166.8 45.5 167.5Q44 168.1 42.5 168.8Q41 169.5 39.5 170.4Q38 171.2 36.5 172Q35 172.8 33.2 173.4Q31.4 174 29.6 174.2Q27.7 174.4 25.8 174.1Q23.9 173.8 22.2 173Q20.5 172.2 19 171Q17.6 169.8 16.5 168.3Q15.4 166.7 14.8 165Q14.1 163.2 13.9 161.4Q13.7 159.6 13.8 157.8Q14 156 14.4 154.4Q14.8 152.8 15.4 151.4Q16 149.9 16.6 148.5Q17.2 147 17.6 145.5Q18 144 18.2 142.5Q18.4 141 18.3 139.5Q18.3 138 18 136.5Q17.7 135 17.1 133.5Q16.6 132 15.9 130.5Q15.3 129 14.5 127.5Q13.7 126 12.9 124.5Q12.1 123 11.3 121.5Q10.5 120 9.9 118.5Q9.2 117 8.7 115.5Q8.2 114 8 112.5Q7.7 111 7.7 109.5Q7.6 108 7.9 106.5Q8.1 105 8.5 103.5Q9 102 9.6 100.5Q10.2 99 11 97.5Q11.7 96 12.5 94.5Q13.4 93 14.2 91.5Q14.9 90 15.7 88.5Q16.4 87 16.9 85.5Q17.5 84 17.8 82.5Q18.2 81 18.3 79.5Q18.4 78 18.3 76.5Q18.1 75 17.8 73.5Q17.4 72 16.8 70.5Q16.3 69 15.5 67.5Q14.8 66 14 64.5Q13.2 63 12.4 61.5Q11.6 60 10.9 58.5Q10.1 57 9.5 55.5Q8.9 54 8.5 52.5Q8 51 7.8 49.5Q7.6 48 7.7 46.5Q7.7 45 8 43.5Q8.3 42 8.8 40.5Q9.3 39 10 37.5Q10.6 36 11.5 34.4Q12.3 32.9 13.4 31.5Q14.4 30.2 15.6 29.1Q16.7 28 17.9 27.1Q19 26.2 20.1 25.5Q21.2 24.7 22.2 24Q23.1 23.3 24 22.5Q24.9 21.8 25.7 20.9Q26.6 20.1 27.5 19.2Q28.4 18.2 29.5 17.2Q30.5 16.2 31.8 15.2Q33 14.2 34 13.6Z\"/><path d=\"M33.9 12.5Q35 13 36.5 13.8Q38 14.6 39.5 15.3Q41 16.1 42.5 16.7Q44 17.3 45.5 17.7Q47 18.1 48.5 18.2Q50 18.4 51.5 18.3Q53 18.2 54.5 17.9Q56 17.6 57.5 17.1Q59 16.5 60.5 15.8Q62 15.2 63.5 14.4Q65 13.6 66.5 12.8Q68 12 69.5 11.2Q71 10.4 72.5 9.8Q74 9.1 75.5 8.6Q77 8.2 78.5 7.9Q80 7.7 81.5 7.7Q83 7.7 84.5 7.9Q86 8.1 87.5 8.6Q89 9 90.5 9.7Q92 10.3 93.5 11.1Q95 11.8 96.5 12.7Q98 13.5 99.5 14.3Q101 15.1 102.5 15.8Q104 16.5 105.5 17Q107 17.5 108.5 17.9Q110 18.2 111.5 18.3Q113 18.4 114.5 18.2Q116 18.1 117.5 17.7Q119 17.3 120.5 16.8Q122 16.2 123.5 15.4Q125 14.7 126.5 13.9Q128 13.1 129.5 12.3Q131 11.5 132.5 10.8Q134 10 135.5 9.4Q137 8.8 138.5 8.4Q140 8 141.5 7.8Q143 7.6 144.5 7.7Q146 7.7 147.5 8Q149 8.3 150.5 8.9Q152 9.4 153.5 10.1Q155 10.7 156.5 11.5Q158 12.3 159.5 13.1Q161 13.9 162.5 14.7Q164 15.5 165.5 16.1Q167 16.8 168.5 17.3Q170 17.8 171.5 18Q173 18.3 174.5 18.3Q176 18.4 177.5 18.1Q179 17.9 180.5 17.5Q182 17 183.5 16.4Q185 15.8 186.5 15Q188 14.3 189.5 13.5Q191 12.6 192.5 11.8Q194 11.1 195.5 10.3Q197 9.6 198.5 9.1Q200 8.5 201.5 8.2Q203 7.8 204.5 7.7Q206 7.6 207.5 7.7Q209 7.9 210.5 8.2Q212 8.6 213.5 9.2Q215 9.7 216.5 10.5Q218 11.2 219.5 12Q221 12.8 222.5 13.6Q224 14.4 225.5 15.1Q227 15.9 228.5 16.5Q230 17.1 231.5 17.5Q233 18 234.5 18.2Q236 18.4 237.5 18.3Q239 18.3 240.5 18Q242 17.7 243.5 17.2Q245 16.7 246.5 16Q248 15.4 249.5 14.6Q251 13.8 252.5 13Q254 12.2 255.5 11.4Q257 10.6 258.5 9.9Q260 9.3 261.5 8.8Q263 8.3 264.5 8Q266 7.7 267.5 7.7Q269 7.6 270.5 7.8Q272 8 273.5 8.5Q275 8.9 276.5 9.5Q278 10.1 279.5 10.9Q281 11.6 282.5 12.4Q284 13.2 285.5 14Q287 14.8 288.5 15.6Q290 16.3 291.5 16.8Q293 17.4 294.5 17.8Q296 18.1 297.5 18.3Q299 18.4 300.5 18.3Q302 18.2 303.5 17.8Q305 17.5 306.5 16.9Q308 16.4 309.5 15.6Q311 14.9 312.5 14.1Q314 13.3 315.5 12.5Q317 11.7 318.5 11Q320 10.2 321.5 9.6Q323 9 324.5 8.5Q326 8.1 327.5 7.9Q329 7.6 330.5 7.7Q332 7.7 333.5 8Q335 8.2 336.5 8.7Q338 9.2 339.5 9.9Q341 10.5 342.5 11.3Q344 12.1 345.5 12.9Q347 13.7 348.4 14.5Q349.9 15.3 351.1 16.1Q352.3 17 353.3 17.8Q354.4 18.6 355.4 19.3Q356.3 20 357.3 20.6Q358.3 21.2 359.3 21.8Q360.4 22.3 361.6 22.9Q362.7 23.5 364 24.2Q365.3 24.8 366.6 25.7Q367.9 26.6 369.2 27.7Q370.5 28.9 371.6 30.3Q372.8 31.7 373.6 33.4Q374.4 35 375 36.5Q375.5 38 375.9 39.5Q376.2 41 376.3 42.5Q376.4 44 376.3 45.5Q376.1 47 375.7 48.5Q375.4 50 374.8 51.5Q374.2 53 373.5 54.5Q372.8 56 372 57.5Q371.2 59 370.3 60.5Q369.5 62 368.8 63.5Q368 65 367.4 66.5Q366.8 68 366.4 69.5Q366 71 365.8 72.5Q365.6 74 365.7 75.5Q365.7 77 366 78.5Q366.3 80 366.8 81.5Q367.3 83 368 84.5Q368.7 86 369.5 87.5Q370.3 89 371.1 90.5Q371.9 92 372.7 93.5Q373.4 95 374.1 96.5Q374.8 98 375.3 99.5Q375.8 101 376 102.5Q376.3 104 376.3 105.5Q376.4 107 376.2 108.5Q375.9 110 375.5 111.5Q375.1 113 374.4 114.5Q373.8 116 373.1 117.5Q372.3 119 371.5 120.5Q370.7 122 369.9 123.5Q369.1 125 368.4 126.5Q367.7 128 367.1 129.5Q366.5 131 366.2 132.5Q365.8 134 365.7 135.5Q365.6 137 365.7 138.5Q365.9 140 366.2 141.5Q366.6 143 367.1 144.5Q367.7 146 368.4 147.5Q369.1 149 369.8 150.5Q370.6 152 371 153.7Q371.5 155.4 371.6 157.3Q371.8 159.1 371.5 161Q371.2 162.9 370.4 164.6Q369.7 166.3 368.5 167.8Q367.4 169.3 365.8 170.4Q364.3 171.6 362.5 172.2Q360.8 172.9 358.9 173.1Q357 173.3 355.2 173Q353.4 172.8 351.7 172.1Q350 171.5 348.5 170.7Q347 169.9 345.5 169.2Q344 168.4 342.5 167.7Q341 167.1 339.5 166.6Q338 166.2 336.5 165.9Q335 165.7 333.5 165.7Q332 165.7 330.5 165.9Q329 166.1 327.5 166.6Q326 167.1 324.5 167.7Q323 168.4 321.5 169.1Q320 169.9 318.5 170.7Q317 171.5 315.5 172.3Q314 173.1 312.5 173.8Q311 174.5 309.5 175Q308 175.6 306.5 175.9Q305 176.2 303.5 176.3Q302 176.4 300.5 176.2Q299 176.1 297.5 175.7Q296 175.3 294.5 174.7Q293 174.1 291.5 173.4Q290 172.7 288.5 171.9Q287 171.1 285.5 170.3Q284 169.5 282.5 168.7Q281 168 279.5 167.4Q278 166.8 276.5 166.4Q275 166 273.5 165.8Q272 165.6 270.5 165.7Q269 165.7 267.5 166.1Q266 166.4 264.5 166.9Q263 167.4 261.5 168.1Q260 168.8 258.5 169.6Q257 170.3 255.5 171.2Q254 172 252.5 172.7Q251 173.5 249.5 174.2Q248 174.8 246.5 175.3Q245 175.8 243.5 176.1Q242 176.3 240.5 176.3Q239 176.4 237.5 176.1Q236 175.9 234.5 175.5Q233 175 231.5 174.4Q230 173.7 228.5 173Q227 172.2 225.5 171.4Q224 170.6 222.5 169.8Q221 169 219.5 168.3Q218 167.6 216.5 167.1Q215 166.5 213.5 166.2Q212 165.8 210.5 165.7Q209 165.6 207.5 165.7Q206 165.9 204.5 166.3Q203 166.6 201.5 167.2Q200 167.8 198.5 168.5Q197 169.2 195.5 170Q194 170.8 192.5 171.6Q191 172.4 189.5 173.2Q188 173.9 186.5 174.5Q185 175.1 183.5 175.6Q182 176 180.5 176.2Q179 176.4 177.5 176.3Q176 176.3 174.5 176Q173 175.7 171.5 175.2Q170 174.7 168.5 174Q167 173.3 165.5 172.6Q164 171.8 162.5 171Q161 170.1 159.5 169.4Q158 168.6 156.5 167.9Q155 167.3 153.5 166.8Q152 166.3 150.5 166Q149 165.7 147.5 165.7Q146 165.6 144.5 165.8Q143 166 141.5 166.5Q140 166.9 138.5 167.5Q137 168.2 135.5 168.9Q134 169.7 132.5 170.5Q131 171.3 129.5 172.1Q128 172.9 126.5 173.6Q125 174.3 123.5 174.9Q122 175.4 120.5 175.8Q119 176.2 117.5 176.3Q116 176.4 114.5 176.3Q113 176.2 111.5 175.8Q110 175.4 108.5 174.9Q107 174.3 105.5 173.6Q104 172.9 102.5 172.1Q101 171.3 99.5 170.5Q98 169.7 96.5 168.9Q95 168.2 93.5 167.6Q92 166.9 90.5 166.5Q89 166.1 87.5 165.8Q86 165.6 84.5 165.7Q83 165.7 81.5 166Q80 166.3 78.5 166.7Q77 167.2 75.5 167.9Q74 168.6 72.5 169.3Q71 170.1 69.5 170.9Q68 171.7 66.5 172.5Q65 173.3 63.5 174Q62 174.7 60.5 175.2Q59 175.7 57.5 176Q56 176.3 54.5 176.3Q53 176.4 51.5 176.2Q50 176 48.5 175.6Q47 175.2 45.5 174.5Q44 173.9 42.5 173.2Q41 172.5 39.5 171.6Q38 170.8 36.5 170Q35 169.2 33.8 168.4Q32.5 167.6 31.4 166.8Q30.3 166 29.3 165.2Q28.3 164.5 27.3 163.8Q26.4 163.2 25.3 162.6Q24.3 162 23.2 161.5Q22.1 160.9 20.8 160.3Q19.6 159.7 18.3 158.8Q16.9 158 15.6 157Q14.3 155.9 13.1 154.6Q11.9 153.3 11 151.7Q10 150.1 9.4 148.5Q8.8 147 8.4 145.5Q8 144 7.8 142.5Q7.6 141 7.7 139.5Q7.7 138 8 136.5Q8.3 135 8.9 133.5Q9.4 132 10.1 130.5Q10.7 129 11.5 127.5Q12.3 126 13.1 124.5Q13.9 123 14.7 121.5Q15.5 120 16.1 118.5Q16.8 117 17.3 115.5Q17.8 114 18 112.5Q18.3 111 18.3 109.5Q18.4 108 18.1 106.5Q17.9 105 17.5 103.5Q17 102 16.4 100.5Q15.8 99 15 97.5Q14.3 96 13.5 94.5Q12.6 93 11.8 91.5Q11.1 90 10.3 88.5Q9.6 87 9.1 85.5Q8.5 84 8.2 82.5Q7.8 81 7.7 79.5Q7.6 78 7.7 76.5Q7.9 75 8.2 73.5Q8.6 72 9.2 70.5Q9.7 69 10.5 67.5Q11.2 66 12 64.5Q12.8 63 13.6 61.5Q14.4 60 15.1 58.5Q15.9 57 16.5 55.5Q17.1 54 17.5 52.5Q18 51 18.2 49.5Q18.4 48 18.3 46.5Q18.3 45 18 43.5Q17.7 42 17.2 40.5Q16.7 39 16 37.5Q15.4 36 14.6 34.5Q13.9 33.1 13.3 31.4Q12.7 29.7 12.5 27.9Q12.2 26.1 12.4 24.2Q12.5 22.4 13.1 20.6Q13.7 18.8 14.7 17.2Q15.8 15.6 17.2 14.3Q18.6 13.1 20.3 12.3Q22 11.5 23.9 11.1Q25.7 10.8 27.6 10.9Q29.4 11 31.2 11.5Q32.9 12 33.9 12.5Z\"/><path d=\"M30.3 18.9L39.7 7.1\"/><path d=\"M30.3 7.1L39.7 18.9\"/><path d=\"M93.3 18.9L102.7 7.1\"/><path d=\"M93.3 7.1L102.7 18.9\"/><path d=\"M155.3 18.9L164.7 7.1\"/><path d=\"M155.3 7.1L164.7 18.9\"/><path d=\"M217.3 18.9L226.7 7.1\"/><path d=\"M217.3 7.1L226.7 18.9\"/><path d=\"M279.3 18.9L288.7 7.1\"/><path d=\"M279.3 7.1L288.7 18.9\"/><path d=\"M341.3 18.9L350.7 7.1\"/><path d=\"M341.3 7.1L350.7 18.9\"/><path d=\"M365.1 55.3L376.9 64.7\"/><path d=\"M376.9 55.3L365.1 64.7\"/><path d=\"M365.1 117.3L376.9 126.7\"/><path d=\"M376.9 117.3L365.1 126.7\"/><path d=\"M352.7 165.1L343.3 176.9\"/><path d=\"M352.7 176.9L343.3 165.1\"/><path d=\"M290.7 165.1L281.3 176.9\"/><path d=\"M290.7 176.9L281.3 165.1\"/><path d=\"M228.7 165.1L219.3 176.9\"/><path d=\"M228.7 176.9L219.3 165.1\"/><path d=\"M166.7 165.1L157.3 176.9\"/><path d=\"M166.7 176.9L157.3 165.1\"/><path d=\"M104.7 165.1L95.3 176.9\"/><path d=\"M104.7 176.9L95.3 165.1\"/><path d=\"M42.7 165.1L33.3 176.9\"/><path d=\"M42.7 176.9L33.3 165.1\"/><path d=\"M18.9 128.7L7.1 119.3\"/><path d=\"M7.1 128.7L18.9 119.3\"/><path d=\"M18.9 66.7L7.1 57.3\"/><path d=\"M7.1 66.7L18.9 57.3\"/>"};
+// Borders and the calibration frame are drawn for 40 x 20. On a wider label they are rebuilt wider, not stretched as a picture:
+// the plain frames keep their corners and only the straight runs grow (the stars stay centred); the organic ones widen evenly.
+// Coordinates are rewritten, so stroke widths stay even.
+const GFX_WIDE = {}; for (const k of Object.keys(GFX)) if (GFX[k].cat === "border" || k === "calibration") GFX_WIDE[k] = Object.assign({}, GFX[k]);
+function remapD(d, fx) {
+  let cmd = "", n = 0;
+  return d.replace(/([MLHVCQSTZ])|(-?\d*\.?\d+(?:e-?\d+)?)/gi, (m, c, num) => {
+    if (c) { cmd = c.toUpperCase(); n = 0; return c; }
+    const v = parseFloat(num), isX = cmd === "H" ? true : cmd === "V" ? false : n % 2 === 0; n++;
+    return isX ? String(Math.round(fx(v) * 100) / 100) : num;
+  });
+}
+function adaptBorders() {
+  for (const k of Object.keys(GFX_WIDE)) {
+    const b = GFX_WIDE[k], [, , bw, bh] = b.vb;
+    if (W === 40) { GFX[k] = Object.assign({}, b); continue; }
+    const k2 = k === "calibration" ? W / 40 : (W - 1.6) / (H - 1.6) * bh / bw, nw = Math.round(bw * k2 * 100) / 100, dx = nw - bw;
+    let body = b.body;
+    if (k === "frame" || k === "doubleframe") body = body.replace(/width="([\d.]+)"/g, (m, v) => `width="${Math.round((+v + dx) * 100) / 100}"`);
+    else { const band = k === "starsframe", lo = 137.5, hi = 246.5;
+      const fx = band ? (x) => x <= lo ? x : x >= hi ? x + dx : x + dx / 2 : (x) => x * k2;
+      body = body.replace(/ d="([^"]*)"/g, (m, d) => ` d="${remapD(d, fx)}"`); }
+    GFX[k] = Object.assign({}, b, { vb: [0, 0, nw, bh], body });
+  }
+  for (const key of [...gfxCache.keys()]) if (GFX_WIDE[key.split("|")[0]]) gfxCache.delete(key);
+}
 // Big uploads are shrunk in halving steps so thin lines stay smooth instead of aliasing (a single huge-to-tiny drawImage skips pixels)
 const dsCache = new WeakMap();
 function smoothFor(cx, src, w, h) {
@@ -1788,8 +1858,8 @@ function doRender() {
   qrEnsure(); qrUI(); colsSync();
   Object.values(cfg.fonts || {}).forEach(f => { if (!fontReady.has(f)) loadFont(f).then(render); });
   const cssW = pv.clientWidth || 640, dpr = Math.min(window.devicePixelRatio || 1, 3);
-  const pw = Math.round(cssW * dpr), ph = Math.round(pw / 2);
-  if (pv.width !== pw) { pv.width = pw; pv.height = ph; }
+  const pw = Math.round(cssW * dpr), ph = Math.round(pw * H / W);
+  if (pv.width !== pw || pv.height !== ph) { pv.width = pw; pv.height = ph; }
   const s = pw / W;
   pctx.setTransform(1, 0, 0, 1, 0, 0); pctx.clearRect(0, 0, pw, ph);
   if (view.mode === "dots") {
@@ -1805,8 +1875,8 @@ function doRender() {
   if (window.__presetSync) window.__presetSync();
   { const cut = isCut(); cutNow = cut; pv.classList.toggle("cut", cut); floatPrev.classList.toggle("cut", cut); { const pb = document.getElementById("printBtn"), qb = document.getElementById("quickBtn"); expBtn.disabled = cut; pb.disabled = cut; qb.disabled = cut; expBtn.title = pb.title = qb.title = cut ? "Move or shrink whatever runs past the red edge first" : ""; } }
   if (floatBox.classList.contains("on")) {
-    const fw = Math.round((floatPrev.clientWidth || 150) * dpr), fh = Math.round(fw / 2);
-    if (floatPrev.width !== fw) { floatPrev.width = fw; floatPrev.height = fh; }
+    const fw = Math.round((floatPrev.clientWidth || 150) * dpr), fh = Math.round(fw * H / W);
+    if (floatPrev.width !== fw || floatPrev.height !== fh) { floatPrev.width = fw; floatPrev.height = fh; }
     fctx.setTransform(1, 0, 0, 1, 0, 0); fctx.clearRect(0, 0, fw, fh); fctx.imageSmoothingEnabled = true; fctx.drawImage(pv, 0, 0, fw, fh);
   }
   drawGizmo();
@@ -2388,7 +2458,7 @@ function lib() { return lsGet(LS_LIB) || []; }
 const LS_RECENT = "vial-label-studio-recent-v1", recent = () => lsGet(LS_RECENT) || [];
 const PRINTER_KEYS = ["printX", "printY", "printR", "printDensity", "threshold", "showEdge"]; // your printer's setup, not part of a label design
 function autoName(c) { return [c.compound, c.variant, c.strength].map((x) => (x || "").trim()).filter(Boolean).join(" "); }
-function thumbOf(cv) { try { const t = document.createElement("canvas"); t.width = 176; t.height = 88; const x = t.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, 176, 88); x.imageSmoothingQuality = "high"; x.drawImage(cv, 0, 0, 176, 88); return t.toDataURL("image/png"); } catch { return ""; } }
+function thumbOf(cv) { try { const th = Math.round(176 * cv.height / cv.width), t = document.createElement("canvas"); t.width = 176; t.height = th; const x = t.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, 176, th); x.imageSmoothingQuality = "high"; x.drawImage(cv, 0, 0, 176, th); return t.toDataURL("image/png"); } catch { return ""; } }
 function addRecent(copies, cv) { // every printed label is remembered; the browser's own storage limit is the only cap, oldest drop first if it runs out
   const c = Object.assign({}, cfg); for (const k of PRINTER_KEYS) delete c[k];
   const key = JSON.stringify(c), e = { cfg: c, at: Date.now(), n: copies || 1, name: autoName(c), thumb: cv ? thumbOf(cv) : "" }; let a = recent();
@@ -2474,7 +2544,7 @@ async function saveFile(filename, data, type) {
 // Needs Web Bluetooth: Chrome or Edge on a computer, or Chrome on Android. Label: 40 x 20 mm at 300 dpi = 472 x 236 px, the exact pixels the PNG export saves.
 const printBtn = document.getElementById("printBtn");
 const NIIM_MODEL = { label: "Niimbot M2-H", id: 4608, dpi: 300, protocol: "v4", task: "b1", density: 3, label_type: 1, speed: 1, name_prefixes: ["M2"] };
-const NIIM_SIZE = { label: "40 x 20 mm (M2-H)", w_mm: 40, h_mm: 20, w_px: EX_W, h_px: EX_H, dpi: 300 };
+const niimSize = () => ({ label: `${W} x ${H} mm (M2-H)`, w_mm: W, h_mm: H, w_px: EX_W, h_px: EX_H, dpi: 300 });
 let niimLoad = null;
 function loadNiimbot() {
   if (window.Niimbot) return Promise.resolve();
@@ -2512,6 +2582,7 @@ function prSet(state) {
   if (printing) prDrawP = prPreviewDraw();
   document.getElementById("prAdv").hidden = !(hq && (printing || state === "cal"));
   document.getElementById("densCol").classList.toggle("open", state !== "cal"); document.getElementById("calBtn").disabled = state === "cal";
+  { const u = document.getElementById("prUsb"); if (u) u.hidden = !(state === "connect" && navigator.serial && !window.__IS_IOS); }
   prGo.textContent = state === "connect" ? "Connect printer" : state === "calneed" ? "Proceed" : state === "again" ? "Print again" : "Print label";
   prClose.textContent = state === "calneed" ? "Go back" : "Close";
   if (state !== "cal") calToggle(false);
@@ -2519,6 +2590,7 @@ function prSet(state) {
 }
 function prTopSync() { document.getElementById("prTop").classList.toggle("open", (prState === "print" || prState === "again") && !calSub.classList.contains("open")); } // the label preview and copies row slide in once the calibration panel has closed
 function prRoute() {
+  if (window.Niimbot && Niimbot.connected) prConn = true;
   if (!prConn) { prSet("connect"); prShow("Turn on your Niimbot M2-H, then tap Connect printer."); }
   else if (prMode === "hq" && !calDoneYet()) { prSet("calneed"); prShow("A calibration label is required for this method. It prints one test label so you can fine tune your printer."); }
   else { prSet("print"); prShow("Printer Connected"); }
@@ -2598,7 +2670,7 @@ function prSync() { prDens.value = Math.max(1, Math.min(5, Math.round(+cfg.print
 prSync();
 function prLaunch(mode) {
   prMode = mode; prOpen(true); prSync();
-  if (!navigator.bluetooth) { prShow(navigator.brave ? "Brave blocks website Bluetooth by default. In Brave, type brave://flags in the address bar, search for Web Bluetooth API, set it to Enabled, then relaunch Brave. If that setting is missing in your version, open this page in Chrome instead." : "Direct printing needs Chrome or Edge on a computer or Android. This browser can't connect to the printer.", true); prGo.disabled = true; return; }
+  if (!navigator.bluetooth && !navigator.serial) { prShow(navigator.brave ? "Brave blocks website Bluetooth by default. In Brave, type brave://flags in the address bar, search for Web Bluetooth API, set it to Enabled, then relaunch Brave. If that setting is missing in your version, open this page in Chrome instead." : "Direct printing needs Chrome or Edge on a computer or Android. This browser can't connect to the printer.", true); prGo.disabled = true; return; }
   loadNiimbot().catch(() => {}); prRoute();
 }
 printBtn.addEventListener("click", () => prLaunch("hq"));
@@ -2615,9 +2687,36 @@ async function renderCalLabel(o) { // the Calibration preset label, drawn with t
 }
 async function prSend(canvas, n, label) {
   const blob = await new Promise((r) => canvas.toBlob(r, "image/png")), url = URL.createObjectURL(blob);
-  try { await Niimbot.printImage(url, { model: NIIM_MODEL, size: NIIM_SIZE, density: prDensity(), copies: n, onProgress: (t) => { if (t && t !== "ok") prShow(String(t).replace(/^./, (m) => m.toUpperCase())); } }); }
+  try { await Niimbot.printImage(url, { model: NIIM_MODEL, size: niimSize(), density: prDensity(), copies: n, onProgress: (t) => { if (t && t !== "ok") prShow(String(t).replace(/^./, (m) => m.toUpperCase())); } }); }
   finally { URL.revokeObjectURL(url); }
 }
+document.getElementById("prUsb").addEventListener("click", async () => {
+  if (prBusy) return; prLock(true);
+  try { await loadNiimbot(); prShow("Choose your Niimbot in the USB window\u2026"); await Niimbot.connectUsb(NIIM_MODEL); prConn = true; prRoute(); printerChip(); }
+  catch (e) { prShow(/No port selected|cancel/i.test(String(e && e.message)) ? "No USB printer was chosen. Plug it in, then tap Use USB cable again." : prErr(e), true); }
+  finally { prLock(false); }
+});
+// Auto-detect: ONE quiet attempt after the page loads (not on iOS or Safari). Reopens a USB printer this site was allowed before,
+// or a Bluetooth printer Chrome remembers for it. Nothing shows if neither is there.
+function printerChip() {
+  let c = document.getElementById("prChip"); const on = window.Niimbot && Niimbot.connected;
+  if (!on) { if (c) c.remove(); return; }
+  if (!c) { c = document.createElement("span"); c.id = "prChip"; c.className = "pr-chip"; document.getElementById("sizeBtn").after(c); }
+  const p = Niimbot.printer; c.textContent = `${(p && p.label) || "Printer"} connected${Niimbot.transport === "usb" ? " (USB)" : ""}`;
+}
+(() => {
+  if (window.__IS_IOS || window.__IS_SAFARI) return;
+  const canUsb = !!(navigator.serial && navigator.serial.getPorts), canBle = !!(navigator.bluetooth && navigator.bluetooth.getDevices);
+  if (!canUsb && !canBle) return;
+  const go = async () => {
+    try {
+      const known = (canUsb ? (await navigator.serial.getPorts()).length : 0) + (canBle ? (await navigator.bluetooth.getDevices()).length : 0); if (!known) return; // nothing allowed before: do not even load the driver
+      await loadNiimbot(); const info = await Niimbot.autoConnect(NIIM_MODEL);
+      if (info) { prConn = true; printerChip(); say(`${info.label || "Printer"} found and connected${Niimbot.transport === "usb" ? " over USB" : ""}. Export \u2192 print goes straight to it.`); }
+    } catch { /* stay quiet */ }
+  };
+  (window.requestIdleCallback || ((f) => setTimeout(f, 1200)))(() => go(), { timeout: 3000 });
+})();
 const prLock = (on) => { prBusy = on; prGo.disabled = on; prClose.disabled = on; document.getElementById("calDone").disabled = on; document.getElementById("calTest").disabled = on; };
 const prFail = (e) => { prShow(prErr(e), true); if (/not connected|link dropped|disconnect/i.test(String((e && e.message) || e))) { prConn = false; if (prState !== "cal") prSet("connect"); } else if (prState === "again") prSet("print"); };
 prGo.addEventListener("click", async () => {
@@ -2678,7 +2777,7 @@ async function exportPng(k) {
   const blob = await new Promise(r => c.toBlob(r, "image/png"));
   const bytes = withDpi(await blob.arrayBuffer(), k);
   const safe = (s) => (s || "").trim().replace(/[^A-Za-z0-9.+-]+/g, "-").replace(/^-|-$/g, "");
-  const filename = `${safe(cfg.compound) || "label"}${cfg.variant && cfg.variant.trim() ? "-" + safe(cfg.variant) : ""}-${safe(cfg.strength) || "x"}-40x20${k > 1 ? "-x" + k : ""}.png`;
+  const filename = `${safe(cfg.compound) || "label"}${cfg.variant && cfg.variant.trim() ? "-" + safe(cfg.variant) : ""}-${safe(cfg.strength) || "x"}-${W}x${H}${k > 1 ? "-x" + k : ""}.png`;
   const pngBlob = new Blob([bytes], { type: "image/png" });
   if (handheld() && await saveToPhotos(pngBlob, filename)) return; // phones and tablets: the Niimbot app only reads the photo library
   try { await saveFile(filename, pngBlob); say(`Saved ${filename}.`); }
@@ -2982,7 +3081,7 @@ function dsgFitText(fit, m) {
   if (fit === "stretch") { const d = Math.abs(a - la) / la; return d < 0.04 ? `The shapes match, so nothing is distorted.` : `Stretches to the label, so the proportions change by about ${pc(d)}%.`; }
   if (!m.mm) return "This file has no size information.";
   const r = (v) => Math.round(v * 10) / 10, over = m.mm.w > W + 0.05 || m.mm.h > H + 0.05;
-  return `Prints at ${r(m.mm.w)} x ${r(m.mm.h)} mm${over ? ", so the part beyond the 40 x 20 mm label is cut off" : m.mm.w < W - 0.05 || m.mm.h < H - 0.05 ? ", centred, with blank space around it" : ", which is the label size"}.`;
+  return `Prints at ${r(m.mm.w)} x ${r(m.mm.h)} mm${over ? ", so the part beyond the ${W} x ${H} mm label is cut off" : m.mm.w < W - 0.05 || m.mm.h < H - 0.05 ? ", centred, with blank space around it" : ", which is the label size"}.`;
 }
 function dsgApply(entry, fit, only) { // make the uploaded design available to the label renderer
   return load(entry.url).then((img) => {
@@ -3007,12 +3106,53 @@ function syncDsgUI() {
   const t = dq("dsgThumb"), x = t.getContext("2d"); x.clearRect(0, 0, t.width, t.height); x.fillStyle = "#fff"; x.fillRect(0, 0, t.width, t.height);
   if (GFX.design) { const e2 = gfxImage("design", "#000000", 1); if (e2.ok) { const R = designRect(cur || rec, GFX.design), k = t.width / W; x.save(); x.beginPath(); x.rect(0, 0, t.width, t.height); x.clip(); x.drawImage(e2.img, R.x * k, R.y * k, R.w * k, R.h * k); x.restore(); } }
 }
+// ---- My uploads: every uploaded design is kept and shown at the top of Presets, where it can be renamed or removed
+const LS_MYDSG = "bcs-my-designs-v1";
+let myDsg = (() => { try { const a = JSON.parse(localStorage.getItem(LS_MYDSG)); return Array.isArray(a) ? a : []; } catch { return []; } })();
+const myDsgStore = () => { try { localStorage.setItem(LS_MYDSG, JSON.stringify(myDsg)); return true; } catch { return false; } };
+function myDsgAdd(e) {
+  myDsg = myDsg.filter((x) => x.url !== e.url); myDsg.unshift({ id: "u" + Date.now().toString(36), name: e.name, url: e.url, meta: e.meta, at: Date.now() });
+  while (!myDsgStore() && myDsg.length > 1) myDsg.pop(); // browser storage full: the oldest uploads make room
+}
+function myDsgThumb(cv, e) {
+  const x = cv.getContext("2d"); x.fillStyle = view.stock; x.fillRect(0, 0, cv.width, cv.height);
+  load(e.url).then((img) => { if (!img) return; const k = Math.min(cv.width / img.naturalWidth, cv.height / img.naturalHeight) * 0.92, w = img.naturalWidth * k, h = img.naturalHeight * k;
+    const t = document.createElement("canvas"); t.width = Math.ceil(w); t.height = Math.ceil(h); const tx = t.getContext("2d"); tx.drawImage(img, 0, 0, w, h); tx.globalCompositeOperation = "source-in"; tx.fillStyle = view.ink; tx.fillRect(0, 0, w, h);
+    x.drawImage(t, (cv.width - w) / 2, (cv.height - h) / 2); });
+}
+function myDsgRender() {
+  presetMenu.querySelectorAll(".mine-head, .popt.mine, .preset-head").forEach((n) => n.remove());
+  if (!myDsg.length) return;
+  const first = presetMenu.firstChild, head = document.createElement("div"); head.className = "mine-head"; head.textContent = "My uploads"; presetMenu.insertBefore(head, first);
+  myDsg.forEach((e) => {
+    const card = document.createElement("div"); card.className = "popt mine"; card.tabIndex = 0; card.setAttribute("role", "option");
+    const cv = document.createElement("canvas"); cv.width = 360; cv.height = Math.round(360 * H / W); myDsgThumb(cv, e);
+    const row = document.createElement("div"); row.className = "mine-row"; const nm = document.createElement("span"); nm.className = "mine-name"; nm.textContent = e.name;
+    const ren = document.createElement("button"); ren.type = "button"; ren.className = "mine-act"; ren.title = "Rename"; ren.setAttribute("aria-label", `Rename ${e.name}`); ren.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
+    const del = document.createElement("button"); del.type = "button"; del.className = "mine-act"; del.title = "Remove"; del.setAttribute("aria-label", `Remove ${e.name}`); del.textContent = "\u00d7";
+    row.append(nm, ren, del); card.append(cv, row); presetMenu.insertBefore(card, first);
+    const use = async () => { try { dsgSaved = { name: e.name, url: e.url, meta: e.meta }; dsgForget(); await dsgApply(dsgSaved, dsgRecommend(e.meta), true); dsgSave(); lsSet(LS_CFG, cfg); syncDsgUI(); render(); menuOpen(false); say(`${e.name} is on your label.`); } catch { say("That upload could not be loaded."); } };
+    card.addEventListener("click", (ev) => { if (ev.target.closest(".mine-act, input")) return; use(); });
+    card.addEventListener("keydown", (ev) => { if ((ev.key === "Enter" || ev.key === " ") && ev.target === card) { ev.preventDefault(); use(); } });
+    ren.addEventListener("click", () => {
+      const inp = document.createElement("input"); inp.type = "text"; inp.className = "mine-input"; inp.value = e.name; inp.maxLength = 40; nm.replaceWith(inp); inp.focus(); inp.select();
+      let fdone = false; const fin = (keep) => { if (fdone || !inp.isConnected) return; fdone = true; const v = inp.value.trim(); if (keep && v) { e.name = v; myDsgStore(); if (dsgSaved && dsgSaved.url === e.url) { dsgSaved.name = v; dsgSave(); if (GFX.design) GFX.design.name = v; } } nm.textContent = e.name; ren.setAttribute("aria-label", `Rename ${e.name}`); del.setAttribute("aria-label", `Remove ${e.name}`); inp.replaceWith(nm); };
+      inp.addEventListener("keydown", (k) => { if (k.key === "Enter") { k.preventDefault(); fin(true); } else if (k.key === "Escape") { k.preventDefault(); k.stopPropagation(); fin(false); } });
+      inp.addEventListener("blur", () => fin(true));
+    });
+    del.addEventListener("click", () => {
+      if (!del.classList.contains("confirm")) { del.classList.add("confirm"); del.textContent = "Remove?"; setTimeout(() => { if (del.isConnected) { del.classList.remove("confirm"); del.textContent = "\u00d7"; } }, 3000); return; }
+      myDsg = myDsg.filter((x) => x !== e); myDsgStore(); myDsgRender(); say(`${e.name} removed from My uploads. It stays on your label if it is there now.`);
+    });
+  });
+  const ph = document.createElement("div"); ph.className = "mine-head preset-head"; ph.textContent = "Presets"; presetMenu.insertBefore(ph, first);
+}
 function dsgSave() { const ok = dsgSaved ? lsSet(LS_DESIGN, dsgSaved) : (localStorage.removeItem(LS_DESIGN), true); return ok; }
 async function dsgUpload(file) {
   try {
     const out = await processDesign(file), meta = await readDesignMeta(file, out.natural);
     const name = (file.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim() || "My design").slice(0, 40);
-    dsgSaved = { name, url: out.url, meta }; const fit = dsgRecommend(meta);
+    dsgSaved = { name, url: out.url, meta }; const fit = dsgRecommend(meta); myDsgAdd(dsgSaved);
     dsgForget(); await dsgApply(dsgSaved, fit, true); const kept = dsgSave(); lsSet(LS_CFG, cfg); syncDsgUI(); render();
     say(kept ? `${name} is on your label with the recommended fit. Change the fit under My Media if you like.` : `${name} is on your label for this session only. This browser would not let the site save it (storage is full, blocked, or in private browsing).`);
   } catch { say("That file could not be read as an image."); }
@@ -3214,8 +3354,8 @@ const presetCfg = (p, keep) => norm(Object.assign({}, DEFAULTS, { compound: "", 
 const thumbs = [];
 function drawThumb(p, cv) {
   const w = 1280, sc = w / W, saveH = hits, saveL = legalOver, saveLogo = logoImg; // drawn at full size, then scaled down, so small text keeps its spacing
-  if (!thumbBig) { thumbBig = document.createElement("canvas"); thumbBig.width = w; thumbBig.height = w / 2; }
-  const x = thumbBig.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = view.stock; x.fillRect(0, 0, w, w / 2);
+  const th = Math.round(w * H / W); if (!thumbBig) thumbBig = document.createElement("canvas"); if (thumbBig.width !== w || thumbBig.height !== th) { thumbBig.width = w; thumbBig.height = th; }
+  const x = thumbBig.getContext("2d"); x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = view.stock; x.fillRect(0, 0, w, th);
   const c = presetCfg(p); if (c.showLogo && !logoImg) { if (!thumbLogo) { thumbLogo = new Image(); thumbLogo.onload = () => redrawThumbs(); thumbLogo.src = DEFAULT_LOGO; } if (thumbLogo.complete && thumbLogo.naturalWidth) logoImg = thumbLogo; }
   x.setTransform(sc, 0, 0, sc, 0, 0);
   try { drawLabel(x, c, view.ink, stockPaint(x, w)); } catch {}
@@ -3225,7 +3365,7 @@ function drawThumb(p, cv) {
 let thumbLogo = null, thumbBig = null;
 for (const p of PRESETS) {
   const o = document.createElement("button"); o.type = "button"; o.className = "popt"; o.setAttribute("role", "option"); o.dataset.id = p.id; o.setAttribute("aria-label", `${p.name}, ${p.note}`);
-  const cv = document.createElement("canvas"); cv.width = 360; cv.height = 180; const t = document.createElement("span"); t.textContent = p.name;
+  const cv = document.createElement("canvas"); cv.width = 360; cv.height = Math.round(360 * H / W); const t = document.createElement("span"); t.textContent = p.name;
   o.append(cv, t); presetMenu.append(o); thumbs.push({ p, cv });
   const th = { p, cv, dirty: true }; thumbs[thumbs.length - 1] = th;
   Object.values(p.cfg.fonts || {}).forEach(f => loadFont(f).then(() => { th.dirty = true; if (!presetMenu.hidden) thumbPump(); }));
@@ -3241,12 +3381,29 @@ function thumbPump(sync = 0) {
 }
 let thumbGfxT = 0; function thumbGfxReady() { if (presetMenu.hidden) return; clearTimeout(thumbGfxT); thumbGfxT = setTimeout(redrawThumbs, 30); } // a graphic finished loading while the window is open
 const redrawThumbs = () => { thumbs.forEach(t => { t.dirty = true; }); if (!presetMenu.hidden) thumbPump(); };
+// ---- Label size switch (header): 40 x 20 <-> 50 x 20
+function setLabelSize(id, quiet) {
+  if (!LABEL_SIZES[id]) return; LABEL_ID = id; W = LABEL_SIZES[id].w; H = LABEL_SIZES[id].h; EX_W = Math.round(W * PXMM); EX_H = Math.round(H * PXMM);
+  try { localStorage.setItem("bcs-label-size", id); } catch {}
+  document.documentElement.style.setProperty("--lab-ar", W + " / " + H);
+  adaptBorders(); if (typeof holoCache !== "undefined") holoCache.clear();
+  const t = `Niimbot M2 \u00b7 ${W} \u00d7 ${H} mm \u00b7 300 dpi`, other = id === "40x20" ? "50 by 20" : "40 by 20";
+  document.getElementById("sizeTxt").textContent = t; document.getElementById("sizeBtn").setAttribute("aria-label", `Label size: ${W} by ${H} millimetres. Tap to switch to ${other}.`);
+  const px = document.getElementById("pxinfo"); if (px) px.textContent = `${EX_W} \u00d7 ${EX_H} px`;
+  const dw = document.querySelector(".plate .dw"); if (dw) dw.textContent = W.toFixed(1) + " mm";
+  for (const id2 of ["prPrev", "calPrev"]) { const c = document.getElementById(id2); if (c) c.height = Math.round(c.width * H / W); }
+  document.querySelectorAll("#presetMenu .popt canvas").forEach((c) => { c.height = Math.round(c.width * H / W); });
+  redrawThumbs(); render();
+  if (!quiet) say(`Label size set to ${W} \u00d7 ${H} mm. Your design stays centred; export, print and Save to Photos now use ${EX_W} \u00d7 ${EX_H} px.`);
+}
+document.getElementById("sizeBtn").addEventListener("click", () => setLabelSize(LABEL_ID === "40x20" ? "50x20" : "40x20"));
+setLabelSize(LABEL_ID, true);
 const presetWrap = document.getElementById("presetWrap");
 document.getElementById("presetClose").addEventListener("click", () => { menuOpen(false); presetBtn.focus(); });
 function menuOpen(on) {
   presetMenu.hidden = !on; presetWrap.hidden = !on; presetBtn.setAttribute("aria-expanded", on ? "true" : "false");
   if (on) {
-    presetMenu.scrollTop = 0;
+    presetMenu.scrollTop = 0; myDsgRender();
     thumbs.forEach(t => { t.dirty = true; }); thumbPump(3); const f = presetMenu.querySelector(".popt"); if (f) f.focus(); }
 }
 presetBtn.addEventListener("click", () => menuOpen(presetMenu.hidden));
@@ -3270,7 +3427,7 @@ function applyPreset(p, snapshot) {
 }
 window.__presetSync = () => { const p = curPreset(); presetReset.hidden = !p; presetReset.disabled = !p || JSON.stringify(cfg) === presetShown; }; // Reset wakes up once the preset has been changed
 presetMenu.addEventListener("click", (e) => {
-  const o = e.target.closest(".popt"); if (!o) return;
+  const o = e.target.closest(".popt"); if (!o || o.classList.contains("mine")) return; // My uploads tiles handle their own clicks
   const p = PRESETS.find((x) => x.id === o.dataset.id); menuOpen(false); presetBtn.focus(); if (!p) return;
   applyPreset(p, true); say(`${p.name} applied. Undo brings your previous label back.`);
 });
@@ -3480,7 +3637,7 @@ if (document.fonts) {
   const ghosts = ['left', 'middle', 'right'].map((a) => { const g = document.createElement('div'); g.className = 'floatGhost'; g.dataset.a = a; document.body.appendChild(g); return g; });
   const showGhosts = (on, hot) => ghosts.forEach((g) => {
     g.style.display = on ? 'block' : 'none';
-    if (on) { g.style.width = st.w + 'px'; g.style.height = (st.w / 2) + 'px'; { const [vx0, vy0] = vvo(); g.style.transform = `translate3d(${snapX(g.dataset.a, st.w) + vx0}px,${TY() + vy0}px,0)`; } g.style.borderColor = g.dataset.a === hot ? 'rgba(235,235,245,.95)' : 'rgba(200,200,210,.45)'; }
+    if (on) { g.style.width = st.w + 'px'; g.style.height = (st.w * H / W) + 'px'; { const [vx0, vy0] = vvo(); g.style.transform = `translate3d(${snapX(g.dataset.a, st.w) + vx0}px,${TY() + vy0}px,0)`; } g.style.borderColor = g.dataset.a === hot ? 'rgba(235,235,245,.95)' : 'rgba(200,200,210,.45)'; }
   });
   const nearest = (px) => { let best = 'right', bd = Infinity; for (const a of ['left', 'middle', 'right']) { const d = Math.abs(px - snapX(a, st.w)); if (d < bd) { bd = d; best = a; } } return best; };
 
@@ -3642,19 +3799,22 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   const frame = (fn, ms) => new Promise((res) => { const t0 = performance.now(); (function tick(now) { const t = now - t0; fn(t); if (t < ms) requestAnimationFrame(tick); else res(); })(t0); });
   const below = (d) => { const i = panels.indexOf(d); return panels.slice(i + 1); };
 
-  const DUR = 520, EZ = "cubic-bezier(.22,1,.36,1)";
+  const EZ = "cubic-bezier(.45,0,.2,1)", durFor = (px) => Math.round(Math.min(640, Math.max(380, 300 + Math.abs(px) * 0.45))); // gentle in and out; taller panels take a little longer so the speed feels even
   function slide(d) { // one smooth height glide per panel; never blocks the others, and can be reversed mid way
     if (reduce && reduce.matches) { d._want = !d.open; d.open = !d.open; glyph(d); save(); return; }
     const want = !(d._want === undefined ? d.open : d._want); d._want = want; glyph(d);
     const cur = d.offsetHeight; if (d._a) d._a.cancel();
     let end; if (want) { d.open = true; end = d.offsetHeight; } else { d.open = false; end = d.offsetHeight; d.open = true; }
     const kids = [...d.children].filter((c) => c.tagName !== "SUMMARY"); d.style.overflow = "hidden"; d.style.contain = "layout paint"; // inner layout is done once, so each frame only moves the edge
-    kids.forEach((k) => { if (k._f) k._f.cancel(); k._f = k.animate(want ? [{ opacity: .15 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: .15 }], { duration: DUR, easing: EZ }); });
+    const DUR = durFor(end - cur);
+    kids.forEach((k) => { if (k._f) k._f.cancel(); k._f = k.animate(want ? [{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }] : [{ opacity: 1 }, { opacity: 0 }], want ? { duration: DUR, delay: 60, easing: EZ, fill: "backwards" } : { duration: DUR * 0.6, easing: "ease-out" }); });
     const a = d._a = d.animate([{ height: cur + "px" }, { height: end + "px" }], { duration: DUR, easing: EZ });
     a.finished.then(() => { if (d._a !== a) return; d.open = want; d.style.overflow = ""; d.style.contain = ""; d._a = null; save(); }, () => {});
     save();
   }
   function toggle(d) { slide(d); }
+  // Switch-style settings (the text-only toggles) always sit together at the bottom of their panel, under the hairline
+  panels.forEach((d) => { const g = d.querySelector(":scope > .grid"); if (!g) return; const t = [...g.children].filter((c) => c.classList.contains("check")); t.forEach((c) => g.appendChild(c)); });
   panels.forEach((d) => {
     const sum = d.querySelector("summary"); if (!sum) return;
     let row = sum.querySelector(".sumr");
@@ -3692,6 +3852,21 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     "Tap a panel\u2019s title in the side bar to open or close it. Tap the arrow to tuck the whole bar away.",
     "For the best image quality, have ChatGPT convert your logos and graphics to SVG before uploading them."
   ];
+  // Phones get shorter wording for the longest tips, so every tip fits the compact three-line banner whole
+  if (matchMedia("(max-width:880px)").matches) {
+    const SHORT = [
+      ["Selecting \u201cDownload PNG", "Export \u2192 Save to Photos gives you a PNG to open in the Niimbot app."],
+      ["Uploading your label in the Niimbot app", "In the Niimbot app, set the photo\u2019s contrast to 0 to remove the white outline."],
+      ["Tap a panel\u2019s title", "Tap a panel\u2019s title to open or close it. Tap the arrow to tuck the bar away."],
+      ["For the best image quality", "For the sharpest prints, convert logos to SVG before uploading. ChatGPT can do it."],
+      ["Made a mistake?", "Made a mistake? Tap Undo at the top. The last 5 changes are remembered."],
+      ["Use the X and Y boxes", "Use the X and Y boxes under the preview to nudge a selected item exactly."],
+      ["BCS Label Studio is a free tool", "BCS Label Studio is free from The BioChem Society. Join us on Discord."],
+      ["Upload a whole-label design", "Upload a whole-label design or your own graphics under My Media."],
+      ["Load presets using", "Tap Presets at the top of the page to kickstart an idea."]
+    ];
+    for (let t = 0; t < TIPS.length; t++) { const m = SHORT.find(([a]) => TIPS[t].startsWith(a)); if (m) TIPS[t] = m[1]; }
+  }
   const KEY = "vial-label-studio-hints-v1", box = document.getElementById("hints"), track = document.getElementById("hTrack");
   const sw = document.getElementById("hintsSwitch");
   let off = false; try { off = localStorage.getItem(KEY) === "off"; } catch {}
@@ -3879,6 +4054,14 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   tg.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg>';
   head.append(logo, ttl, tg); sb.prepend(head);
   const bub = document.createElement("button"); bub.type = "button"; bub.id = "sbBubble"; bub.setAttribute("aria-controls", "sidebar"); bub.innerHTML = tg.innerHTML; document.body.appendChild(bub); bub.addEventListener("click", () => tg.click());
+  // First visit on a phone: point at the bubble until the panel has been opened once
+  { let seen = false; try { seen = localStorage.getItem("bcs-coach-v1") === "1"; } catch {}
+    if (!seen && mqN.matches) {
+      const tip = document.createElement("div"); tip.className = "coachTip"; tip.setAttribute("role", "status"); tip.innerHTML = "Tap here to edit your label<small>Text, layout, graphics and more are in this panel.</small>";
+      const done = () => { bub.classList.remove("coach"); tip.remove(); try { localStorage.setItem("bcs-coach-v1", "1"); } catch {} };
+      setTimeout(() => { if (!body.classList.contains("sb-collapsed")) return done(); bub.classList.add("coach"); document.body.appendChild(tip); tip.addEventListener("click", () => tg.click()); }, 900);
+      new MutationObserver(() => { if (!body.classList.contains("sb-collapsed")) done(); }).observe(body, { attributes: true, attributeFilter: ["class"] });
+    } }
   const scrim = document.createElement("div"); scrim.className = "sb-scrim"; sb.parentNode.insertBefore(scrim, sb);
   // icons on every row, tooltip text for the rail
   sb.querySelectorAll("summary").forEach((s) => {
